@@ -1,0 +1,47 @@
+/*:root {*/
+/*    --primary-color: #FFD233;*/
+/*    --primary-color-light: #FFFCF0;*/
+/*    --primary-color-text: #fff;*/
+/*    --primary-color-background: #fff;*/
+/*}*/
+
+:root {
+    --primary-color: #0500FF;
+    --primary-color-light: #F0F6FF;
+    --primary-color-text: #fff;
+    --primary-color-background: #fff;
+    --primary-color-footer: #F9F9F9;
+}
+
+html {
+    scroll-behavior: smooth !important;
+}
+
+.zhelb-login-useful-link {
+    padding: 5px;
+    /*background: var(--primary-color);*/
+    border-radius: 4px;
+    margin: 3px;
+}
+
+.zhelb-login-useful-link:hover {
+    cursor: pointer;
+    /*font-style: italic;*/
+}
+
+.zhelb-input {
+    background: var(--primary-color-light) !important;
+    border: 2px solid var(--primary-color);
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: none;
+}
+
+.zhelb-button {
+    color: white!important;
+    background: var(--primary-color);
+}
+
+.zhelb-button:hover {
+    color: white;
+}
