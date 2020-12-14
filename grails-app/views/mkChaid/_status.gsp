@@ -1,4 +1,38 @@
+
+<div class="panel-body">
+  <g:form controller="mkChaid" action="addChadStatus"
+                                                  method="POST"
+                                                  class="form-horizontal">
+                                              <g:hiddenField name="chaid_id" value="${mkChaid.id}"/>
+
+
+                                              <div class="col-lg-3">
+                                                  <g:select name="status_id" id="status_id" value=""
+                                                            from="${admin.DictionaryItem.findAllByDictionary_idAndActive(admin.Dictionary.findByCode("CHADSTATUS"),true)}"
+                                                            optionKey="id" optionValue="name" required="required"
+                                                            class="form-control select-search"
+                                                            noSelection="['': 'Choose Action']"/>
+
+                                              </div>
+
+                                              <div class="col-lg-4">
+                                                  <g:textArea name="comment" placeholder="Write any comment .."
+                                                              rows="2" cols="10"/>
+
+                                              </div>
+
+                                              <div class="col-lg-3">
+
+                                                  <button type="submit" class="btn btn-primary">SAVE CHANGES <i
+                                                          class="icon-arrow-right14 position-right"></i>
+                                                  </button>
+
+                                              </div>
+                                          </g:form>
+
+</div>
   <table class="table datatable-basic tabs_table">
+
 
                             <thead>
                             <tr>

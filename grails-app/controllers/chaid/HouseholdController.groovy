@@ -12,6 +12,10 @@ class HouseholdController {
 
     def index(Integer max) {
         session["activePage"] = "household"
+        if(!params.order) {
+            params.sort = 'id'
+            params.order = 'desc'
+        }
 
         params.max = Math.min(max ?: 10, 100)
         respond householdService.list(params), model:[householdCount: householdService.count()]

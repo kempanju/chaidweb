@@ -8,7 +8,30 @@
                                                    <td colspan="2">
                                                       <h5>Pregnant Women</h5>
                                                    </td></tr>
+<tr>
+<td> <span class="text-semibold">Name</span></td>
+ <td>
+ ${fieldValue(bean: pregnantInstance, field: "name")}
+                                    </td>
 
+</tr>
+
+<tr>
+<td> <span class="text-semibold">Age</span></td>
+ <td>
+ ${fieldValue(bean: pregnantInstance, field: "age")}
+                                    </td>
+
+</tr>
+
+
+<tr>
+<td> <span class="text-semibold">Phone Number</span></td>
+ <td>
+ ${fieldValue(bean: pregnantInstance, field: "phone_number")}
+                                    </td>
+
+</tr>
    <tr>
        <td>
            <span class="text-semibold"><g:message code="description" default="Menstrual Period"/></span>

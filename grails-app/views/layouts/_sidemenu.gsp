@@ -59,10 +59,6 @@
                                                         <ul>
                                                             <li><g:link controller='mkChaid' action="index">Chaid</g:link></li>
 
-                                                            <li><g:link controller='preginantDetails' action="index">Pregnant</g:link>
-                                                            </li>
-                                                            <li><g:link controller='childFiveYears' action="index">Child Under Five</g:link>
-                                                            </li>
 
 
                                                         </ul>

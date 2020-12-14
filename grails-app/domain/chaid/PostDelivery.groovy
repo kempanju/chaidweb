@@ -2,8 +2,6 @@ package chaid
 
 import admin.DictionaryItem
 
-import java.sql.Date
-
 class PostDelivery {
     int version,id
     MkChaid chaid
@@ -12,7 +10,8 @@ class PostDelivery {
     String facility_card_name
     DictionaryItem danger_sign
     Boolean provided_immunization,postnatal_clinic
-    Integer under_five_no
+    Integer under_five_no,child_age,child_age_month
+    java.sql.Timestamp created_at
 
     static constraints = {
         provided_immunization nullable:true
@@ -26,5 +25,13 @@ class PostDelivery {
         delivery_date nullable:true
         under_five_no nullable:true
         family_planning nullable:true
+        child_age formula:"(current_date -delivery_date::date)/365"
+        child_age_month formula:"(current_date -delivery_date::date)/30"
+        created_at nullable: true
+    }
+    def beforeInsert(){
+        def current_time = Calendar.instance
+        created_at = new java.sql.Timestamp(current_time.time.time)
+
     }
 }

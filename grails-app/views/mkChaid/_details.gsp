@@ -40,8 +40,8 @@
                                     </td>
                                     <td>
 
-           <g:link class="list" controller="household" action="show" id="${mkChaid.id}">
-                                    ${fieldValue(bean: mkChaid, field: "household.name")}</g:link></td>
+           <g:link class="list" controller="household" action="show" id="${mkChaid?.household?.id}">
+                                    ${fieldValue(bean: mkChaid, field: "household.full_name")}</g:link></td>
                                 </tr>
 
                  <tr>
@@ -49,7 +49,7 @@
                                                        <span class="text-semibold"><g:message code="type" default="Household Number"/></span>
                                                    </td>
                                                    <td>
-                                                 <g:link class="list" controller="household" action="show" id="${mkChaid.id}">
+                                                 <g:link class="list" controller="household" action="show" id="${mkChaid?.household?.id}">
                                                    ${fieldValue(bean: mkChaid, field: "household.number")}</g:link></td>
                                                </tr>
 
@@ -67,7 +67,7 @@
                                     </td>
                                     <td style="word-break:break-word">
 
-                                      <span class="text-muted"><g:formatDate format="dd MMM, yyyy HH:mm"
+                                      <span class="text-muted"><g:formatDate format="dd MMM, yyyy"
                                                                                                        date="${mkChaid.arrival_time}"/></span>
 
                                                             </td>
@@ -113,6 +113,14 @@
                                                 </td>
                                                 <td>${fieldValue(bean: mkChaid, field: "uniquecode")}</td>
                                             </tr>
+       <tr>
+                                                    <td>
+                                                        <span class="text-semibold"><g:message code="type" default="Registration No"/></span>
+                                                    </td>
+                                                    <td>${fieldValue(bean: mkChaid, field: "reg_no")}</td>
+                                                </tr>
+
+
       <g:render template="postdelivery" bean="mkChaid"/>
 
 
@@ -174,9 +182,9 @@
                                                    </td></tr>
        <g:each in="${chaid.AvailableMemberHouse.findAllByChaid(mkChaid)}" status="i" var="activityListInstance">
        <tr>
-       <td>${i+1}</td>
-        <td>
-        ${fieldValue(bean: activityListInstance, field: "type_id.name")}
+
+        <td colspan="2">
+        ${fieldValue(bean: activityListInstance, field: "type_id.name")} ( Member No: ${fieldValue(bean: activityListInstance, field: "member_no")})
                                            </td>
 
        </tr>

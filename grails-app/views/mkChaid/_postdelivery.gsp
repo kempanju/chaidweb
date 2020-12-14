@@ -15,7 +15,7 @@
        </td>
        <td >
         <span class="text-muted"><g:formatDate format="dd MMM, yyyy HH:mm"
-                          date="${postDeliveryInstance.delivery_date}"/></span>
+                          date="${postDeliveryInstance.delivery_date}"/> ${postDeliveryInstance.child_age}</span>
 
 
        </td>

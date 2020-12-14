@@ -1,6 +1,7 @@
 package chaid
 
 import admin.DictionaryItem
+import admin.SubStreet
 import admin.SystemLogs
 import com.chaid.security.MkpUser
 import grails.converters.JSON
@@ -21,14 +22,20 @@ class ApplicationService {
         def user_id=jsonData.user_id
 
 
-        def house_hold_id=jsonData.house_hold_id
+        def house_hold_id=jsonData.house_hold
         def respondent=jsonData.respondent
         def gender=jsonData.gender
         def age=jsonData.age
-        def relationshipstatus=jsonData.relationship_status
+        def relationshipstatus=jsonData.relationshipstatus
         def results=jsonData.results
         def house_hold_sick_person=jsonData.house_hold_sick_person
         def house_hold_sick_person_age=jsonData.house_hold_sick_person_age
+
+        def latitude=jsonData.latitude
+        def longitude=jsonData.longitude
+        def accuracy=jsonData.accuracy
+        def care_giver=jsonData.care_giver
+
 
         def uniquecode=jsonData.unique_code
 
@@ -37,7 +44,20 @@ class ApplicationService {
 
             def chadInstance = new MkChaid()
 
-            def houseHoldInstance=Household.get(house_hold_id)
+            def houseHoldInstance=null
+
+            if(house_hold_id){
+                def id=house_hold_id.house_hold_id
+                if(!id) {
+                    def number = house_hold_id.number
+                    def street_id = house_hold_id.street_id
+                    def name = house_hold_id.name
+                    def subStreetInstance = SubStreet.get(street_id)
+                    houseHoldInstance = Household.findOrSaveWhere(village_id: subStreetInstance.village_id, district_id: subStreetInstance.district_id, number: number, name: name, street: subStreetInstance)
+                }else{
+                    houseHoldInstance = Household.get(id)
+                }
+            }
             chadInstance.respondent_name = respondent
             chadInstance.respondent_gender = gender
             chadInstance.respondent_age = age
@@ -49,6 +69,26 @@ class ApplicationService {
             chadInstance.sick_person=house_hold_sick_person
             chadInstance.uniquecode=uniquecode
             chadInstance.relationship_status = DictionaryItem.findByCode(relationshipstatus)
+            chadInstance.care_giver=care_giver
+
+            try{
+                int countChaid=MkChaid.countByStreet(userInstance.village_id)+1
+                int  districtId= userInstance.village_id.district_id.id
+                //int regionId=userInstance.village_id.district_id.id
+                int village=userInstance.village_id.id
+                def regNo= String.format("%03d", districtId)+"/"+String.format("%04d", village)+"/"+String.format("%04d", countChaid)
+                chadInstance.reg_no=regNo
+            }catch(Exception e){
+                e.printStackTrace()
+            }
+
+            try{
+                chadInstance.centroid_x=Double.parseDouble(latitude)
+                chadInstance.centroid_y=Double.parseDouble(longitude)
+                chadInstance.accuracy=Double.parseDouble(accuracy)
+            }catch(Exception e){
+                e.printStackTrace()
+            }
             results.each {
                 def code = it.code
                 def answer_code = it.answer_code
@@ -70,11 +110,12 @@ class ApplicationService {
 
 
             }
-            if (chadInstance.save(failOnError: true)) {
+            if (chadInstance.save(failOnError: true,flush: true)) {
                 results.each {
                     def code = it.code
                     String answer_code = it.answer_code
                     String comment = it.comment
+                    def resultCodeArray=it.answer_code
 
                     if (code.equals("CHAD6")) {
                         try {
@@ -84,11 +125,42 @@ class ApplicationService {
                                 def educationInstance = new EducationType()
                                 educationInstance.type = dictionaryItemList
                                 educationInstance.chaid = chadInstance
-                                educationInstance.save()
+                                educationInstance.save(flush: true)
 
                             }
                         }catch(Exception e){
 
+                        }
+
+                    }
+
+                    if(code.equals("CHAD15")){
+                        def answercodeArray=it.answer_code
+                        def maleNo=0
+                        def femaleNo=0
+                        answercodeArray.each{
+                            try {
+                                String valueCode = it.code
+                                def member_no = it.member_no
+                                if(valueCode.equals("CHAD15A")){
+                                    if(member_no) {
+                                        maleNo = Integer.parseInt(member_no)
+                                    }
+                                }
+                                if(valueCode.equals("CHAD15B")){
+                                    if(member_no) {
+                                        femaleNo = Integer.parseInt(member_no)
+                                    }
+                                }
+
+                            }catch(Exception e){
+                                e.printStackTrace()
+                            }
+
+                        }
+
+                        if((maleNo>0||femaleNo>0)&&houseHoldInstance){
+                            Household.executeUpdate("update Household set male_no=:male_no,female_no=:female_no where id=:houseID",[male_no:maleNo,female_no:femaleNo,houseID:houseHoldInstance.id])
                         }
 
                     }
@@ -104,7 +176,7 @@ class ApplicationService {
                                 activityInstance.chaid = chadInstance
                                 activityInstance.type = dictionaryItemList
                                 activityInstance.other_explaination = comment
-                                activityInstance.save()
+                                activityInstance.save(flush: true)
 
                             }
                         }catch(Exception e){
@@ -117,13 +189,14 @@ class ApplicationService {
 
                     if (code.equals("CHAD16")) {
                         try {
-                            def breakArray = answer_code.split(",")
+                            def breakArray = resultCodeArray
                             breakArray.each {
-                                def dictionaryItemList = DictionaryItem.findByCode(it)
-                                def houseHoldDetail = new HouseholdDetails()
-                                houseHoldDetail.household = houseHoldInstance
-                                houseHoldDetail.detailsType = dictionaryItemList
-                                houseHoldDetail.save()
+                                def dictionaryItemList = DictionaryItem.findByCode(it.code)
+                                def houseHoldDetail =HouseholdDetails.findOrSaveWhere(household:houseHoldInstance,detailsType:dictionaryItemList)
+                                houseHoldDetail.member_no = Integer.parseInt(it.member_no)
+                                houseHoldDetail.save(flush: true)
+
+                                println(it.member_no)
 
                             }
                         }catch(Exception e){
@@ -133,13 +206,14 @@ class ApplicationService {
 
                     if (code.equals("CHAD17")) {
                         try {
-                            def breakArray = answer_code.split(",")
+                            def breakArray = resultCodeArray
                             breakArray.each {
-                                def dictionaryItemList = DictionaryItem.findByCode(it)
+                                def dictionaryItemList = DictionaryItem.findByCode(it.code)
                                 def availableHouseHold = new AvailableMemberHouse()
                                 availableHouseHold.household = houseHoldInstance
                                 availableHouseHold.type_id = dictionaryItemList
                                 availableHouseHold.chaid = chadInstance
+                                availableHouseHold.member_no = Integer.parseInt(it.member_no)
                                 availableHouseHold.save()
 
                             }
@@ -161,9 +235,13 @@ class ApplicationService {
 
 
                 }
-                pregnantWomen(chadInstance,houseHoldInstance,jsonData,userInstance)
-                postDelivery(chadInstance,houseHoldInstance,jsonData,userInstance)
-                childUnderFive(chadInstance,houseHoldInstance,jsonData,userInstance)
+                try {
+                    pregnantWomen(chadInstance, houseHoldInstance, jsonData, userInstance)
+                    postDelivery(chadInstance, houseHoldInstance, jsonData, userInstance)
+                    childUnderFive(chadInstance, houseHoldInstance, jsonData, userInstance)
+                }catch(Exception e){
+                    e.printStackTrace()
+                }
             }
 
 
@@ -174,207 +252,221 @@ class ApplicationService {
 
 
     def childUnderFive(MkChaid mkChaid,Household household,def jsonData,def userInstance){
-        def last_date=jsonData.child_under_five.last_date
-        def baby_provided_immunization=jsonData.child_under_five.baby_provided_immunization
-        def take_child_clinic=jsonData.child_under_five.take_child_clinic
-        def under_five_no=jsonData.child_under_five.under_five_no
+        try {
+            def last_date = jsonData.child_under_five.last_date
+            def baby_provided_immunization = jsonData.child_under_five.baby_provided_immunization
+            def take_child_clinic = jsonData.child_under_five.take_child_clinic
+            def under_five_no = jsonData.child_under_five.under_five_no
 
-        def childUnderFiveInstance=new ChildFiveYears()
-        childUnderFiveInstance.provided_immunization=baby_provided_immunization
-        childUnderFiveInstance.chaid=mkChaid
-        childUnderFiveInstance.child_clinic=take_child_clinic
-        childUnderFiveInstance.child_no=under_five_no
-        childUnderFiveInstance.household=household
+            def childUnderFiveInstance = new ChildFiveYears()
+            childUnderFiveInstance.provided_immunization = baby_provided_immunization
+            childUnderFiveInstance.chaid = mkChaid
+            childUnderFiveInstance.child_clinic = take_child_clinic
+            childUnderFiveInstance.child_no = under_five_no
+            childUnderFiveInstance.household = household
 
-        if(childUnderFiveInstance.save(failOnError: true)){
-            def results=jsonData.results
+            if (childUnderFiveInstance.save(failOnError: true,flush: true)) {
+                def results = jsonData.results
 
-            results.each {
-                def code = it.code
-                def answer_code = it.answer_code
-
-
-                if (code.equals("CHAD32A")) {
-                    try {
-                        def dangerSignExists = false
-                        def msgDangerSign = ""
-                        def signCount = 1;
-                        def breakArray = answer_code.split(",")
-                        breakArray.each {
-                            def dictionaryItemList = DictionaryItem.findByCode(it)
-                            def childSignInstance = new ChildDangerSign()
-                            childSignInstance.childFiveYears = childUnderFiveInstance
-                            childSignInstance.sign_type = dictionaryItemList
-                            childSignInstance.save(failOnError: true)
-
-                            msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
+                results.each {
+                    def code = it.code
+                    def answer_code = it.answer_code
 
 
-                            signCount++
+                    if (code.equals("CHAD32A")) {
+                        try {
+                            def dangerSignExists = false
+                            def msgDangerSign = ""
+                            def signCount = 1;
+                            def breakArray = answer_code.split(",")
+                            breakArray.each {
+                                def dictionaryItemList = DictionaryItem.findByCode(it)
+                                def childSignInstance = new ChildDangerSign()
+                                childSignInstance.childFiveYears = childUnderFiveInstance
+                                childSignInstance.sign_type = dictionaryItemList
+                                childSignInstance.save()
 
+                                msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
+
+
+                                signCount++
+
+                            }
+
+                            def uniquecode = jsonData.unique_code
+                            def current_time = Calendar.instance
+                            def send_at = new java.sql.Timestamp(current_time.time.time)
+
+                            def dangerSignOn = "Reported Child danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
+
+                            saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
+
+                        } catch (Exception e) {
+                            e.printStackTrace()
                         }
 
-                        def uniquecode = jsonData.unique_code
-                        def current_time = Calendar.instance
-                        def send_at = new java.sql.Timestamp(current_time.time.time)
-
-                        def dangerSignOn = "Reported Child danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
-
-                        saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
-
-                    }catch(Exception e){
-                        e.printStackTrace()
                     }
 
                 }
 
             }
-
+        }catch(Exception e){
+            e.printStackTrace()
         }
 
     }
     def postDelivery(MkChaid mkChaid,Household household,def jsonData,def userInstance){
-        def delivery_date=jsonData.post_delivery.delivery_date
-        def card_verification_facility=jsonData.post_delivery.card_verification_facility
-        def taken_baby_to_clinic=jsonData.post_delivery.taken_baby_to_clinic
-        def baby_provided_immunization=jsonData.post_delivery.baby_provided_immunization
-        def under_five_no=jsonData.post_delivery.under_five_no
-        def postDeliveryInstance=new PostDelivery()
-        //postDeliveryInstance.delivery_date=delivery_date
-        postDeliveryInstance.facility_card_name=card_verification_facility
-        postDeliveryInstance.postnatal_clinic=taken_baby_to_clinic
-        postDeliveryInstance.provided_immunization=baby_provided_immunization
-        postDeliveryInstance.chaid=mkChaid
-        postDeliveryInstance.under_five_no=under_five_no
-        def results=jsonData.results
+        try {
+            def delivery_date = jsonData.post_delivery.delivery_date
+            def card_verification_facility = jsonData.post_delivery.card_verification_facility
+            def taken_baby_to_clinic = jsonData.post_delivery.taken_baby_to_clinic
+            def baby_provided_immunization = jsonData.post_delivery.baby_provided_immunization
+            def under_five_no = jsonData.post_delivery.under_five_no
+            def postDeliveryInstance = new PostDelivery()
+            //postDeliveryInstance.delivery_date=delivery_date
 
-        results.each {
-            def code = it.code
-            def answer_code = it.answer_code
+            if(delivery_date){
+                postDeliveryInstance.delivery_date= java.util.Date.parse("yyyy-MM-dd",delivery_date)
 
-            if (code.equals("CHAD23A")) {
-                postDeliveryInstance.outcome_type = DictionaryItem.findByCode(answer_code)
             }
-
-            if (code.equals("CHAD23B")) {
-                postDeliveryInstance.baby_condition = DictionaryItem.findByCode(answer_code)
-            }
-
-            if (code.equals("CHAD23C")) {
-                postDeliveryInstance.delivery_type = DictionaryItem.findByCode(answer_code)
-            }
-
-            if (code.equals("CHAD23D")) {
-                postDeliveryInstance.delivery_place = DictionaryItem.findByCode(answer_code)
-            }
-
-            if (code.equals("CHAD29")) {
-                postDeliveryInstance.family_planning = DictionaryItem.findByCode(answer_code)
-            }
-
-        }
-        if(postDeliveryInstance.save(failOnError: true)){
+            postDeliveryInstance.facility_card_name = card_verification_facility
+            postDeliveryInstance.postnatal_clinic = taken_baby_to_clinic
+            postDeliveryInstance.provided_immunization = baby_provided_immunization
+            postDeliveryInstance.chaid = mkChaid
+            postDeliveryInstance.under_five_no = under_five_no
+            def results = jsonData.results
 
             results.each {
                 def code = it.code
                 def answer_code = it.answer_code
 
-                if (code.equals("CHAD27B")) {
-
-                    try {
-
-                        def breakArray = answer_code.split(",")
-                        breakArray.each {
-                            def dictionaryItemList = DictionaryItem.findByCode(it)
-                            def childImmunizationInstance = new ChildImmunization()
-                            childImmunizationInstance.chaid = mkChaid
-                            childImmunizationInstance.postDelivery = postDeliveryInstance
-                            childImmunizationInstance.immunization_type = dictionaryItemList
-                            childImmunizationInstance.save()
-
-                        }
-                    }catch(Exception e){
-
-                    }
-
-                }
-                if (code.equals("CHAD25")) {
-
-                    try {
-                        def dangerSignExists = false
-                        def msgDangerSign = ""
-                        def signCount = 1;
-                        def breakArray = answer_code.split(",")
-                        breakArray.each {
-                            def dictionaryItemList = DictionaryItem.findByCode(it)
-                            def dangerSignInstance = new DangerSignMotherDelivery()
-                            dangerSignInstance.chaid = mkChaid
-                            dangerSignInstance.postDelivery = postDeliveryInstance
-                            dangerSignInstance.sign_type = dictionaryItemList
-                            dangerSignInstance.save()
-
-                            msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
-
-
-                            signCount++
-                        }
-
-                        def uniquecode = jsonData.unique_code
-                        def current_time = Calendar.instance
-                        def send_at = new java.sql.Timestamp(current_time.time.time)
-
-                        def dangerSignOn = "Reported Mother danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
-
-                        saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
-
-                    }catch(Exception e){
-                        e.printStackTrace()
-                    }
-
-
+                if (code.equals("CHAD23A")) {
+                    postDeliveryInstance.outcome_type = DictionaryItem.findByCode(answer_code)
                 }
 
+                if (code.equals("CHAD23B")) {
+                    postDeliveryInstance.baby_condition = DictionaryItem.findByCode(answer_code)
+                }
 
-                if (code.equals("CHAD26")) {
-                    try {
-                        def breakArray = answer_code.split(",")
-                        def dangerSignExists = false
-                        def msgDangerSign = ""
-                        def signCount = 1;
-                        breakArray.each {
-                            def dictionaryItemList = DictionaryItem.findByCode(it)
-                            def dangerSignInstance = new DangerSignChildDelivery()
-                            dangerSignInstance.chaid = mkChaid
-                            dangerSignInstance.postDelivery = postDeliveryInstance
-                            dangerSignInstance.sign_type = dictionaryItemList
-                            msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
+                if (code.equals("CHAD23C")) {
+                    postDeliveryInstance.delivery_type = DictionaryItem.findByCode(answer_code)
+                }
 
+                if (code.equals("CHAD23D")) {
+                    postDeliveryInstance.delivery_place = DictionaryItem.findByCode(answer_code)
+                }
 
-                            signCount++
-                            if (dangerSignInstance.save()) {
+                if (code.equals("CHAD29")) {
+                    postDeliveryInstance.family_planning = DictionaryItem.findByCode(answer_code)
+                }
+
+            }
+            if (postDeliveryInstance.save(failOnError: true)) {
+
+                results.each {
+                    def code = it.code
+                    def answer_code = it.answer_code
+
+                    if (code.equals("CHAD27B")) {
+
+                        try {
+
+                            def breakArray = answer_code.split(",")
+                            breakArray.each {
+                                def dictionaryItemList = DictionaryItem.findByCode(it)
+                                def childImmunizationInstance = new ChildImmunization()
+                                childImmunizationInstance.chaid = mkChaid
+                                childImmunizationInstance.postDelivery = postDeliveryInstance
+                                childImmunizationInstance.immunization_type = dictionaryItemList
+                                childImmunizationInstance.save()
 
                             }
+                        } catch (Exception e) {
+
+                        }
+
+                    }
+                    if (code.equals("CHAD25")) {
+
+                        try {
+                            def dangerSignExists = false
+                            def msgDangerSign = ""
+                            def signCount = 1;
+                            if(answer_code) {
+                                def breakArray = answer_code.split(",")
+                                breakArray.each {
+                                    try {
+                                        def dictionaryItemList = DictionaryItem.findByCode(it)
+                                        def dangerSignInstance = new DangerSignMotherDelivery()
+                                        dangerSignInstance.chaid = mkChaid
+                                        dangerSignInstance.postDelivery = postDeliveryInstance
+                                        dangerSignInstance.sign_type = dictionaryItemList
+                                        dangerSignInstance.save()
+
+                                        msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
+
+                                    } catch (Exception e) {
+                                        e.printStackTrace()
+                                    }
+                                    signCount++
+                                }
+
+                                def uniquecode = jsonData.unique_code
+                                def current_time = Calendar.instance
+                                def send_at = new java.sql.Timestamp(current_time.time.time)
+
+                                def dangerSignOn = "Reported Mother danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
+
+                                saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace()
                         }
 
 
-                        def uniquecode = jsonData.unique_code
-                        def current_time = Calendar.instance
-                        def send_at = new java.sql.Timestamp(current_time.time.time)
-
-                        def dangerSignOn = "Reported Child danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
-
-                        saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
+                    }
 
 
+                    if (code.equals("CHAD26")) {
+                        try {
+                            if(answer_code) {
+                                def breakArray = answer_code.split(",")
+                                def dangerSignExists = false
+                                def msgDangerSign = ""
+                                def signCount = 1;
+                                breakArray.each {
+                                    def dictionaryItemList = DictionaryItem.findByCode(it)
+                                    def dangerSignInstance = new DangerSignChildDelivery()
+                                    dangerSignInstance.chaid = mkChaid
+                                    dangerSignInstance.postDelivery = postDeliveryInstance
+                                    dangerSignInstance.sign_type = dictionaryItemList
+                                    msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
 
 
+                                    signCount++
+                                    if (dangerSignInstance.save()) {
+
+                                    }
+                                }
 
 
-                }catch(Exception e){
-                    e.printStackTrace()
-                }
+                                def uniquecode = jsonData.unique_code
+                                def current_time = Calendar.instance
+                                def send_at = new java.sql.Timestamp(current_time.time.time)
+
+                                def dangerSignOn = "Reported Child danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
+
+                                saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace()
+                        }
+                    }
                 }
             }
+        }catch(Exception e){
+            e.printStackTrace()
         }
 
 
@@ -398,85 +490,109 @@ class ApplicationService {
     def pregnantWomen(MkChaid mkChaid,Household household,def jsonData,def userInstance){
 
         println("called ghhh")
+        try {
+            def name = jsonData.pregnant_woman.name
+            def phone_number = jsonData.pregnant_woman.phone_number
+            def age = jsonData.pregnant_woman.age
 
-        def last_menstrual=jsonData.pregnant_woman.last_menstrual
-        def attended_clinic=jsonData.pregnant_woman.attended_clinic
-        def child_aged_under_one=jsonData.pregnant_woman.child_aged_under_one
-       // def used_planning_method=jsonData.pregnant_woman.used_planning_method
-        def prefer_planning_after_delivery=jsonData.pregnant_woman.prefer_planning_after_delivery
+            def last_menstrual = jsonData.pregnant_woman.last_menstrual
+            def attended_clinic = jsonData.pregnant_woman.attended_clinic
+            def child_aged_under_one = jsonData.pregnant_woman.child_aged_under_one
+            // def used_planning_method=jsonData.pregnant_woman.used_planning_method
+            def prefer_planning_after_delivery = jsonData.pregnant_woman.prefer_planning_after_delivery
 
-        println(last_menstrual)
+            println(last_menstrual)
 
-        def pregnantInstance=new PreginantDetails()
-        //pregnantInstance.last_menstual= Date.parse("yyyy-MM-dd",last_menstrual)
-        pregnantInstance.attended_clinic=attended_clinic
-        pregnantInstance.child_under_one=child_aged_under_one
-        pregnantInstance.prefer_family_planning=prefer_planning_after_delivery
-        pregnantInstance.chaid=mkChaid
-        pregnantInstance.household=household
+            def pregnantInstance = new PreginantDetails()
 
-        def results=jsonData.results
+            if(last_menstrual){
+                pregnantInstance.last_menstual = java.util.Date.parse("yyyy-MM-dd",last_menstrual)
 
-        results.each {
-            def code = it.code
-            def answer_code = it.answer_code
-            if (code.equals("CHAD18D")) {
-                pregnantInstance.visit_type = DictionaryItem.findByCode(answer_code)
             }
 
 
-            if (code.equals("CHAD18F")) {
-                pregnantInstance.education_type = DictionaryItem.findByCode(answer_code)
-            }
-            if (code.equals("CHAD19")) {
-                pregnantInstance.child_group_no = DictionaryItem.findByCode(answer_code)
-            }
+            pregnantInstance.name= name
+            pregnantInstance.phone_number= phone_number
+            try {
+                pregnantInstance.age =age
+            }catch(Exception e){
 
-            if (code.equals("CHAD22B")) {
-                pregnantInstance.family_planning_type = DictionaryItem.findByCode(answer_code)
             }
-        }
+            pregnantInstance.attended_clinic = attended_clinic
+            pregnantInstance.child_under_one = child_aged_under_one
+            pregnantInstance.prefer_family_planning = prefer_planning_after_delivery
+            pregnantInstance.chaid = mkChaid
+            pregnantInstance.household = household
 
-        if(pregnantInstance.save(failOnError: true)){
+            def results = jsonData.results
+
             results.each {
                 def code = it.code
                 def answer_code = it.answer_code
-
-                if (code.equals("CHAD18B")) {
-                    try {
-                        def breakArray = answer_code.split(",")
-                        def dangerSignExists = false
-                        def msgDangerSign = ""
-                        def signCount = 1;
-                        breakArray.each {
-                            dangerSignExists = true
-                            def dictionaryItemList = DictionaryItem.findByCode(it)
-                            def dangerSignPregnant = new DangerSignPregnant()
-                            dangerSignPregnant.chaid = mkChaid
-                            dangerSignPregnant.sign_type = dictionaryItemList
-                            dangerSignPregnant.preginantDetails = pregnantInstance
-                            dangerSignPregnant.save(failOnError: true)
-
-                            msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
-
-
-                            signCount++
-
-                        }
-                        def uniquecode = jsonData.unique_code
-                        def current_time = Calendar.instance
-                        def send_at = new java.sql.Timestamp(current_time.time.time)
-
-                        def dangerSignOn = "Reported Pregnant danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
-
-                        saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
-                    }catch(Exception e){
-                        e.printStackTrace()
-                    }
-
+                if (code.equals("CHAD18D")) {
+                    pregnantInstance.visit_type = DictionaryItem.findByCode(answer_code)
                 }
+
+
+                if (code.equals("CHAD18F")) {
+                    pregnantInstance.education_type = DictionaryItem.findByCode(answer_code)
+                }
+                if (code.equals("CHAD19")) {
+                    pregnantInstance.child_group_no = DictionaryItem.findByCode(answer_code)
+                }
+
+                if (code.equals("CHAD22B")) {
+                    pregnantInstance.family_planning_type = DictionaryItem.findByCode(answer_code)
+                }
+
             }
 
+            if (pregnantInstance.save(failOnError: true)) {
+                results.each {
+                    def code = it.code
+                    def answer_code = it.answer_code
+
+                    if (code.equals("CHAD18B")) {
+                        try {
+                            if(answer_code) {
+                                def breakArray = answer_code.split(",")
+                                def dangerSignExists = false
+                                def msgDangerSign = ""
+                                def signCount = 1;
+                                breakArray.each {
+                                    dangerSignExists = true
+                                    def dictionaryItemList = DictionaryItem.findByCode(it)
+                                    def dangerSignPregnant = new DangerSignPregnant()
+                                    dangerSignPregnant.chaid = mkChaid
+                                    dangerSignPregnant.sign_type = dictionaryItemList
+                                    dangerSignPregnant.preginantDetails = pregnantInstance
+                                    dangerSignPregnant.save(failOnError: true)
+
+                                    msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
+
+
+                                    signCount++
+
+                                }
+                                def uniquecode = jsonData.unique_code
+                                def current_time = Calendar.instance
+                                def send_at = new java.sql.Timestamp(current_time.time.time)
+
+                                def dangerSignOn = "Reported Pregnant danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
+
+                                saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
+
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace()
+                        }
+
+                    }
+                }
+
+            }
+        }catch(Exception e){
+            e.printStackTrace()
         }
 
     }

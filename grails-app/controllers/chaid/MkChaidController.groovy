@@ -1,5 +1,8 @@
 package chaid
 
+import admin.DictionaryItem
+import com.chaid.security.MkpUser
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
@@ -7,6 +10,7 @@ import static org.springframework.http.HttpStatus.*
 class MkChaidController {
 
     MkChaidService mkChaidService
+    def springSecurityService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -22,6 +26,25 @@ class MkChaidController {
 
     def show(Long id) {
         respond mkChaidService.get(id)
+    }
+    @Transactional
+
+    def addChadStatus(){
+        def userInstanceData = springSecurityService.currentUser
+
+        def comment=params.comment
+        def status_id=params.status_id
+
+        session['defaultTabL']=1
+
+        def chadInstance=new ChadStatus();
+        chadInstance.createdBy= userInstanceData
+        chadInstance.chaid=MkChaid.get(params.chaid_id)
+        chadInstance.comment=comment
+        chadInstance.status= DictionaryItem.get(status_id)
+        chadInstance.save(failOnError:true)
+        flash.message="Successfully Added!"
+        redirect action: 'show',id:params.chaid_id
     }
 
     def create() {

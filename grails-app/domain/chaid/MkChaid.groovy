@@ -10,18 +10,19 @@ class MkChaid {
     Household household
     DictionaryItem visit_type,meeting_type,objective_type,relationship_status,interview_status
     java.sql.Timestamp arrival_time
-    String respondent_name,respondent_gender,uniquecode
+    String respondent_name,respondent_gender,uniquecode,reg_no
     Integer respondent_age,age_sick_person
-    Boolean sick_person
+    Boolean sick_person,care_giver
     District distric
     Street street
-    Double centroid_x=0,centroid_y=0
+    Double centroid_x=0,centroid_y=0,accuracy=0
     MkpUser created_by
     static constraints = {
         visit_type nullable:true
         meeting_type nullable:true
         objective_type nullable:true
         objective_type nullable:true
+        household nullable:true
         relationship_status nullable:true
         interview_status nullable:true
         arrival_time nullable:true
@@ -35,6 +36,9 @@ class MkChaid {
         centroid_x nullable:true
         centroid_y nullable:true
         created_by nullable:true
+        accuracy nullable:true
+        care_giver nullable:true
+        reg_no nullable:true
 
     }
     static mapping = {

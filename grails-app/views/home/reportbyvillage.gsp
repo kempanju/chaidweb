@@ -19,7 +19,7 @@
                class="btn btn-primary">${message(code: 'application.list', default: 'Reports By Village')} </a>
         </div>
  </div>
-        <div class="col-lg-5">
+        <div class="col-lg-5  panel-body">
 
         <div class="form-group">
                        <label class="control-label col-lg-7">Wilaya</label>

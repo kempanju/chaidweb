@@ -128,7 +128,20 @@ ApplicationService applicationService
 
         JSONObject answersObject16=new JSONObject()
         answersObject16.put("code","CHAD16")
-        answersObject16.put("answer_code","CHAD16A,CHAD16B")
+
+        JSONArray answers=new JSONArray()
+        JSONObject houseCategory=new JSONObject()
+        houseCategory.put("code","CHAD16A")
+        houseCategory.put("member_no",4)
+        answers.put(houseCategory)
+        JSONObject houseCategory1=new JSONObject()
+        houseCategory1.put("code","CHAD16B")
+        houseCategory1.put("member_no",3)
+        answers.put(houseCategory1)
+
+
+
+        answersObject16.put("answer_code",answers)
         answersObject16.put("comment","John Alex")
         jsonArray.put(answersObject16)
 
@@ -345,7 +358,7 @@ ApplicationService applicationService
          jsonDetails.put("house_hold_list",houselistList.toString())
          jsonDetails.put("pregnant_list","null")
 
-         def chaidDataList= Dictionary.findAllByActiveAndIs_questionnaireAndActive(true,true,true)
+         def chaidDataList= Dictionary.findAllByActiveAndIs_questionnaireAndActive(true,true,true,[order:'asc',sort:'id'])
          JSONArray jsonArrayDetails=new JSONArray()
          chaidDataList.each{
              JSONObject jsonObject=new JSONObject()
@@ -353,7 +366,7 @@ ApplicationService applicationService
              jsonObject.put("code",it.code)
              jsonObject.put("name",it.name)
 
-             def optionQuestionare= DictionaryItem.findAllByActiveAndDictionary_id(true,it) as JSON
+             def optionQuestionare= DictionaryItem.findAllByActiveAndDictionary_id(true,it,[order:'asc',sort:'code']) as JSON
              jsonObject.put("options",optionQuestionare.toString())
              jsonArrayDetails.put(jsonObject)
 
