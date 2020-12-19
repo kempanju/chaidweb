@@ -26,6 +26,8 @@ ApplicationService applicationService
 
     def sendMessage(){
         applicationService.sendMessage("255766545878"," hello")
+       // String url="https://apisms.bongolive.africa/v1/send"
+       // applicationService.smsSendMessage("255766545878","hello there",url)
         render "Done"
     }
     @Transactional
@@ -308,16 +310,28 @@ ApplicationService applicationService
 
     @Transactional
     def chadStatusApi(){
+        println(params)
         def userID=params.user_id
         def comment=params.comment
         def chaidCode=params.code
+        def chaidID=params.chad_id
+
+        def userInstance=MkpUser.get(userID)
+        def chadInstanceMain=MkChaid.get(chaidID)
+        def dictionaryInstance=DictionaryItem.findByCode(chaidCode)
 
         def chadInstance=new ChadStatus();
-        chadInstance.createdBy=MkpUser.get(userID)
-        chadInstance.chaid=MkChaid.findByUniquecode(chaidCode)
+        chadInstance.createdBy=userInstance
+        chadInstance.chaid=chadInstanceMain
         chadInstance.comment=comment
-        chadInstance.status=DictionaryItem.findByCode("CREPORTED")
-        chadInstance.save(failOnError:true)
+        chadInstance.status=dictionaryInstance
+        if(chadInstance.save(failOnError:true)){
+            String message=userInstance.full_name+"  changed visit status ("+dictionaryInstance.name+") with ID "+chadInstanceMain.reg_no+" and Household "+chadInstanceMain.household.full_name+". "
+            applicationService.saveSchedualLogs(chadInstanceMain.created_by,message)
+
+            MkChaid.executeUpdate("update MkChaid set emergence_status=2 where id=:id",[id:chadInstanceMain.id])
+
+        }
         render "Done"
     }
 
@@ -342,14 +356,45 @@ ApplicationService applicationService
             render "Failed ",status:404
         }
     }
+    def initialDataAdmin(){
+        println(params)
+        def username=params.username
+        def userInstance= MkpUser.findByUsername(username)
+        JSONObject jsonDetails=new JSONObject()
+        jsonDetails.put("full_name",userInstance.full_name)
+        jsonDetails.put("id",userInstance.id)
+        jsonDetails.put("facility_name",userInstance.facility.name)
+        jsonDetails.put("facility_mobile_number",userInstance.facility.mobile_number)
+        def statusList=DictionaryItem.findAllByDictionary_idAndActive(Dictionary.findByCode("CHADSTATUS"),true) as JSON
+        jsonDetails.put("status_list",statusList)
+        def visitInstanceList=MkChaid.findAllByEmergence_statusAndFacility(1,userInstance.facility)
+        JSONArray jsonArray=new JSONArray()
+        visitInstanceList.each{
+            JSONObject jsonObject=new JSONObject()
+            jsonObject.put("respondent_name",it.respondent_name)
+            jsonObject.put("reg_no",it.reg_no)
+            jsonObject.put("chad_id",it.id)
+            jsonObject.put("village_name",it.street.name)
+            jsonObject.put("house_hold",it.household.full_name)
+            jsonArray.put(jsonObject)
+        }
+        jsonDetails.put("reported_visit",jsonArray)
+        render jsonDetails
+    }
      def initialData(){
-        long userID=13;
-        def userInstance= MkpUser.findByUsername("admin")
+         def username=params.username
+
+         //println("Initial Data")
+         println(params)
+        def userInstance= MkpUser.findByUsername(username)
         JSONObject jsonDetails=new JSONObject()
         jsonDetails.put("full_name",userInstance.full_name)
         jsonDetails.put("id",userInstance.id)
         jsonDetails.put("village_id",userInstance.village_id.id)
          jsonDetails.put("village_name",userInstance.village_id.name)
+
+         jsonDetails.put("facility_name",userInstance.facility.name)
+         jsonDetails.put("facility_mobile_number",userInstance.facility.mobile_number)
 
          def streetList= SubStreet.findAllByVillage_id(userInstance.village_id) as JSON
          jsonDetails.put("street",streetList.toString())

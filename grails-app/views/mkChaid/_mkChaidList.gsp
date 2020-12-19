@@ -1,58 +1,4 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta name="layout" content="main" />
-        <g:set var="entityName" value="${message(code: 'mkChaid.label', default: 'MkChaid')}" />
-        <title><g:message code="default.list.label" args="[entityName]" /></title>
-
-         <script>
-                    function chaidSearch(ids) {
-
-                        var ids = ids.value;
-                        $.ajax({
-                            url: '${grailsApplication.config.systemLink.toString()}/mkChaid/searchChadList',
-                            data: {'search_string': ids}, // change this to send js object
-                            type: "post",
-                            success: function (data) {
-                                //document.write(data); just do not use document.write
-                                $("#list-mkChaid").html(data);
-                                //console.log(data);
-                            }
-                        });
-                    }
-                </script>
-    </head>
-    <body>
-<div class="register_dv expert">
-
-    <div class="row panel-flat back_white">
-        <div class="btn-group btn-breadcrumb">
-            <g:link controller="home" action="dashboard" class="btn btn-default"><i
-                    class="glyphicon glyphicon-home"></i></g:link>
-            <g:link controller="home" action="dashboard" class="btn btn-default">Dashboard</g:link>
-
-            <a href="#"
-               class="btn btn-primary">${message(code: 'application.list', default: 'Chad List')} (<g:formatNumber number="${mkChaidCount}" type="number" />)</a>
-        </div>
-    </div>
-      <div class="page-header-content">
-
-
-                <div class="heading-elements">
-
-                    <input type="text" value="" name="search_text" class="form-control" onkeyup="chaidSearch(this)"
-                           placeholder="Search  Chad">
-
-                </div>
-
-            </div>
-        <div id="list-mkChaid" class="content scaffold-list " role="main">
-            <g:if test="${flash.message}">
-                <div class="message" role="status">${flash.message}</div>
-            </g:if>
-
-
-             <table  class="table datatable-basic table-bordered table-striped table-hover">
+  <table  class="table datatable-basic table-bordered table-striped table-hover">
                                         <thead>
                                         <tr>
                                             <g:sortableColumn property="id" title="${message(code: 'no', default: 'No')}"/>
@@ -104,23 +50,3 @@
                                         </tbody>
                                     </table>
 
-                                    <g:if test="${mkChaidCount > 10}">
-                                        <div class="col-md-10 text-center" style="margin-top: 20px">
-
-                                            <div class="pagination">
-                                            <g:paginate total="${mkChaidCount ?: 0}"/>
-                                        </div>
-                                        </div>
-                                    </g:if>
-
-
-
-
-
-
-
-        </div>
-
-        </div>
-    </body>
-</html>

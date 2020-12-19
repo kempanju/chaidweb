@@ -13,6 +13,12 @@
                 <input type="text" name="number" class="form-control" autocomplete="number" required="required" value="${facility?.number}">
             </div>
         </div>
+            <div class="form-group">
+                    <label  class="control-label col-lg-3"><g:message code="name.en" default="Phone Number"/> </label>
+                    <div class="col-lg-5">
+                        <input type="text" name="mobile_number" class="form-control" autocomplete="mobile_number"  value="${facility?.mobile_number}">
+                    </div>
+                </div>
  <div class="form-group">
             <label class="control-label col-lg-3">Wilaya</label>
 

@@ -54,7 +54,7 @@
                                         <p style="max-width: 400px">${message}</p></td>
                                     <td>${fieldValue(bean: systemLogListInstance, field: "created_at")}</td>
                                     <td>
-                                        <g:if test="${systemLogListInstance.log_type.code == "SMSL"}">
+                                        <g:if test="${systemLogListInstance.log_type.code == "SSMS"}">
                                             <span class="label label-info">
 
                                                 ${fieldValue(bean: systemLogListInstance, field: "msg_status")}

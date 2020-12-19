@@ -58,7 +58,7 @@
 
                     </div>
 
-                     <div class="tab-pane  <g:if test="${defaultTab == 1}">active</g:if>" id="left-icon-tab3">
+                     <div class="tab-pane  <g:if test="${defaultTab == 2}">active</g:if>" id="left-icon-tab3">
                                             <g:render template="map" bean="mkChaid"/>
 
                                         </div>

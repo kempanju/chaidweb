@@ -27,8 +27,30 @@ class MkChaidController {
     def show(Long id) {
         respond mkChaidService.get(id)
     }
-    @Transactional
 
+    def searchChadList(){
+
+        def searchText=params.search_string
+        def searchstring="%"+searchText+"%".toLowerCase()
+        //println(searchstring)
+
+        params.max=20
+        params.sort = 'id'
+        params.order = 'desc'
+        def chadInstanceList=MkChaid.executeQuery("from MkChaid where lower(respondent_name) like :searchstring or lower(reg_no) like :searchstring or lower(street.name) like :searchstring or lower(household.full_name) like :searchstring",[searchstring:searchstring],params)
+
+        render(template: 'mkChaidList',model: [mkChaidList:chadInstanceList])
+    }
+
+    def memberDetailsShow(){
+        println(params)
+        def availableMemberInstance=AvailableMemberHouse.get(params.id)
+        def categoryInstance=CategoryAvailableChildren.findByAvailableMemberHouse(availableMemberInstance)
+        println(categoryInstance)
+        render template:'availableMemberDetails',model: [categoryInstance:categoryInstance]
+    }
+
+    @Transactional
     def addChadStatus(){
         def userInstanceData = springSecurityService.currentUser
 

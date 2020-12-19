@@ -15,6 +15,8 @@ class BootStrap {
         try {
             MkpRole.findOrSaveWhere(authority: 'ROLE_DISTRICT')
             MkpRole.findOrSaveWhere(authority: 'ROLE_DATA')
+            MkpRole.findOrSaveWhere(authority: 'ROLE_RESPONDENT')
+
             def adminRole = MkpRole.findOrSaveWhere(authority: 'ROLE_ADMIN')
 
 

@@ -55,7 +55,7 @@
                         </li>
 
       <li class="<g:if test="${activePage == 'mkchaid'}">active</g:if>">
-                                                        <a href="#"><i class="icon-map"></i> <span>Chaid</span></a>
+                                                        <a href="#"><i class="icon-select2"></i> <span>Chaid</span></a>
                                                         <ul>
                                                             <li><g:link controller='mkChaid' action="index">Chaid</g:link></li>
 
@@ -68,13 +68,13 @@
 
                         <li class="<g:if test="${activePage == 'household'}">active</g:if>">
                             <g:link class="list" controller="household" action="index"><i
-                                    class=" icon-file-text"></i> <span><g:message code="my.publication"
+                                    class="icon-clipboard3"></i> <span><g:message code="my.publication"
                                                                                   default="Households"/></span></g:link>
                         </li>
 
                          <li class="<g:if test="${activePage == 'facility'}">active</g:if>">
                                                     <g:link class="list" controller="facility" action="index"><i
-                                                            class=" icon-file-text"></i> <span><g:message code="my.publication"
+                                                            class=" icon-circle"></i> <span><g:message code="my.publication"
                                                                                                           default="Facilities"/></span></g:link>
                                                 </li>
 <li class="<g:if test="${activePage == 'location'}">active</g:if>">

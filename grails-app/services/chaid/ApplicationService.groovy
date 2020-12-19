@@ -4,9 +4,14 @@ import admin.DictionaryItem
 import admin.SubStreet
 import admin.SystemLogs
 import com.chaid.security.MkpUser
+import com.chaid.security.MkpUserMkpRole
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
+import org.grails.web.json.JSONArray
+import org.grails.web.json.JSONObject
 
+import javax.net.ssl.HttpsURLConnection
+import java.nio.charset.StandardCharsets
 import java.sql.Date
 
 @Transactional
@@ -16,10 +21,77 @@ class ApplicationService {
 
     }
 
+    def saveAvailableMemberDetails(def jsonData,String coreRequest,DictionaryItem category,def member_no,AvailableMemberHouse availableMemberHouse){
+        def neonates=jsonData.neonates
+        def infants=jsonData.infants
+        def children=jsonData.children
+
+        def savingJson=null
+        if(coreRequest.equals("CHAD17D")){
+            savingJson=neonates
+
+        }else  if(coreRequest.equals("CHAD17E")){
+            savingJson=infants
+        } else  if (coreRequest.equals("CHAD17F")){
+            savingJson=children
+        }
+
+        if(savingJson) {
+
+            def taken_baby_to_clinic = savingJson.taken_baby_to_clinic
+            def baby_provided_immunization = savingJson.baby_provided_immunization
+
+
+            def immunization = savingJson.immunization
+            def danger_sign = savingJson.danger_sign
+
+            def categoryAvailableInstance = new CategoryAvailableChildren();
+            categoryAvailableInstance.taken_baby_to_clinic = taken_baby_to_clinic
+            categoryAvailableInstance.baby_provided_immunization = baby_provided_immunization
+            categoryAvailableInstance.categoryType = category
+            categoryAvailableInstance.member_no = member_no
+            categoryAvailableInstance.availableMemberHouse = availableMemberHouse
+            if (categoryAvailableInstance.save(flush: true)) {
+
+                if (immunization) {
+                    def breakArray = immunization.split(",")
+                    breakArray.each {
+                        String reqCode = it
+                        reqCode = reqCode.trim()
+                        def immunizationAvailable = new ImmunizationAvailableChildren()
+                        immunizationAvailable.availableMemberHouse = availableMemberHouse
+                        immunizationAvailable.categoryAvailableChildren = categoryAvailableInstance
+                        def dictionaryItemList = DictionaryItem.findByCode(reqCode)
+                        immunizationAvailable.immunization_type = dictionaryItemList
+                        immunizationAvailable.save(failOnError: true)
+                    }
+                }
+
+                if (danger_sign) {
+                    def breakArray = danger_sign.split(",")
+
+                    breakArray.each {
+                        String reqCode = it
+                        reqCode = reqCode.trim()
+                        def immunizationAvailable = new DangerSignAvailableChildren()
+                        immunizationAvailable.availableMemberHouse = availableMemberHouse
+                        immunizationAvailable.categoryAvailableChildren = categoryAvailableInstance
+                        def dictionaryItemList = DictionaryItem.findByCode(reqCode)
+                        immunizationAvailable.danger_type = dictionaryItemList
+                        immunizationAvailable.save(failOnError: true)
+                    }
+
+                }
+
+            }
+        }
+    }
+
     def saveChaid(def data){
         def jsonData= JSON.parse(data)
 
         def user_id=jsonData.user_id
+
 
 
         def house_hold_id=jsonData.house_hold
@@ -35,6 +107,7 @@ class ApplicationService {
         def longitude=jsonData.longitude
         def accuracy=jsonData.accuracy
         def care_giver=jsonData.care_giver
+
 
 
         def uniquecode=jsonData.unique_code
@@ -65,6 +138,7 @@ class ApplicationService {
             chadInstance.created_by=userInstance
             chadInstance.distric = userInstance.village_id.district_id
             chadInstance.street = userInstance.village_id
+            chadInstance.facility=userInstance.facility
             chadInstance.age_sick_person=house_hold_sick_person_age
             chadInstance.sick_person=house_hold_sick_person
             chadInstance.uniquecode=uniquecode
@@ -207,41 +281,73 @@ class ApplicationService {
                     if (code.equals("CHAD17")) {
                         try {
                             def breakArray = resultCodeArray
+
                             breakArray.each {
-                                def dictionaryItemList = DictionaryItem.findByCode(it.code)
+                                String coreRequest=it.code
+                                def dictionaryItemList = DictionaryItem.findByCode(coreRequest)
                                 def availableHouseHold = new AvailableMemberHouse()
                                 availableHouseHold.household = houseHoldInstance
                                 availableHouseHold.type_id = dictionaryItemList
                                 availableHouseHold.chaid = chadInstance
                                 availableHouseHold.member_no = Integer.parseInt(it.member_no)
-                                availableHouseHold.save()
+                                if(availableHouseHold.save(flush: true)){
+                                    def memberNo=Integer.parseInt(it.member_no)
+                                    saveAvailableMemberDetails(jsonData,coreRequest,dictionaryItemList,memberNo,availableHouseHold)
+
+
+                                }
 
                             }
                         }catch(Exception e){
-
+                            e.printStackTrace()
                         }
                     }
 
-                    if (code.equals("CHAD17")) {
+                   /* if (code.equals("CHAD17")) {
                         def breakArray = answer_code.split(",")
                         breakArray.each {
                             def dictionaryItemList = DictionaryItem.findByCode(it)
 
                         }
 
-                    }
+                    }*/
 
 
 
 
                 }
                 try {
-                    pregnantWomen(chadInstance, houseHoldInstance, jsonData, userInstance)
-                    postDelivery(chadInstance, houseHoldInstance, jsonData, userInstance)
-                    childUnderFive(chadInstance, houseHoldInstance, jsonData, userInstance)
+                    def post_delivery = jsonData.post_delivery
+                    def pregnant_woman = jsonData.post_delivery
+                    def child_under_five = jsonData.post_delivery
+                    if(pregnant_woman) {
+                        pregnantWomen(chadInstance, houseHoldInstance, jsonData, userInstance)
+                    }
+                    if(post_delivery) {
+                        postDelivery(chadInstance, houseHoldInstance, jsonData, userInstance)
+                    }
+                    if(child_under_five) {
+                        childUnderFive(chadInstance, houseHoldInstance, jsonData, userInstance)
+                    }
                 }catch(Exception e){
                     e.printStackTrace()
                 }
+
+
+
+
+                try{
+                    def chadInstanceStatus=new ChadStatus();
+                    chadInstanceStatus.createdBy=userInstance
+                    chadInstanceStatus.chaid=chadInstance
+                    chadInstanceStatus.comment="Submitted"
+                    chadInstanceStatus.status=DictionaryItem.findByCode("CHASUB")
+                    chadInstanceStatus.save(failOnError:true)
+                }catch(Exception e){
+
+                }
+
+
             }
 
 
@@ -297,9 +403,12 @@ class ApplicationService {
                             def current_time = Calendar.instance
                             def send_at = new java.sql.Timestamp(current_time.time.time)
 
-                            def dangerSignOn = "Reported Child danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
-
-                            saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
+                            def dangerSignOn = "Reported Child danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
+                            def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
+                            userLists.each {
+                                saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
+                            }
+                            MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id:id",[id:mkChaid.id])
 
                         } catch (Exception e) {
                             e.printStackTrace()
@@ -415,9 +524,14 @@ class ApplicationService {
                                 def current_time = Calendar.instance
                                 def send_at = new java.sql.Timestamp(current_time.time.time)
 
-                                def dangerSignOn = "Reported Mother danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
+                                def dangerSignOn = "Reported Mother danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
 
-                                saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
+                                def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
+                                userLists.each {
+                                    saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
+                                }
+                                MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
+
                             }
                         } catch (Exception e) {
                             e.printStackTrace()
@@ -454,9 +568,17 @@ class ApplicationService {
                                 def current_time = Calendar.instance
                                 def send_at = new java.sql.Timestamp(current_time.time.time)
 
-                                def dangerSignOn = "Reported Child danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
+                                def dangerSignOn = "Reported Child danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
 
-                                saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
+
+                                def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
+                                userLists.each {
+                                    saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
+                                }
+
+
+                                MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id:id",[id:mkChaid.id])
+
                             }
 
                         } catch (Exception e) {
@@ -486,10 +608,25 @@ class ApplicationService {
     }
 
 
+    def  saveSchedualLogs(MkpUser userInstance, def message){
+        def current_time = Calendar.instance
+        def send_at = new java.sql.Timestamp(current_time.time.time)
+
+        def userLogsInstanceD = new SystemLogs()
+        userLogsInstanceD.log_type = DictionaryItem.findByCode("SSMS")
+        userLogsInstanceD.user_id = userInstance
+        userLogsInstanceD.message = message
+        userLogsInstanceD.sending_time=send_at
+        userLogsInstanceD.sending_status=0
+        userLogsInstanceD.unique_id=System.currentTimeMillis()
+        userLogsInstanceD.save()
+        // flash.message="Message successfully sent."
+    }
+
+
 
     def pregnantWomen(MkChaid mkChaid,Household household,def jsonData,def userInstance){
 
-        println("called ghhh")
         try {
             def name = jsonData.pregnant_woman.name
             def phone_number = jsonData.pregnant_woman.phone_number
@@ -501,7 +638,6 @@ class ApplicationService {
             // def used_planning_method=jsonData.pregnant_woman.used_planning_method
             def prefer_planning_after_delivery = jsonData.pregnant_woman.prefer_planning_after_delivery
 
-            println(last_menstrual)
 
             def pregnantInstance = new PreginantDetails()
 
@@ -578,10 +714,15 @@ class ApplicationService {
                                 def current_time = Calendar.instance
                                 def send_at = new java.sql.Timestamp(current_time.time.time)
 
-                                def dangerSignOn = "Reported Pregnant danger sign with code " + uniquecode + ". Some signs are " + msgDangerSign + "."
+                                def dangerSignOn = "Reported Pregnant danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
 
-                                saveSchedualMessages(userInstance, dangerSignOn, 0, send_at)
 
+                                def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
+                                userLists.each {
+                                    saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
+                                }
+
+                                MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id:id",[id:mkChaid.id])
                             }
                         } catch (Exception e) {
                             e.printStackTrace()
@@ -598,11 +739,10 @@ class ApplicationService {
     }
 
     def sendMessage(def phoneNumber,def shortTxt){
+        String output=" "
+         String parameters="USERNAME=bmfapi&PASSWORD=bmfapi123&DESTADDR="+phoneNumber+"&MESSAGE="+shortTxt
+
         def linkUrl="https://gw.selcommobile.com:8443/bin/send.json"
-        def output = null;
-        String name = "1"
-        String parameters="USERNAME=BMFAPI&PASSWORD=BMFAPI&DESTADDR=255766545878&MESSAGE=TEST"
-        //println(grailsApplication.config.cardApiUrlUser.toString())
         def post = new URL(linkUrl).openConnection()
         post.setRequestMethod("GET")
         post.setDoOutput(true)
@@ -611,11 +751,15 @@ class ApplicationService {
         wr.flush()
 
         def postRC = post.getResponseCode()
-        println("code:"+postRC)
-
+       // println("code:"+postRC)
         if (postRC.equals(200)) {
             output = post.getInputStream().getText()
-            println(output)
+        //    println(output)
         }
     }
+
+
+
+
+
 }

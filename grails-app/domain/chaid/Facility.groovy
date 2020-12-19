@@ -6,13 +6,14 @@ import admin.Street
 class Facility {
 
     int version,id
-    String name,number
+    String name,number,mobile_number
     Boolean deleted
     Street village_id
     District district_id
     static constraints = {
         deleted nullable:true
         number nullable:true,maxSize:20
+        mobile_number nullable:true,maxSize:30
 
     }
 

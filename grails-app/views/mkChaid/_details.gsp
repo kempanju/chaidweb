@@ -27,12 +27,15 @@
                                                         <td style="word-break:break-word">${fieldValue(bean: mkChaid, field: "visit_type.name")}</td>
                                                     </tr>
 
+        <g:if test="${mkChaid.meeting_type}">
+
              <tr>
                                                                <td>
                                                                    <span class="text-semibold"><g:message code="description" default="Type of meeting/congression"/></span>
                                                                </td>
                                                                <td style="word-break:break-word">${fieldValue(bean: mkChaid, field: "meeting_type.name")}</td>
                                                            </tr>
+           </g:if>
 
        <tr>
                                     <td>
@@ -51,6 +54,22 @@
                                                    <td>
                                                  <g:link class="list" controller="household" action="show" id="${mkChaid?.household?.id}">
                                                    ${fieldValue(bean: mkChaid, field: "household.number")}</g:link></td>
+                                               </tr>
+ <tr>
+                                                   <td>
+                                                       <span class="text-semibold"><g:message code="type" default="Household Male Number"/></span>
+                                                   </td>
+                                                   <td>
+                                                 <g:link class="list" controller="household" action="show" id="${mkChaid?.household?.id}">
+                                                   ${fieldValue(bean: mkChaid, field: "household.male_no")}</g:link></td>
+                                               </tr>
+ <tr>
+                                                   <td>
+                                                       <span class="text-semibold"><g:message code="type" default="Household Female Number"/></span>
+                                                   </td>
+                                                   <td>
+                                                 <g:link class="list" controller="household" action="show" id="${mkChaid?.household?.id}">
+                                                   ${fieldValue(bean: mkChaid, field: "household.female_no")}</g:link></td>
                                                </tr>
 
                                  <tr>
@@ -119,7 +138,47 @@
                                                     </td>
                                                     <td>${fieldValue(bean: mkChaid, field: "reg_no")}</td>
                                                 </tr>
+      <g:if test="${mkChaid.sick_person}">
 
+             <tr>
+                                                               <td>
+                                                                   <span class="text-semibold"><g:message code="description" default="Is there sick person in household?"/></span>
+                                                               </td>
+                                                               <td style="word-break:break-word"> ${ mkChaid.sick_person?"Yes": "No"}</td>
+
+
+
+                                                           </tr>
+           </g:if>
+
+
+            <g:if test="${mkChaid.age_sick_person}">
+
+                        <tr>
+                                                                          <td>
+                                                                              <span class="text-semibold"><g:message code="description" default="Age of sick person in household"/></span>
+                                                                          </td>
+                                                                          <td style="word-break:break-word">
+
+${fieldValue(bean: mkChaid, field: "age_sick_person")}
+                                                                          </td>
+
+
+
+                                                                      </tr>
+                      </g:if>
+ <g:if test="${mkChaid.care_giver}">
+
+             <tr>
+                                                               <td>
+                                                                   <span class="text-semibold"><g:message code="description" default="Are you Care giver for sick person?"/></span>
+                                                               </td>
+                                                               <td style="word-break:break-word"> ${ mkChaid.care_giver?"Yes": "No"}</td>
+
+
+
+                                                           </tr>
+           </g:if>
 
       <g:render template="postdelivery" bean="mkChaid"/>
 
@@ -185,6 +244,12 @@
 
         <td colspan="2">
         ${fieldValue(bean: activityListInstance, field: "type_id.name")} ( Member No: ${fieldValue(bean: activityListInstance, field: "member_no")})
+
+          <g:link class="create" data-toggle="modal" data-target="#myModal" action="memberDetailsShow"
+                                        id="${activityListInstance.id}">
+                                    <i class="icon-menu-open"></i><span>Read More</span>
+
+                                </g:link>
                                            </td>
 
        </tr>
@@ -198,3 +263,26 @@
 
 </table>
 </div>
+
+
+   <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Member Details</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <p>Loading....</p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
