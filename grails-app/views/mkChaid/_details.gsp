@@ -86,7 +86,7 @@
                                     </td>
                                     <td style="word-break:break-word">
 
-                                      <span class="text-muted"><g:formatDate format="dd MMM, yyyy"
+                                      <span class="text-muted"><g:formatDate format="dd MMM, yyyy HH:mm"
                                                                                                        date="${mkChaid.arrival_time}"/></span>
 
                                                             </td>
@@ -132,6 +132,20 @@
                                                 </td>
                                                 <td>${fieldValue(bean: mkChaid, field: "uniquecode")}</td>
                                             </tr>
+            <tr>
+                                                           <td>
+                                                               <span class="text-semibold"><g:message code="type" default="Added By"/></span>
+                                                           </td>
+                                                           <td>
+                                                         <g:link class="list" controller="mkpUser" action="show" id="${mkChaid?.created_by?.id}">
+
+                                                           ${fieldValue(bean: mkChaid, field: "created_by.full_name")}
+
+                                                           </g:link>
+
+                                                           </td>
+                                                       </tr>
+
        <tr>
                                                     <td>
                                                         <span class="text-semibold"><g:message code="type" default="Registration No"/></span>

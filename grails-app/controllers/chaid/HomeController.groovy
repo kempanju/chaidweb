@@ -326,7 +326,10 @@ ApplicationService applicationService
         chadInstance.comment=comment
         chadInstance.status=dictionaryInstance
         if(chadInstance.save(failOnError:true)){
-            String message=userInstance.full_name+"  changed visit status ("+dictionaryInstance.name+") with ID "+chadInstanceMain.reg_no+" and Household "+chadInstanceMain.household.full_name+". "
+            String message="Name: "+chadInstanceMain.respondent_name+"\\nVillage: "+chadInstanceMain?.household?.village_id?.name+"\\n" +
+                    "Hamlets: "+chadInstanceMain?.household?.street?.name+"\\nStatus: "+dictionaryInstance.name+"\\nReference: "+chadInstanceMain.reg_no+"\\nHousehold: "+chadInstanceMain.household.full_name+". "
+
+
             applicationService.saveSchedualLogs(chadInstanceMain.created_by,message)
 
             MkChaid.executeUpdate("update MkChaid set emergence_status=2 where id=:id",[id:chadInstanceMain.id])
@@ -348,13 +351,50 @@ ApplicationService applicationService
     def chadSaveData(){
         def response = request.JSON
         if(response) {
-            println("Sent: "+response)
+            //println("Sent: "+response.toString())
             applicationService.saveChaid(response.toString())
             render "Successfully "
 
         }else{
             render "Failed ",status:404
         }
+    }
+    def getReferralList(){
+        def username=params.username
+        username="admin"
+        params.max=30
+        params.sort = 'id'
+        params.order = 'desc'
+        def userInstance= MkpUser.findByUsername(username)
+        def visitInstanceList=MkChaid.findAllByFacility(userInstance.facility,params)
+        JSONArray jsonArray=new JSONArray()
+        visitInstanceList.each{
+           JSONObject jsonObject=new JSONObject()
+            jsonObject.put("name",it.respondent_name)
+            jsonObject.put("reg_no",it.reg_no)
+            jsonObject.put("chad_id",it.id)
+            jsonObject.put("village_name",it.street.name)
+            jsonObject.put("house_hold",it.household.full_name)
+            jsonObject.put("hamlet",it.household?.street?.name)
+            jsonObject.put("id",it.id)
+            jsonObject.put("arrival_time",it.arrival_time.toString())
+
+
+
+            def chadStatusList=ChadStatus.findAllByChaid(it)
+            JSONArray statusArray=new JSONArray()
+            chadStatusList.each{
+                JSONObject statusObject=new JSONObject()
+                statusObject.put("name",it.status.name)
+                statusObject.put("comment",it.comment)
+                statusObject.put("created_at",it.created_at.toString())
+                statusArray.put(statusObject)
+            }
+
+            jsonObject.put("statuses",statusArray)
+            jsonArray.put(jsonObject)
+        }
+         render jsonArray as JSON
     }
     def initialDataAdmin(){
         println(params)
@@ -368,6 +408,8 @@ ApplicationService applicationService
         def statusList=DictionaryItem.findAllByDictionary_idAndActive(Dictionary.findByCode("CHADSTATUS"),true) as JSON
         jsonDetails.put("status_list",statusList)
         def visitInstanceList=MkChaid.findAllByEmergence_statusAndFacility(1,userInstance.facility)
+       //  def visitInstanceList=MkChaid.findAllByFacility(userInstance.facility)
+
         JSONArray jsonArray=new JSONArray()
         visitInstanceList.each{
             JSONObject jsonObject=new JSONObject()

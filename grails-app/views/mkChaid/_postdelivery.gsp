@@ -1,4 +1,4 @@
-  <g:if test="${chaid.PreginantDetails.countByChaid(mkChaid)>0}">
+  <g:if test="${chaid.PostDelivery.countByChaid(mkChaid)>0}">
         <%
 
         def postDeliveryInstance=chaid.PostDelivery.findByChaid(mkChaid)
@@ -15,7 +15,7 @@
        </td>
        <td >
         <span class="text-muted"><g:formatDate format="dd MMM, yyyy HH:mm"
-                          date="${postDeliveryInstance.delivery_date}"/> ${postDeliveryInstance.child_age}</span>
+                          date="${postDeliveryInstance?.delivery_date}"/> ${postDeliveryInstance?.child_age}</span>
 
 
        </td>

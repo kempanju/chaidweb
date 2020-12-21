@@ -21,29 +21,42 @@ class ApplicationService {
 
     }
 
-    def saveAvailableMemberDetails(def jsonData,String coreRequest,DictionaryItem category,def member_no,AvailableMemberHouse availableMemberHouse){
+    def saveAvailableMemberDetails(def jsonData,String coreRequest,DictionaryItem category,def member_no,AvailableMemberHouse availableMemberHouse,MkChaid mkChaid){
         def neonates=jsonData.neonates
         def infants=jsonData.infants
         def children=jsonData.children
 
+        def nameSign=null
+
         def savingJson=null
         if(coreRequest.equals("CHAD17D")){
             savingJson=neonates
+            nameSign="Neonate"
 
         }else  if(coreRequest.equals("CHAD17E")){
             savingJson=infants
+            nameSign="Infant"
         } else  if (coreRequest.equals("CHAD17F")){
             savingJson=children
+            nameSign="Child"
         }
 
         if(savingJson) {
 
             def taken_baby_to_clinic = savingJson.taken_baby_to_clinic
             def baby_provided_immunization = savingJson.baby_provided_immunization
+            if(!baby_provided_immunization){
+                baby_provided_immunization=0
+            }
 
+            if(!taken_baby_to_clinic){
+                taken_baby_to_clinic=0
+            }
 
             def immunization = savingJson.immunization
             def danger_sign = savingJson.danger_sign
+
+           // println("danger sign:"+danger_sign)
 
             def categoryAvailableInstance = new CategoryAvailableChildren();
             categoryAvailableInstance.taken_baby_to_clinic = taken_baby_to_clinic
@@ -51,7 +64,7 @@ class ApplicationService {
             categoryAvailableInstance.categoryType = category
             categoryAvailableInstance.member_no = member_no
             categoryAvailableInstance.availableMemberHouse = availableMemberHouse
-            if (categoryAvailableInstance.save(flush: true)) {
+            if (categoryAvailableInstance.save(flush: true,failOnError: true)) {
 
                 if (immunization) {
                     def breakArray = immunization.split(",")
@@ -66,10 +79,10 @@ class ApplicationService {
                         immunizationAvailable.save(failOnError: true)
                     }
                 }
-
                 if (danger_sign) {
                     def breakArray = danger_sign.split(",")
-
+                    def msgDangerSign = ""
+                    def signCount = 1;
                     breakArray.each {
                         String reqCode = it
                         reqCode = reqCode.trim()
@@ -79,7 +92,26 @@ class ApplicationService {
                         def dictionaryItemList = DictionaryItem.findByCode(reqCode)
                         immunizationAvailable.danger_type = dictionaryItemList
                         immunizationAvailable.save(failOnError: true)
+
+                        msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
+                        signCount++
                     }
+
+                    def current_time = Calendar.instance
+
+                    def send_at = new java.sql.Timestamp(current_time.time.time)
+
+
+                    String dangerSignOn=" Name: "+mkChaid?.respondent_name+" \\n Village: "+mkChaid?.household?.village_id?.name+" \\n" +
+                            " Hamlets: "+mkChaid?.household?.street?.name+"\\n Reference: "+mkChaid.reg_no+"\\n Household: "+mkChaid.household.full_name+".\\n Danger Sign "+nameSign+":\\n"+msgDangerSign
+
+
+                    def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:mkChaid.created_by.facility])
+                    userLists.each {
+                        saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
+                    }
+                    MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
+
 
                 }
 
@@ -88,6 +120,7 @@ class ApplicationService {
     }
 
     def saveChaid(def data){
+        println(data)
         def jsonData= JSON.parse(data)
 
         def user_id=jsonData.user_id
@@ -185,6 +218,8 @@ class ApplicationService {
 
             }
             if (chadInstance.save(failOnError: true,flush: true)) {
+                def dangerSignPostDelivery=false
+                //println("passed")
                 results.each {
                     def code = it.code
                     String answer_code = it.answer_code
@@ -270,7 +305,7 @@ class ApplicationService {
                                 houseHoldDetail.member_no = Integer.parseInt(it.member_no)
                                 houseHoldDetail.save(flush: true)
 
-                                println(it.member_no)
+                            //    println(it.member_no)
 
                             }
                         }catch(Exception e){
@@ -292,7 +327,7 @@ class ApplicationService {
                                 availableHouseHold.member_no = Integer.parseInt(it.member_no)
                                 if(availableHouseHold.save(flush: true)){
                                     def memberNo=Integer.parseInt(it.member_no)
-                                    saveAvailableMemberDetails(jsonData,coreRequest,dictionaryItemList,memberNo,availableHouseHold)
+                                    saveAvailableMemberDetails(jsonData,coreRequest,dictionaryItemList,memberNo,availableHouseHold,chadInstance)
 
 
                                 }
@@ -303,14 +338,10 @@ class ApplicationService {
                         }
                     }
 
-                   /* if (code.equals("CHAD17")) {
-                        def breakArray = answer_code.split(",")
-                        breakArray.each {
-                            def dictionaryItemList = DictionaryItem.findByCode(it)
+                    if (code.equals("CHAD25")||code.equals("CHAD26")) {
 
-                        }
-
-                    }*/
+                        dangerSignPostDelivery=true
+                    }
 
 
 
@@ -318,12 +349,15 @@ class ApplicationService {
                 }
                 try {
                     def post_delivery = jsonData.post_delivery
-                    def pregnant_woman = jsonData.post_delivery
-                    def child_under_five = jsonData.post_delivery
+
+
+                    def pregnant_woman = jsonData.pregnant_woman
+                    def child_under_five = jsonData.child_under_five
+                   // println(pregnant_woman)
                     if(pregnant_woman) {
                         pregnantWomen(chadInstance, houseHoldInstance, jsonData, userInstance)
                     }
-                    if(post_delivery) {
+                    if(post_delivery||dangerSignPostDelivery) {
                         postDelivery(chadInstance, houseHoldInstance, jsonData, userInstance)
                     }
                     if(child_under_five) {
@@ -344,7 +378,7 @@ class ApplicationService {
                     chadInstanceStatus.status=DictionaryItem.findByCode("CHASUB")
                     chadInstanceStatus.save(failOnError:true)
                 }catch(Exception e){
-
+                    e.printStackTrace()
                 }
 
 
@@ -408,7 +442,7 @@ class ApplicationService {
                             userLists.each {
                                 saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
                             }
-                            MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id:id",[id:mkChaid.id])
+                            MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
 
                         } catch (Exception e) {
                             e.printStackTrace()
@@ -425,6 +459,7 @@ class ApplicationService {
 
     }
     def postDelivery(MkChaid mkChaid,Household household,def jsonData,def userInstance){
+     //   println("passed99")
         try {
             def delivery_date = jsonData.post_delivery.delivery_date
             def card_verification_facility = jsonData.post_delivery.card_verification_facility
@@ -496,6 +531,7 @@ class ApplicationService {
 
                     }
                     if (code.equals("CHAD25")) {
+                        println("passe")
 
                         try {
                             def dangerSignExists = false
@@ -505,7 +541,9 @@ class ApplicationService {
                                 def breakArray = answer_code.split(",")
                                 breakArray.each {
                                     try {
-                                        def dictionaryItemList = DictionaryItem.findByCode(it)
+                                        String codeSelected=it
+                                        codeSelected=codeSelected.trim()
+                                        def dictionaryItemList = DictionaryItem.findByCode(codeSelected)
                                         def dangerSignInstance = new DangerSignMotherDelivery()
                                         dangerSignInstance.chaid = mkChaid
                                         dangerSignInstance.postDelivery = postDeliveryInstance
@@ -524,7 +562,11 @@ class ApplicationService {
                                 def current_time = Calendar.instance
                                 def send_at = new java.sql.Timestamp(current_time.time.time)
 
-                                def dangerSignOn = "Reported Mother danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
+                               // def dangerSignOn = "Reported Mother danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
+
+                                String dangerSignOn=" Name: "+mkChaid?.respondent_name+" \\n Village: "+mkChaid?.household?.village_id?.name+" \\n" +
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"\\n Reference: "+mkChaid.reg_no+"\\n Household: "+mkChaid.household.full_name+".\\n Danger Sign Mother:\\n"+msgDangerSign
+
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
                                 userLists.each {
@@ -549,7 +591,9 @@ class ApplicationService {
                                 def msgDangerSign = ""
                                 def signCount = 1;
                                 breakArray.each {
-                                    def dictionaryItemList = DictionaryItem.findByCode(it)
+                                    String codeSelected=it
+                                    codeSelected=codeSelected.trim()
+                                    def dictionaryItemList = DictionaryItem.findByCode(codeSelected)
                                     def dangerSignInstance = new DangerSignChildDelivery()
                                     dangerSignInstance.chaid = mkChaid
                                     dangerSignInstance.postDelivery = postDeliveryInstance
@@ -568,7 +612,10 @@ class ApplicationService {
                                 def current_time = Calendar.instance
                                 def send_at = new java.sql.Timestamp(current_time.time.time)
 
-                                def dangerSignOn = "Reported Child danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
+                              //  def dangerSignOn = "Reported Child danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
+
+                                String dangerSignOn=" Name: "+mkChaid?.respondent_name+" \\n Village: "+mkChaid?.household?.village_id?.name+" \\n" +
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"\\n Reference: "+mkChaid.reg_no+"\\n Household: "+mkChaid.household.full_name+".\\n Danger Sign Child:\\n"+msgDangerSign
 
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
@@ -577,7 +624,7 @@ class ApplicationService {
                                 }
 
 
-                                MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id:id",[id:mkChaid.id])
+                                MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
 
                             }
 
@@ -628,6 +675,7 @@ class ApplicationService {
     def pregnantWomen(MkChaid mkChaid,Household household,def jsonData,def userInstance){
 
         try {
+            println("passed")
             def name = jsonData.pregnant_woman.name
             def phone_number = jsonData.pregnant_woman.phone_number
             def age = jsonData.pregnant_woman.age
@@ -687,8 +735,10 @@ class ApplicationService {
                 results.each {
                     def code = it.code
                     def answer_code = it.answer_code
+                  //  println(code)
 
-                    if (code.equals("CHAD18B")) {
+                    if (code.equals("CHAD18C")) {
+                       // println("passed")
                         try {
                             if(answer_code) {
                                 def breakArray = answer_code.split(",")
@@ -696,15 +746,18 @@ class ApplicationService {
                                 def msgDangerSign = ""
                                 def signCount = 1;
                                 breakArray.each {
+
+                                    String codeGiven=it
+                                    codeGiven=codeGiven.trim()
                                     dangerSignExists = true
-                                    def dictionaryItemList = DictionaryItem.findByCode(it)
+                                    def dictionaryItemList = DictionaryItem.findByCode(codeGiven)
                                     def dangerSignPregnant = new DangerSignPregnant()
                                     dangerSignPregnant.chaid = mkChaid
                                     dangerSignPregnant.sign_type = dictionaryItemList
                                     dangerSignPregnant.preginantDetails = pregnantInstance
                                     dangerSignPregnant.save(failOnError: true)
 
-                                    msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
+                                    msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name+"\\n"
 
 
                                     signCount++
@@ -714,7 +767,9 @@ class ApplicationService {
                                 def current_time = Calendar.instance
                                 def send_at = new java.sql.Timestamp(current_time.time.time)
 
-                                def dangerSignOn = "Reported Pregnant danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
+
+                                String dangerSignOn=" Name: "+name+" \\n Village: "+mkChaid?.household?.village_id?.name+" \\n" +
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"\\n Reference: "+mkChaid.reg_no+"\\n Household: "+mkChaid.household.full_name+".\\n Danger Sign:\\n"+msgDangerSign
 
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
@@ -722,7 +777,7 @@ class ApplicationService {
                                     saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
                                 }
 
-                                MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id:id",[id:mkChaid.id])
+                                MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
                             }
                         } catch (Exception e) {
                             e.printStackTrace()

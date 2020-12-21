@@ -31,10 +31,9 @@
             </ul>
         </div>
         <div id="show-mkpUser" class="content scaffold-show" role="main">
-            <g:if test="${flash.message}">
-            <div class="message" role="status">${flash.message}</div>
-            </g:if>
-
+           <g:if test="${flash.message}">
+                    <div class="message alert alert-success alert-styled-left alert-arrow-left alert-bordered" role="status">${flash.message}</div>
+                    </g:if>
 
         <table class="table datatable-basic table-bordered table-striped">
                                    <tr>
@@ -108,6 +107,58 @@
                                    </td>
 
         </tr>
+
+         <tr>
+                            <td colspan="3">
+                                <div class="col-lg-10">
+
+                                    <table class="table text-nowrap customers">
+
+
+                                        <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                            <tr>
+
+                                                <td colspan="4">
+                                                    <g:form method="POST" controller="mkpUser" action="sendPasswordUser"
+                                                            class="form-horizontal">
+                                                        <g:hiddenField name="id" value="${mkpUser.id}"/>
+                                                        <div class="col-lg-3">
+                                                            <label class="control-label col-lg-2 text-bold"><g:message code="password.options" default="Password Options"/></label>
+                                                        </div>
+
+                                                        <div class="col-lg-4">
+
+                                                            <select name="optionData">
+                                                                <option value="1"><g:message code="by.email" default="By Email"/></option>
+
+                                                                <option value="2"><g:message code="by.phone.number" default="By Phonenumber"/></option>
+
+                                                            </select>
+
+                                                        </div>
+
+
+                                                        <div class="text-right col-lg-5">
+                                                            <button type="submit" class="btn btn-danger"><g:message code="send.password" default="Send Password"/> <i
+                                                                    class="icon-arrow-right14 position-right"></i>
+                                                            </button>
+
+                                                        </div>
+                                                    </g:form>
+
+                                                </td>
+
+                                            </tr>
+
+
+                                        </sec:ifAnyGranted>
+
+                                    </table>
+
+                                </div>
+
+                            </td>
+                        </tr>
 
 
   <tr><td>Add Role</td><td> <a href="#" onclick="addRole()"><i class="icon-gear"></i> Add Role</a></td></tr>

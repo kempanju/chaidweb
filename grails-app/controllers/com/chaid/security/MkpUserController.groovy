@@ -1,5 +1,6 @@
 package com.chaid.security
 
+import chaid.ApplicationService
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
@@ -8,6 +9,8 @@ import static org.springframework.http.HttpStatus.*
 class MkpUserController {
 
     MkpUserService mkpUserService
+    def springSecurityService
+    ApplicationService applicationService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -85,6 +88,42 @@ class MkpUserController {
             }
             '*'{ respond mkpUser, [status: OK] }
         }
+    }
+
+
+    @org.springframework.transaction.annotation.Transactional
+    def sendPasswordUser(){
+        //  def optionData=Integer.parseInt(params.optionData)
+        def code = getRandomNumber(1000, 9999)
+        def userInstance = MkpUser.get(params.id)
+        def passwords= Integer.toString(code)
+        //userInstance.password =springSecurityService.encodePassword(passwords, null)
+        userInstance.password=passwords
+        userInstance.accountLocked = 0
+        // println(code)
+        if(userInstance.save(failOnError: true,flush:true)){
+            //  flash.message="Password successfully sent!"
+            flash.message="Password successfully sent! Password: "+code
+
+            try {
+                def name = userInstance.full_name
+                def phone_number=userInstance.phone_number
+
+                String msg="Hello "+name+", Your Chaid Username is "+userInstance.username+" and Password is "+code+". Thanks."
+                applicationService.sendMessage(phone_number,msg)
+
+
+            } catch (Exception e) {
+                // e.printStackTrace()
+            }
+
+        }
+
+        redirect(action: 'show',id:params.id)
+    }
+
+    private int getRandomNumber(int min,int max) {
+        return (new Random()).nextInt((max - min) + 1) + min;
     }
 
     def delete(Long id) {

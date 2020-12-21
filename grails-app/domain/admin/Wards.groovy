@@ -6,9 +6,11 @@ class Wards {
     District district_id
     Region region_id
     Boolean ward_visible
+    String uniquename
     static constraints = {
         region_id nullable: true
         ward_visible nullable: true
+        uniquename nullable:true,unique:true
     }
 
     static mapping = {

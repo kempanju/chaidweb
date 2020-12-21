@@ -11,6 +11,7 @@ class DangerSignMotherDelivery {
 
     static constraints = {
         created_at nullable:true
+        postDelivery nullable:true
     }
     def beforeInsert() {
         def current_time = Calendar.instance

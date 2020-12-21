@@ -22,7 +22,7 @@
                                          <td>
                                              <span class="text-semibold"><g:message code="description" default="Taken them to Clinic"/></span>
                                          </td>
-                                         <td style="word-break:break-word"> ${ categoryInstance.taken_baby_to_clinic?"Yes": "No"}</td>
+                                         <td style="word-break:break-word"> ${ categoryInstance?.taken_baby_to_clinic?"Yes": "No"}</td>
 
 
 
@@ -32,7 +32,7 @@
                                        <td>
                                            <span class="text-semibold"><g:message code="description" default="Provided with Immunization"/></span>
                                        </td>
-                                       <td style="word-break:break-word"> ${ categoryInstance.baby_provided_immunization?"Yes": "No"}</td>
+                                       <td style="word-break:break-word"> ${ categoryInstance?.baby_provided_immunization?"Yes": "No"}</td>
 
 
 

@@ -14,6 +14,7 @@ class PreginantDetails {
     Integer child_no,age
     Boolean attended_clinic,prefer_family_planning,child_under_one,ever_used_any_family_planning
     String name,phone_number
+    Integer pregnant_month
     java.sql.Timestamp created_at
 
 
@@ -35,6 +36,8 @@ class PreginantDetails {
         date_of_birth nullable:true
         age nullable:true
         created_at nullable:true
+        pregnant_month formula:"(current_date -last_menstual::date)/30"
+
     }
 
     def beforeInsert(){
