@@ -36,7 +36,12 @@ class MkpUserController {
         }
 
         try {
-            mkpUser.username=params.email_address
+            if(params.username){
+                mkpUser.username=params.username
+            }else{
+                mkpUser.username=params.email_address
+
+            }
             mkpUser.email=params.email_address
 
             mkpUser.password=System.currentTimeMillis()+"yhh"
@@ -88,6 +93,19 @@ class MkpUserController {
             }
             '*'{ respond mkpUser, [status: OK] }
         }
+    }
+
+
+    def searchUserList(){
+        def searchText=params.search_string
+        String searchstring="%"+searchText+"%"
+        searchstring=searchstring.toLowerCase()
+        params.max=20
+
+        def userInstanceList=MkpUser.executeQuery("from MkpUser where  lower(full_name) like :searchstring or phone_number like :searchstring or  lower(username) like :searchstring or village_id.name like :searchstring or facility.name like :searchstring",[searchstring:searchstring],params)
+
+        render(template: 'userlist',model: [mkpUserList:userInstanceList])
+
     }
 
 

@@ -102,15 +102,17 @@ class ApplicationService {
                     def send_at = new java.sql.Timestamp(current_time.time.time)
 
 
-                    String dangerSignOn=" Name: "+mkChaid?.respondent_name+" \\n Village: "+mkChaid?.household?.village_id?.name+" \\n" +
-                            " Hamlets: "+mkChaid?.household?.street?.name+"\\n Reference: "+mkChaid.reg_no+"\\n Household: "+mkChaid.household.full_name+".\\n Danger Sign "+nameSign+":\\n"+msgDangerSign
+                    String dangerSignOn=" Name: "+mkChaid?.respondent_name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
+                            " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid.household.full_name+".%0a Danger Sign "+nameSign+": %0a "+msgDangerSign
 
-
+                    println(mkChaid.created_by.facility)
                     def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:mkChaid.created_by.facility])
+
                     userLists.each {
+                        println(it)
                         saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
                     }
-                    MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
+                    MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
 
 
                 }
@@ -194,7 +196,10 @@ class ApplicationService {
                 chadInstance.centroid_y=Double.parseDouble(longitude)
                 chadInstance.accuracy=Double.parseDouble(accuracy)
             }catch(Exception e){
-                e.printStackTrace()
+                chadInstance.centroid_x=0
+                chadInstance.centroid_y=0
+                chadInstance.accuracy=0
+                //e.printStackTrace()
             }
             results.each {
                 def code = it.code
@@ -442,7 +447,8 @@ class ApplicationService {
                             userLists.each {
                                 saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
                             }
-                            MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
+                            //MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
+                            MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
 
                         } catch (Exception e) {
                             e.printStackTrace()
@@ -564,15 +570,15 @@ class ApplicationService {
 
                                // def dangerSignOn = "Reported Mother danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
 
-                                String dangerSignOn=" Name: "+mkChaid?.respondent_name+" \\n Village: "+mkChaid?.household?.village_id?.name+" \\n" +
-                                        " Hamlets: "+mkChaid?.household?.street?.name+"\\n Reference: "+mkChaid.reg_no+"\\n Household: "+mkChaid.household.full_name+".\\n Danger Sign Mother:\\n"+msgDangerSign
+                                String dangerSignOn=" Name: "+mkChaid?.respondent_name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid.household.full_name+".%0a Danger Sign Mother: "+msgDangerSign
 
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
                                 userLists.each {
                                     saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
                                 }
-                                MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
+                                MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
 
                             }
                         } catch (Exception e) {
@@ -614,8 +620,8 @@ class ApplicationService {
 
                               //  def dangerSignOn = "Reported Child danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
 
-                                String dangerSignOn=" Name: "+mkChaid?.respondent_name+" \\n Village: "+mkChaid?.household?.village_id?.name+" \\n" +
-                                        " Hamlets: "+mkChaid?.household?.street?.name+"\\n Reference: "+mkChaid.reg_no+"\\n Household: "+mkChaid.household.full_name+".\\n Danger Sign Child:\\n"+msgDangerSign
+                                String dangerSignOn=" Name: "+mkChaid?.respondent_name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid.household.full_name+".%0a Danger Sign Child: "+msgDangerSign
 
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
@@ -623,8 +629,8 @@ class ApplicationService {
                                     saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
                                 }
 
+                                MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
 
-                                MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
 
                             }
 
@@ -757,7 +763,7 @@ class ApplicationService {
                                     dangerSignPregnant.preginantDetails = pregnantInstance
                                     dangerSignPregnant.save(failOnError: true)
 
-                                    msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name+"\\n"
+                                    msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name+"%0a"
 
 
                                     signCount++
@@ -768,16 +774,16 @@ class ApplicationService {
                                 def send_at = new java.sql.Timestamp(current_time.time.time)
 
 
-                                String dangerSignOn=" Name: "+name+" \\n Village: "+mkChaid?.household?.village_id?.name+" \\n" +
-                                        " Hamlets: "+mkChaid?.household?.street?.name+"\\n Reference: "+mkChaid.reg_no+"\\n Household: "+mkChaid.household.full_name+".\\n Danger Sign:\\n"+msgDangerSign
+                                String dangerSignOn=" Name: "+name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid.household.full_name+".%0a Danger Sign:%0a"+msgDangerSign
 
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
                                 userLists.each {
                                     saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
                                 }
+                                MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
 
-                                MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
                             }
                         } catch (Exception e) {
                             e.printStackTrace()

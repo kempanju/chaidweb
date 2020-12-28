@@ -359,10 +359,48 @@ ApplicationService applicationService
             render "Failed ",status:404
         }
     }
+    def getReferralListUser(){
+        def username=params.username
+        //username="admin"
+        params.max=30
+        params.sort = 'id'
+        params.order = 'desc'
+        def userInstance= MkpUser.findByUsername(username)
+        def visitInstanceList=MkChaid.findAllByCreated_by(userInstance,params)
+        JSONArray jsonArray=new JSONArray()
+        visitInstanceList.each{
+            JSONObject jsonObject=new JSONObject()
+            jsonObject.put("name",it.respondent_name)
+            jsonObject.put("reg_no",it.reg_no)
+            jsonObject.put("chad_id",it.id)
+            jsonObject.put("village_name",it.street.name)
+            jsonObject.put("house_hold",it?.household?.full_name)
+            jsonObject.put("hamlet",it.household?.street?.name)
+            jsonObject.put("id",it.id)
+            jsonObject.put("arrival_time",it.arrival_time.toString())
+
+
+
+            def chadStatusList=ChadStatus.findAllByChaid(it)
+            JSONArray statusArray=new JSONArray()
+            chadStatusList.each{
+                JSONObject statusObject=new JSONObject()
+                statusObject.put("name",it.status.name)
+                statusObject.put("comment",it.comment)
+                statusObject.put("created_at",it.created_at.toString())
+                statusArray.put(statusObject)
+            }
+
+            jsonObject.put("statuses",statusArray)
+            jsonArray.put(jsonObject)
+        }
+        render jsonArray as JSON
+    }
+
     def getReferralList(){
         def username=params.username
-        username="admin"
-        params.max=30
+        //username="admin"
+        params.max=60
         params.sort = 'id'
         params.order = 'desc'
         def userInstance= MkpUser.findByUsername(username)
@@ -374,7 +412,7 @@ ApplicationService applicationService
             jsonObject.put("reg_no",it.reg_no)
             jsonObject.put("chad_id",it.id)
             jsonObject.put("village_name",it.street.name)
-            jsonObject.put("house_hold",it.household.full_name)
+            jsonObject.put("house_hold",it?.household?.full_name)
             jsonObject.put("hamlet",it.household?.street?.name)
             jsonObject.put("id",it.id)
             jsonObject.put("arrival_time",it.arrival_time.toString())
@@ -418,6 +456,7 @@ ApplicationService applicationService
             jsonObject.put("chad_id",it.id)
             jsonObject.put("village_name",it.street.name)
             jsonObject.put("house_hold",it.household.full_name)
+            jsonObject.put("message",it.message)
             jsonArray.put(jsonObject)
         }
         jsonDetails.put("reported_visit",jsonArray)

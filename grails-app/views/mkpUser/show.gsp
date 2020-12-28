@@ -67,10 +67,10 @@
 
                                     <tr>
                                    <td>
-                                       <span class="text-semibold">Email</span>
+                                       <span class="text-semibold">Username</span>
                                    </td>
                                    <td>
-                                       ${fieldValue(bean: mkpUser, field: "email")}
+                                       ${fieldValue(bean: mkpUser, field: "username")}
 
                                    </td>
 

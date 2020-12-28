@@ -27,12 +27,12 @@
                                         <thead>
                                         <tr>
                                             <g:sortableColumn property="id" title="${message(code: 'no', default: 'No')}"/>
-                                            <g:sortableColumn property="code"
+                                            <g:sortableColumn property="number"
                                                               title="${message(code: 'code', default: 'Number')}"/>
 
-                                            <g:sortableColumn property="name_en"
+                                            <g:sortableColumn property="name"
                                                               title="${message(code: 'name', default: 'Name')}"/>
-                                            <g:sortableColumn property="dictionary_id"
+                                            <g:sortableColumn property="district_id.name"
                                                               title="${message(code: 'dictionary', default: 'District')}"/>
 
                                             <th class="text-center"><g:message code="actions" default="Actions"/></th>

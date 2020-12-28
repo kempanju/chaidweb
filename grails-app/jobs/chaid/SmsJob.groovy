@@ -15,7 +15,7 @@ class SmsJob {
         // execute job
         def dictionaryItemInstance= DictionaryItem.findByCode("SSMS");
 
-        def logInstanceList= SystemLogs.findAllByLog_typeAndSending_status(dictionaryItemInstance,0,[max:2])
+        def logInstanceList= SystemLogs.findAllByLog_typeAndSending_status(dictionaryItemInstance,0,[max:3])
         //println(logInstanceList)
         logInstanceList.each{
             def message=it.message

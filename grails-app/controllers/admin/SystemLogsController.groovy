@@ -1,5 +1,6 @@
 package admin
 
+import com.chaid.security.MkpUser
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
@@ -74,6 +75,19 @@ class SystemLogsController {
             }
             '*'{ respond systemLogs, [status: OK] }
         }
+    }
+
+    def searchLogsList(){
+        def searchText=params.search_string
+        String searchstring="%"+searchText+"%"
+        searchstring=searchstring.toLowerCase()
+        params.max=20
+        params.sort = 'id'
+        params.order = 'desc'
+        println(searchstring)
+        def logInstanceList= SystemLogs.executeQuery("from SystemLogs where  message like :searchstring or lower(user_id.full_name) like :searchstring or  lower(facility.name) like :searchstring",[searchstring:searchstring],params)
+        println(logInstanceList)
+        render(template: 'logslist',model: [systemLogsList:logInstanceList])
     }
 
     def delete(Long id) {

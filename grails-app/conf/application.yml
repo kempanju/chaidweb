@@ -99,7 +99,7 @@ environments:
     development:
         dataSource:
             dbCreate: update
-            url: jdbc:postgresql://localhost:5432/db_chaid_new
+            url: jdbc:postgresql://localhost:5432/chaddb
         systemLink: http://localhost:8080
 
     test:
