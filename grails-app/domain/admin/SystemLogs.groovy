@@ -1,6 +1,7 @@
 package admin
 
 import chaid.Facility
+import chaid.MkChaid
 import com.chaid.security.MkpUser
 
 class SystemLogs {
@@ -13,6 +14,7 @@ class SystemLogs {
     Boolean user_visible
     static belongsTo = [user_id: MkpUser]
     Facility facility
+    MkChaid chaid
 
     static constraints = {
         created_at nullable: true
@@ -23,6 +25,7 @@ class SystemLogs {
         sending_time nullable: true
         user_visible nullable: true
         facility nullable:true
+        chaid nullable:true
     }
 
     static mapping = {

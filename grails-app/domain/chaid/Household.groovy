@@ -12,6 +12,7 @@ class Household {
     SubStreet street
     District district_id
     Integer male_no=0,female_no=0
+    java.sql.Timestamp created_at
     int total_members
     static constraints = {
         deleted nullable:true
@@ -21,10 +22,13 @@ class Household {
         female_no nullable:true
         street nullable:true
         total_members formula:"(male_no+female_no)"
+        created_at nullable:true
     }
 
     def beforeInsert() {
         deleted=0
+        def current_time = Calendar.instance
+        created_at = new java.sql.Timestamp(current_time.time.time)
     }
 
     static mapping = {

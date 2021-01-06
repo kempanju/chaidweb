@@ -18,7 +18,7 @@ class MkChaid {
     Double centroid_x=0,centroid_y=0,accuracy=0
     MkpUser created_by
     Facility facility
-    String message
+    String message,app_logs
     static constraints = {
         visit_type nullable:true
         meeting_type nullable:true
@@ -44,11 +44,14 @@ class MkChaid {
         emergence_status nullable:true
         facility nullable:true
         message nullable:true
+        app_logs nullable:true
+
 
     }
     static mapping = {
         created_by column: 'created_by'
         message type: "text"
+        app_logs type:"text"
     }
 
     def beforeInsert(){

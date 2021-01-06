@@ -9,8 +9,8 @@ class PostDelivery {
     DictionaryItem outcome_type,baby_condition,delivery_type,delivery_place,family_planning
     String facility_card_name
     DictionaryItem danger_sign
-    Boolean provided_immunization,postnatal_clinic
-    Integer under_five_no,child_age,child_age_month
+    Boolean provided_immunization,postnatal_clinic,is_referrals
+    Integer under_five_no,child_age,child_age_month,child_age_days
     java.sql.Timestamp created_at
 
     static constraints = {
@@ -27,11 +27,14 @@ class PostDelivery {
         family_planning nullable:true
         child_age formula:"(current_date -delivery_date::date)/365"
         child_age_month formula:"(current_date -delivery_date::date)/30"
+        child_age_days formula:"(current_date -delivery_date::date)"
         created_at nullable: true
+        is_referrals nullable:true
     }
     def beforeInsert(){
         def current_time = Calendar.instance
         created_at = new java.sql.Timestamp(current_time.time.time)
+        is_referrals=0
 
     }
 }

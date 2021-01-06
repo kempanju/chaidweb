@@ -109,7 +109,11 @@
                            <li class="<g:if test="${activePage == 'reports'}">active</g:if>">
                                                     <a href="#"><i class="icon-map"></i> <span>Reports</span></a>
                                                     <ul>
-                                               <li><g:link controller='home' action="reportByVillage">Village Mapping Indicators</g:link></li>
+                                                  <li><g:link controller='home' action="reportByVillage">Report By District</g:link></li>
+
+                                               <li><g:link controller='home' action="reportByRegistered">Registered</g:link></li>
+                                               <li><g:link controller='home' action="reportByReferralsGenerated">Referrals Generated</g:link></li>
+                                               <li><g:link controller='home' action="reportByHealthEducation">Health Education</g:link></li>
 
                                                     </ul>
 

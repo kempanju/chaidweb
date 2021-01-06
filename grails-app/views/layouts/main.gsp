@@ -8,6 +8,8 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <asset:link rel="icon" href="favicon.ico" type="image/x-ico"/>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-sanitize.js"></script>
 
 
     <link rel = "stylesheet"
@@ -31,6 +33,10 @@
     <asset:javascript src="jquery-ui/jquery-ui.js"/>
     <asset:javascript src="jquery-ui/jquery-ui.js"/>
     <asset:javascript src="customjs/applicant_module.js"/>
+
+    <asset:javascript src="bootstrap-datetimepicker.min.js"/>
+    <asset:javascript src="customjs/applicant_module.js"/>
+
 
     <g:layoutHead/>
     <script>

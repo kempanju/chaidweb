@@ -67,16 +67,18 @@ class ApplicationService {
             if (categoryAvailableInstance.save(flush: true,failOnError: true)) {
 
                 if (immunization) {
+                    println(immunization)
                     def breakArray = immunization.split(",")
                     breakArray.each {
                         String reqCode = it
                         reqCode = reqCode.trim()
+                        println(reqCode)
                         def immunizationAvailable = new ImmunizationAvailableChildren()
                         immunizationAvailable.availableMemberHouse = availableMemberHouse
                         immunizationAvailable.categoryAvailableChildren = categoryAvailableInstance
                         def dictionaryItemList = DictionaryItem.findByCode(reqCode)
                         immunizationAvailable.immunization_type = dictionaryItemList
-                        immunizationAvailable.save(failOnError: true)
+                        immunizationAvailable.save()
                     }
                 }
                 if (danger_sign) {
@@ -103,16 +105,17 @@ class ApplicationService {
 
 
                     String dangerSignOn=" Name: "+mkChaid?.respondent_name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
-                            " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid.household.full_name+".%0a Danger Sign "+nameSign+": %0a "+msgDangerSign
+                            " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign "+nameSign+": %0a "+msgDangerSign
 
                     println(mkChaid.created_by.facility)
                     def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:mkChaid.created_by.facility])
 
                     userLists.each {
                         println(it)
-                        saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
+                        saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                     }
                     MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
+                    CategoryAvailableChildren.executeUpdate("update CategoryAvailableChildren set is_referrals=1 where id=:id",[id:categoryAvailableInstance.id])
 
 
                 }
@@ -171,14 +174,15 @@ class ApplicationService {
             chadInstance.respondent_age = age
             chadInstance.household = houseHoldInstance
             chadInstance.created_by=userInstance
-            chadInstance.distric = userInstance.village_id.district_id
-            chadInstance.street = userInstance.village_id
+            chadInstance.distric = userInstance?.village_id?.district_id
+            chadInstance.street = userInstance?.village_id
             chadInstance.facility=userInstance.facility
             chadInstance.age_sick_person=house_hold_sick_person_age
             chadInstance.sick_person=house_hold_sick_person
             chadInstance.uniquecode=uniquecode
             chadInstance.relationship_status = DictionaryItem.findByCode(relationshipstatus)
             chadInstance.care_giver=care_giver
+            chadInstance.app_logs=data
 
             try{
                 int countChaid=MkChaid.countByStreet(userInstance.village_id)+1
@@ -224,13 +228,13 @@ class ApplicationService {
             }
             if (chadInstance.save(failOnError: true,flush: true)) {
                 def dangerSignPostDelivery=false
-                //println("passed")
+
                 results.each {
                     def code = it.code
                     String answer_code = it.answer_code
                     String comment = it.comment
                     def resultCodeArray=it.answer_code
-
+                    println("passed twice:"+code)
                     if (code.equals("CHAD6")) {
                         try {
                             def breakArray = answer_code.split(",")
@@ -318,12 +322,15 @@ class ApplicationService {
                         }
                     }
 
+
+
                     if (code.equals("CHAD17")) {
                         try {
                             def breakArray = resultCodeArray
-
                             breakArray.each {
                                 String coreRequest=it.code
+                                coreRequest=coreRequest.trim()
+                               // println("called:"+coreRequest)
                                 def dictionaryItemList = DictionaryItem.findByCode(coreRequest)
                                 def availableHouseHold = new AvailableMemberHouse()
                                 availableHouseHold.household = houseHoldInstance
@@ -332,7 +339,7 @@ class ApplicationService {
                                 availableHouseHold.member_no = Integer.parseInt(it.member_no)
                                 if(availableHouseHold.save(flush: true)){
                                     def memberNo=Integer.parseInt(it.member_no)
-                                    saveAvailableMemberDetails(jsonData,coreRequest,dictionaryItemList,memberNo,availableHouseHold,chadInstance)
+                                 //   saveAvailableMemberDetails(jsonData,coreRequest,dictionaryItemList,memberNo,availableHouseHold,chadInstance)
 
 
                                 }
@@ -445,7 +452,7 @@ class ApplicationService {
                             def dangerSignOn = "Reported Child danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
                             def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
                             userLists.each {
-                                saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
+                                saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                             }
                             //MkChaid.executeUpdate("update MkChaid set emergence_status=1 where id=:id",[id:mkChaid.id])
                             MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
@@ -511,19 +518,22 @@ class ApplicationService {
                 }
 
             }
-            if (postDeliveryInstance.save(failOnError: true)) {
+            if (postDeliveryInstance.save(failOnError: true,flush: true)) {
 
                 results.each {
                     def code = it.code
                     def answer_code = it.answer_code
 
-                    if (code.equals("CHAD27B")) {
+                    if (code.equals("CHAD27C")) {
 
                         try {
 
                             def breakArray = answer_code.split(",")
                             breakArray.each {
-                                def dictionaryItemList = DictionaryItem.findByCode(it)
+                                //println(it)
+                                String codeSelected=it
+                                codeSelected=codeSelected.trim()
+                                def dictionaryItemList = DictionaryItem.findByCode(codeSelected)
                                 def childImmunizationInstance = new ChildImmunization()
                                 childImmunizationInstance.chaid = mkChaid
                                 childImmunizationInstance.postDelivery = postDeliveryInstance
@@ -532,7 +542,7 @@ class ApplicationService {
 
                             }
                         } catch (Exception e) {
-
+                            e.printStackTrace()
                         }
 
                     }
@@ -571,14 +581,15 @@ class ApplicationService {
                                // def dangerSignOn = "Reported Mother danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
 
                                 String dangerSignOn=" Name: "+mkChaid?.respondent_name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
-                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid.household.full_name+".%0a Danger Sign Mother: "+msgDangerSign
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign Mother: "+msgDangerSign
 
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
                                 userLists.each {
-                                    saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
+                                    saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                                 }
                                 MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
+                                PostDelivery.executeUpdate("update PostDelivery set is_referrals=1 where id=:id",[id:postDeliveryInstance.id])
 
                             }
                         } catch (Exception e) {
@@ -621,12 +632,12 @@ class ApplicationService {
                               //  def dangerSignOn = "Reported Child danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
 
                                 String dangerSignOn=" Name: "+mkChaid?.respondent_name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
-                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid.household.full_name+".%0a Danger Sign Child: "+msgDangerSign
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign Child: "+msgDangerSign
 
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
                                 userLists.each {
-                                    saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
+                                    saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                                 }
 
                                 MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
@@ -648,11 +659,12 @@ class ApplicationService {
     }
 
 
-    def  saveSchedualMessages(MkpUser userInstance, def message, def seder_status, def senderTime){
+    def  saveSchedualMessages(MkpUser userInstance, def message, def seder_status, def senderTime,def mkChaid=null){
         def userLogsInstanceD = new SystemLogs()
         userLogsInstanceD.log_type = DictionaryItem.findByCode("SSMS")
         userLogsInstanceD.user_id = userInstance
         userLogsInstanceD.message = message
+        userLogsInstanceD.chaid=mkChaid
         userLogsInstanceD.sending_time=senderTime
         userLogsInstanceD.sending_status=seder_status
         userLogsInstanceD.unique_id=System.currentTimeMillis()
@@ -737,7 +749,7 @@ class ApplicationService {
 
             }
 
-            if (pregnantInstance.save(failOnError: true)) {
+            if (pregnantInstance.save(failOnError: true,flush: true)) {
                 results.each {
                     def code = it.code
                     def answer_code = it.answer_code
@@ -775,14 +787,15 @@ class ApplicationService {
 
 
                                 String dangerSignOn=" Name: "+name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
-                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid.household.full_name+".%0a Danger Sign:%0a"+msgDangerSign
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign:%0a"+msgDangerSign
 
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
                                 userLists.each {
-                                    saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at)
+                                    saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                                 }
                                 MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
+                                PreginantDetails.executeUpdate("update PreginantDetails set is_referrals=1 where id=:id",[id:pregnantInstance.id])
 
                             }
                         } catch (Exception e) {

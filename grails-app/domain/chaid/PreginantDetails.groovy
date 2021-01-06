@@ -12,7 +12,7 @@ class PreginantDetails {
     Date last_menstual,date_of_birth
     DictionaryItem danger_sign,visit_type,education_type,family_planning_type,child_group_no
     Integer child_no,age
-    Boolean attended_clinic,prefer_family_planning,child_under_one,ever_used_any_family_planning
+    Boolean attended_clinic,prefer_family_planning,child_under_one,ever_used_any_family_planning,is_referrals
     String name,phone_number
     Integer pregnant_month
     java.sql.Timestamp created_at
@@ -37,12 +37,13 @@ class PreginantDetails {
         age nullable:true
         created_at nullable:true
         pregnant_month formula:"(current_date -last_menstual::date)/30"
-
+        is_referrals nullable:true
     }
 
     def beforeInsert(){
         def current_time = Calendar.instance
         created_at = new java.sql.Timestamp(current_time.time.time)
+        is_referrals=0
 
     }
 }

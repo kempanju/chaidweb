@@ -338,6 +338,78 @@ ApplicationService applicationService
         render "Done"
     }
 
+    def reportByRegistered(){
+        session["activePage"] = "reports"
+
+        render view: 'registered'
+    }
+
+    def registeredReport(){
+        def  preginantWomanNo=PreginantDetails.count()
+        def breastFeedingLess=PostDelivery.executeQuery("from PostDelivery where child_age_days<=42").size()
+        def breastFeedingAbove=PostDelivery.executeQuery("from PostDelivery where child_age_days>42").size()
+
+        def neonates=CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17D"))
+        def infants=CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17E"))
+        def childrenUnder5=CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17F"))
+
+
+        def childrenUnderNotImmnunized=CategoryAvailableChildren.countByBaby_provided_immunization(false)
+
+        JSONObject jsonObject=new JSONObject()
+        jsonObject.put("pregnant_no",preginantWomanNo)
+        jsonObject.put("breast_feeding_less_no",breastFeedingLess)
+        jsonObject.put("breast_feeding_above_no",breastFeedingAbove)
+        jsonObject.put("neonates_no",neonates)
+        jsonObject.put("infants_no",infants)
+        jsonObject.put("children_under_five_no",childrenUnder5)
+        jsonObject.put("children_under_five_not_immunized",childrenUnderNotImmnunized)
+
+        JSONObject outPutObject=new JSONObject()
+        outPutObject.put("registered",jsonObject)
+        render outPutObject as JSON
+    }
+
+    def registeredReportByDate(){
+        println(params)
+        JSONObject outPutObject=new JSONObject()
+        outPutObject.put("registered","john")
+        render outPutObject as JSON
+    }
+
+    def reportByReferralsGenerated(){
+        session["activePage"] = "reports"
+
+        render view: 'referrals'
+    }
+
+    def reportByReferralsGeneratedJSON(){
+        def referrals_no=MkChaid.executeQuery("from MkChaid where emergence_status<>0").size()
+        def  pregnantWomanNo=PreginantDetails.executeQuery("from PreginantDetails where  is_referrals=true").size()
+        def breastFeedingLess=PostDelivery.executeQuery("from PostDelivery where child_age_days<=42 and is_referrals=true").size()
+        def breastFeedingAbove=PostDelivery.executeQuery("from PostDelivery where child_age_days>42 and is_referrals=true").size()
+
+
+        def neonates=CategoryAvailableChildren.countByCategoryTypeAndIs_referrals(DictionaryItem.findByCode("CHAD17D"),true)
+        def infants=CategoryAvailableChildren.countByCategoryTypeAndIs_referrals(DictionaryItem.findByCode("CHAD17E"),true)
+        def childrenUnder5=CategoryAvailableChildren.countByCategoryTypeAndIs_referrals(DictionaryItem.findByCode("CHAD17F"),true)
+
+
+
+        JSONObject jsonObject=new JSONObject()
+        jsonObject.put("referrals_no",referrals_no)
+        jsonObject.put("pregnant_no",pregnantWomanNo)
+        jsonObject.put("breast_feeding_less_no",breastFeedingLess)
+        jsonObject.put("breast_feeding_above_no",breastFeedingAbove)
+        jsonObject.put("neonates_no",neonates)
+        jsonObject.put("infants_no",infants)
+        jsonObject.put("children_under_five_no",childrenUnder5)
+
+        JSONObject outPutObject=new JSONObject()
+        outPutObject.put("referrals",jsonObject)
+        render outPutObject as JSON
+    }
+
     def reportByVillage(){
         session["activePage"] = "reports"
         render view: 'reportbyvillage'

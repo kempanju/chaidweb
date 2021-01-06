@@ -103,8 +103,44 @@
             </div>
         </div>
 
+  <div class="col-md-12  panel">
+            <g:form method="GET" action="reportByDatePayment" class="form-horizontal">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-lg-5 text-bold">From Date</label>
 
-        <div class="container col-lg-12" style="margin-top: 20px">
+
+                        <div class="col-lg-10 input-append date form_datetime">
+                            <input type="text" name="start_date" readonly required="required" class="form-control"/>
+                            <span class="add-on"><i class="icon-th"></i></span>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label col-lg-5 text-bold">To Date</label>
+
+                        <div class="col-lg-10 input-append date form_datetime">
+                            <input type="text" name="end_date" readonly required="required" class="form-control"/>
+                            <span class="add-on"><i class="icon-th"></i></span>
+
+                        </div>
+                    </div>
+                </div>
+ <div class="col-lg-3">
+                <div class="text-right col-md-4">
+                                        <label class="control-label col-lg-5 text-bold">..</label>
+
+                    <button type="submit" class="btn btn-primary">SELECT REPORT
+                    </button>
+ </div>
+                </div>
+            </g:form>
+        </div>
+
+        <div class="container col-lg-12" style="margin-top: 10px">
             <div class="row ">
                 <div class="col-md-4">
                     <div class="card-counter primary">
@@ -225,6 +261,10 @@
 </div>
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPB9AxnZBelfaOOLgATTB2B-t3BR685eE&callback=initMap">
+</script>
+
+<script type="text/javascript">
+    $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:mm'});
 </script>
 </body>
 </html>

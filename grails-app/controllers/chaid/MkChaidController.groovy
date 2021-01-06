@@ -2,6 +2,7 @@ package chaid
 
 import admin.DictionaryItem
 import com.chaid.security.MkpUser
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
@@ -27,6 +28,10 @@ class MkChaidController {
     def show(Long id) {
         respond mkChaidService.get(id)
     }
+    def showTest(Long id) {
+        def chaidInstance=MkChaid.get(id).app_logs
+        render chaidInstance
+    }
 
     def searchChadList(){
 
@@ -37,7 +42,7 @@ class MkChaidController {
         params.max=20
         params.sort = 'id'
         params.order = 'desc'
-        def chadInstanceList=MkChaid.executeQuery("from MkChaid where lower(respondent_name) like :searchstring or lower(reg_no) like :searchstring or lower(street.name) like :searchstring or lower(household.full_name) like :searchstring",[searchstring:searchstring],params)
+        def chadInstanceList=MkChaid.executeQuery("from MkChaid where lower(created_by.full_name) like :searchstring or lower(respondent_name) like :searchstring or lower(reg_no) like :searchstring or lower(street.name) like :searchstring or lower(household.full_name) like :searchstring",[searchstring:searchstring],params)
 
         render(template: 'mkChaidList',model: [mkChaidList:chadInstanceList])
     }

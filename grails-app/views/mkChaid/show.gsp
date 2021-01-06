@@ -43,6 +43,7 @@
                     <li  class="<g:if test="${defaultTab == 1}">active</g:if>"><a href="#left-icon-tab2" data-toggle="tab">2: Status</a></li>
 
                                      <li  class="<g:if test="${defaultTab == 2}">active</g:if>"><a href="#left-icon-tab3" data-toggle="tab">3: Map</a></li>
+                                     <li  class="<g:if test="${defaultTab == 3}">active</g:if>"><a href="#left-icon-tab4" data-toggle="tab">4: Logs</a></li>
 
                    </ul>
 
@@ -62,6 +63,13 @@
                                             <g:render template="map" bean="mkChaid"/>
 
                                         </div>
+
+                     <div class="tab-pane  <g:if test="${defaultTab == 3}">active</g:if>" id="left-icon-tab4">
+                                                            <g:render template="chadlogs" bean="mkChaid"/>
+
+                                                        </div>
+
+
                    <div>
 
         </div>
