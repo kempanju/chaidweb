@@ -115,7 +115,7 @@ class ApplicationService {
                         saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                     }
                     MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
-                    CategoryAvailableChildren.executeUpdate("update CategoryAvailableChildren set is_referrals=1 where id=:id",[id:categoryAvailableInstance.id])
+                    CategoryAvailableChildren.executeUpdate("update CategoryAvailableChildren set is_referrals=true where id=:id",[id:categoryAvailableInstance.id])
 
 
                 }
@@ -589,7 +589,7 @@ class ApplicationService {
                                     saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                                 }
                                 MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
-                                PostDelivery.executeUpdate("update PostDelivery set is_referrals=1 where id=:id",[id:postDeliveryInstance.id])
+                                PostDelivery.executeUpdate("update PostDelivery set is_referrals=true where id=:id",[id:postDeliveryInstance.id])
 
                             }
                         } catch (Exception e) {
@@ -795,7 +795,7 @@ class ApplicationService {
                                     saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                                 }
                                 MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
-                                PreginantDetails.executeUpdate("update PreginantDetails set is_referrals=1 where id=:id",[id:pregnantInstance.id])
+                                PreginantDetails.executeUpdate("update PreginantDetails set is_referrals=true where id=:id",[id:pregnantInstance.id])
 
                             }
                         } catch (Exception e) {
