@@ -196,14 +196,22 @@ class ApplicationService {
             }
 
             try{
-                chadInstance.centroid_x=Double.parseDouble(latitude)
-                chadInstance.centroid_y=Double.parseDouble(longitude)
+                def lat=Double.parseDouble(latitude)
+                def lon=Double.parseDouble(longitude)
+                def tempValueLat=lat
+                def tempValueLon=lon
+                if(lat>0){
+                    lat=tempValueLon
+                    lon=tempValueLat
+                }
+                chadInstance.centroid_x=lat
+                chadInstance.centroid_y=lon
                 chadInstance.accuracy=Double.parseDouble(accuracy)
             }catch(Exception e){
                 chadInstance.centroid_x=0
                 chadInstance.centroid_y=0
                 chadInstance.accuracy=0
-                //e.printStackTrace()
+                e.printStackTrace()
             }
             results.each {
                 def code = it.code
