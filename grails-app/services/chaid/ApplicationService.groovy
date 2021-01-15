@@ -40,6 +40,7 @@ class ApplicationService {
             savingJson=children
             nameSign="Child"
         }
+       // println(savingJson)
 
         if(savingJson) {
 
@@ -67,12 +68,12 @@ class ApplicationService {
             if (categoryAvailableInstance.save(flush: true,failOnError: true)) {
 
                 if (immunization) {
-                    println(immunization)
+                   // println(immunization)
                     def breakArray = immunization.split(",")
                     breakArray.each {
                         String reqCode = it
                         reqCode = reqCode.trim()
-                        println(reqCode)
+                       // println(reqCode)
                         def immunizationAvailable = new ImmunizationAvailableChildren()
                         immunizationAvailable.availableMemberHouse = availableMemberHouse
                         immunizationAvailable.categoryAvailableChildren = categoryAvailableInstance
@@ -107,11 +108,11 @@ class ApplicationService {
                     String dangerSignOn=" Name: "+mkChaid?.respondent_name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
                             " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign "+nameSign+": %0a "+msgDangerSign
 
-                    println(mkChaid.created_by.facility)
+                    //println(mkChaid.created_by.facility)
                     def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:mkChaid.created_by.facility])
 
                     userLists.each {
-                        println(it)
+                        //println(it)
                         saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                     }
                     MkChaid.executeUpdate("update MkChaid set emergence_status=1,message=:message where id=:id",[message:dangerSignOn,id:mkChaid.id])
@@ -129,7 +130,6 @@ class ApplicationService {
         def jsonData= JSON.parse(data)
 
         def user_id=jsonData.user_id
-
 
 
         def house_hold_id=jsonData.house_hold
@@ -234,7 +234,7 @@ class ApplicationService {
                     String answer_code = it.answer_code
                     String comment = it.comment
                     def resultCodeArray=it.answer_code
-                    println("passed twice:"+code)
+                   // println("passed twice:"+code)
                     if (code.equals("CHAD6")) {
                         try {
                             def breakArray = answer_code.split(",")
@@ -339,9 +339,12 @@ class ApplicationService {
                                 availableHouseHold.member_no = Integer.parseInt(it.member_no)
                                 if(availableHouseHold.save(flush: true)){
                                     def memberNo=Integer.parseInt(it.member_no)
-                                 //   saveAvailableMemberDetails(jsonData,coreRequest,dictionaryItemList,memberNo,availableHouseHold,chadInstance)
+                                    try {
+                                        saveAvailableMemberDetails(jsonData, coreRequest, dictionaryItemList, memberNo, availableHouseHold, chadInstance)
 
-
+                                    }catch(Exception e){
+                                        e.printStackTrace()
+                                    }
                                 }
 
                             }

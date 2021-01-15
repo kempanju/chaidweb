@@ -272,7 +272,16 @@ ${fieldValue(bean: mkChaid, field: "age_sick_person")}
                </g:if>
 
       <g:render template="pregnant" bean="mkChaid"/>
+       <sec:ifAnyGranted roles="ROLE_PUBLISHER,ROLE_ADMIN">
 
+                                                 <tr><td>Actions</td><td>
+
+                                                                    <g:link action="deleteChad" id="${mkChaid.id}"
+                                                                            class="btn btn-link btn-float has-text"><i
+                                                                            class=" icon-database-remove text-warning"></i><span>Delete</span></g:link>
+
+                                                                </td></tr>
+                             </sec:ifAnyGranted>
 
 
 </table>

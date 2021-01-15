@@ -13,7 +13,7 @@ class BootStrap {
 
 
         try {
-            MkpRole.findOrSaveWhere(authority: 'ROLE_DISTRICT')
+           /* MkpRole.findOrSaveWhere(authority: 'ROLE_DISTRICT')
             MkpRole.findOrSaveWhere(authority: 'ROLE_DATA')
             MkpRole.findOrSaveWhere(authority: 'ROLE_RESPONDENT')
 
@@ -31,9 +31,11 @@ class BootStrap {
 
             assert MkpRole.count() == 1
             assert MkpRole.count() == 1
-            assert MkpUserMkpRole.count() == 1
-        }catch(Exception e){
+            assert MkpUserMkpRole.count() == 1*/
+            MkChaid.executeUpdate("update MkChaid set deleted=false where deleted is null")
 
+        }catch(Exception e){
+            e.printStackTrace()
         }
     }
     def destroy = {

@@ -10,9 +10,9 @@ class MkChaid {
     Household household
     DictionaryItem visit_type,meeting_type,objective_type,relationship_status,interview_status
     java.sql.Timestamp arrival_time
-    String respondent_name,respondent_gender,uniquecode,reg_no
+    String respondent_name,respondent_gender,uniquecode,reg_no,sick_person_name
     Integer respondent_age,age_sick_person,emergence_status
-    Boolean sick_person,care_giver
+    Boolean sick_person,care_giver,deleted
     District distric
     Street street
     Double centroid_x=0,centroid_y=0,accuracy=0
@@ -45,6 +45,8 @@ class MkChaid {
         facility nullable:true
         message nullable:true
         app_logs nullable:true
+        deleted nullable: true
+        sick_person_name nullable: true
 
 
     }
@@ -58,6 +60,7 @@ class MkChaid {
         def current_time = Calendar.instance
         arrival_time = new java.sql.Timestamp(current_time.time.time)
         emergence_status=0
+        deleted=0
 
     }
 }

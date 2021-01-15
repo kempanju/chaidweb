@@ -22,7 +22,13 @@ class MkChaidController {
             params.order = 'desc'
         }
         params.max = Math.min(max ?: 10, 100)
-        respond mkChaidService.list(params), model:[mkChaidCount: mkChaidService.count()]
+        respond MkChaid.findAllByDeleted(false,params), model:[mkChaidCount: MkChaid.countByDeleted(false)]
+    }
+    @Transactional
+    def deleteChad(){
+        MkChaid.executeUpdate("update MkChaid set deleted=true where id=:id",[id:Integer.parseInt(params.id)])
+        flash.message="Successfully removed!"
+        redirect(action: 'index')
     }
 
     def show(Long id) {

@@ -145,7 +145,7 @@
                 <div class="col-md-4">
                     <div class="card-counter primary">
                         <i class="fa fa-code-fork"></i>
-                        <span class="count-numbers">${chaid.MkChaid.count()}</span>
+                        <span class="count-numbers">${chaid.MkChaid.countByDeleted(false)}</span>
                         <span class="count-name">Chad</span>
                     </div>
                 </div>
@@ -217,7 +217,7 @@
            function initMap() {
 
                var locations=[
-                   <g:each  in="${chaid.MkChaid.executeQuery("from MkChaid where centroid_y>0 ")}" status="i" var="locInstance">
+                   <g:each  in="${chaid.MkChaid.executeQuery("from MkChaid where centroid_y>0 and deleted=false")}" status="i" var="locInstance">
 
                    ['${locInstance.created_by.full_name}',${locInstance.centroid_x}, ${locInstance.centroid_y},${i+1}],
                    </g:each>
