@@ -19,12 +19,12 @@
                class="btn btn-primary">${message(code: 'application.list', default: 'Reports By Village')} </a>
         </div>
  </div>
-        <div class="col-lg-5  panel-body">
+        <div class="col-lg-7  panel-body">
 
         <div class="form-group">
-                       <label class="control-label col-lg-7">Wilaya</label>
+                       <label class="control-label col-lg-4">Wilaya</label>
 
-                       <div class="col-lg-5">
+                       <div class="col-lg-7">
                            <g:select name="district_id" id="district_id" value="" onchange="getVillageReports(this)"
                                      data-show-subtext="true" data-live-search="true"
                                      from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"

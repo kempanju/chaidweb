@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,18 +8,20 @@
 
     <title>Dashboard</title>
 
+
     <script type="text/javascript">
         google.charts.load("current", {packages: ["corechart"]});
 
         google.charts.setOnLoadCallback(drawChartGender);
         google.charts.setOnLoadCallback(drawChartCategory);
         google.charts.setOnLoadCallback(drawChartCrimeType);
+        google.charts.setOnLoadCallback(drawChartPopulationType);
 
         function drawChartGender() {
             var data = google.visualization.arrayToDataTable([
                 ['Task', 'Chad numbers'],
-                ['Male', ${chaid.MkChaid.countByRespondent_gender("Male")}],
-                ['Female', ${chaid.MkChaid.countByRespondent_gender("Female")}],
+                ['Male', ${houseHoldMember[0][1]}],
+                ['Female', ${houseHoldMember[0][2]}],
 
             ]);
 
@@ -47,9 +50,29 @@
                 is3D: true,
             };
 
-            var chart = new google.visualization.PieChart(document.getElementById('piechart_3d_comp'));
+            var chart = new google.visualization.PieChart(document.getElementById('piechart_3d_comp_population'));
             chart.draw(data, options);
         }
+
+
+         function drawChartPopulationType() {
+                    var data = google.visualization.arrayToDataTable([
+                        ['Task', ' Available Members'],
+                        <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD17"))}" var="lawyerDataInstance">
+
+                        ["${lawyerDataInstance.name}", ${chaid.AvailableMemberHouse.executeQuery("from AvailableMemberHouse where type_id=:visit_type and chaid.deleted=false",[visit_type:lawyerDataInstance]).size()}],
+                        </g:each>
+
+                    ]);
+
+                    var options = {
+                        title: 'Available Members',
+                        is3D: true,
+                    };
+
+                    var chart = new google.visualization.PieChart(document.getElementById('piechart_3d_comp'));
+                    chart.draw(data, options);
+                }
 
 
 
@@ -103,42 +126,7 @@
             </div>
         </div>
 
-  <div class="col-md-12  panel">
-            <g:form method="GET" action="reportByDatePayment" class="form-horizontal">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label col-lg-5 text-bold">From Date</label>
 
-
-                        <div class="col-lg-10 input-append date form_datetime">
-                            <input type="text" name="start_date" readonly required="required" class="form-control"/>
-                            <span class="add-on"><i class="icon-th"></i></span>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label col-lg-5 text-bold">To Date</label>
-
-                        <div class="col-lg-10 input-append date form_datetime">
-                            <input type="text" name="end_date" readonly required="required" class="form-control"/>
-                            <span class="add-on"><i class="icon-th"></i></span>
-
-                        </div>
-                    </div>
-                </div>
- <div class="col-lg-3">
-                <div class="text-right col-md-4">
-                                        <label class="control-label col-lg-5 text-bold">..</label>
-
-                    <button type="submit" class="btn btn-primary">SELECT REPORT
-                    </button>
- </div>
-                </div>
-            </g:form>
-        </div>
 
         <div class="container col-lg-12" style="margin-top: 10px">
             <div class="row ">
@@ -146,7 +134,7 @@
                     <div class="card-counter primary">
                         <i class="fa fa-code-fork"></i>
                         <span class="count-numbers">${chaid.MkChaid.countByDeleted(false)}</span>
-                        <span class="count-name">Chad</span>
+                        <span class="count-name">Activity</span>
                     </div>
                 </div>
 
@@ -161,7 +149,7 @@
                 <div class="col-md-4">
                     <div class="card-counter success">
                         <i class="fa fa-database"></i>
-                        <span class="count-numbers">${chaid.Facility.count()}</span>
+                        <span class="count-numbers">${chaid.Facility.countByDeleted(false)}</span>
                         <span class="count-name">Facilities</span>
                     </div>
                 </div>
@@ -171,38 +159,43 @@
                 <div class="col-md-4">
                     <div class="card-counter info">
                         <i class="fa fa-building-o"></i>
-                        <span class="count-numbers">${chaid.PostDelivery.count()}</span>
-                        <span class="count-name">Post Delivery</span>
+
+                        <span class="count-numbers">${houseHoldMember[0][0]}</span>
+                        <span class="count-name">Population</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card-counter info">
                         <i class="fa fa-file"></i>
-                        <span class="count-numbers">${chaid.ChildFiveYears.count()}</span>
-                        <span class="count-name">Child Under 5 Years</span>
+                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where emergence_status<>0 and deleted=false").size()}</span>
+                        <span class="count-name">Referrals</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card-counter info">
                         <i class="fa fa-users"></i>
-                        <span class="count-numbers">${chaid.ChildImmunization.count()}</span>
-                        <span class="count-name">Child Immunization</span>
+                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where emergence_status=2 and deleted=false").size()}</span>
+                        <span class="count-name">Responded Referrals</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-6 text-center" style="padding: 20px">
-            <div id="piechart_3d_comp_gender" style="width: 100%;min-height: 300px;margin-top: 10px"></div>
+        <div class="col-lg-6 text-center" style="padding: 10px">
+            <div id="piechart_3d_comp_gender" style="width: 100%;min-height: 300px;margin-top: 5px"></div>
 
         </div>
-        <div class="col-lg-6 text-center" style="padding: 20px">
-            <div id="piechart_3d_comp" style="width: 100%;min-height: 300px;margin-top: 10px"></div>
+        <div class="col-lg-6 text-center" style="padding: 10px">
+            <div id="piechart_3d_comp" style="width: 100%;min-height: 300px;margin-top: 5px"></div>
 
         </div>
 
-        <div class="col-lg-6 text-center" style="padding: 20px">
+        <div class="col-lg-6 text-center" style="padding: 10px">
             <div id="piechart_3d_comp_crime" style="width: 100%;min-height: 300px;margin-top: 1px"></div>
+
+        </div>
+<div class="col-lg-6 text-center" style="padding: 10px">
+            <div id="piechart_3d_comp_population" style="width: 100%;min-height: 300px;margin-top: 1px"></div>
 
         </div>
 

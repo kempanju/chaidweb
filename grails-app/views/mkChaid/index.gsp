@@ -32,7 +32,7 @@
             <g:link controller="home" action="dashboard" class="btn btn-default">Dashboard</g:link>
 
             <a href="#"
-               class="btn btn-primary">${message(code: 'application.list', default: 'Chad List')} (<g:formatNumber number="${mkChaidCount}" type="number" />)</a>
+               class="btn btn-primary">${message(code: 'application.list', default: 'Activity List')} (<g:formatNumber number="${mkChaidCount}" type="number" />)</a>
         </div>
     </div>
       <div class="page-header-content">
@@ -56,12 +56,12 @@
                                         <thead>
                                         <tr>
                                             <g:sortableColumn property="id" title="${message(code: 'no', default: 'No')}"/>
-                                            <g:sortableColumn property="code"
+                                            <g:sortableColumn property="respondent_name"
                                                               title="${message(code: 'code', default: 'Respondent')}"/>
 
-                                            <g:sortableColumn property="name_en"
+                                            <g:sortableColumn property="distric.name"
                                                               title="${message(code: 'name', default: 'District')}"/>
-                                            <g:sortableColumn property="dictionary_id"
+                                            <g:sortableColumn property="household.full_name"
                                                               title="${message(code: 'dictionary', default: 'Household')}"/>
 
                                             <th class="text-center"><g:message code="actions" default="Actions"/></th>
@@ -81,12 +81,12 @@
                                                                                                      ${i + 1 + offset}
 
                                                 </td>
-                                                <td>${fieldValue(bean: mkchaidListInstance, field: "respondent_name")}</td>
+                                                <td class="text-capitalize">${fieldValue(bean: mkchaidListInstance, field: "respondent_name")}</td>
                                                 <td>
                                                                                                  <g:link class="list" controller="district" action="show" id="${mkchaidListInstance.distric.id}">
 
                                                 ${fieldValue(bean: mkchaidListInstance, field: "distric.name")}</g:link></td>
-                                                <td>${fieldValue(bean: mkchaidListInstance, field: "household.full_name")}</td>
+                                                <td class="text-capitalize">${fieldValue(bean: mkchaidListInstance, field: "household.full_name")}</td>
 
                                                 <td class="text-center">
 

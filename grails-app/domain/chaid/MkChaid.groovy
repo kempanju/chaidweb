@@ -8,7 +8,7 @@ import com.chaid.security.MkpUser
 class MkChaid {
     int id,version
     Household household
-    DictionaryItem visit_type,meeting_type,objective_type,relationship_status,interview_status
+    DictionaryItem visit_type,meeting_type,objective_type,relationship_status,interview_status,living_with_household
     java.sql.Timestamp arrival_time
     String respondent_name,respondent_gender,uniquecode,reg_no,sick_person_name
     Integer respondent_age,age_sick_person,emergence_status
@@ -47,6 +47,7 @@ class MkChaid {
         app_logs nullable:true
         deleted nullable: true
         sick_person_name nullable: true
+        living_with_household nullable:true
 
 
     }

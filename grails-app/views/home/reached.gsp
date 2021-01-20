@@ -6,7 +6,7 @@
         <title><g:message code="default.create.label" args="[entityName]" /></title>
     </head>
     <body>
-     <div class="register_dv expert" ng-app="myApplication" ng-controller="myCtrl" ng-init="linkName='${grailsApplication.config.systemLink.toString()}'">
+     <div class="register_dv expert" ng-app="myApplication" ng-controller="reached" ng-init="linkName='${grailsApplication.config.systemLink.toString()}'">
             <div class="center  panel-body">
 
 
@@ -16,7 +16,7 @@
             <g:link controller="home" action="dashboard" class="btn btn-default">Dashboard</g:link>
 
             <a href="#"
-               class="btn btn-primary">${message(code: 'application.list', default: 'Reports By Registered')} </a>
+               class="btn btn-primary">${message(code: 'application.list', default: 'Reports By Reached')} </a>
         </div>
  </div>
 
@@ -94,13 +94,21 @@
                                         </td> </tr>
        <tr>
                                           <td>
-                                              <span class="text-semibold"><g:message code="Pregnant.Women" default="Breastfeeding Mother"/></span>
+                                              <span class="text-semibold"><g:message code="Pregnant.Women" default="Breastfeeding mothers within 42 days "/></span>
                                           </td>
                                           <td><span
-                                                  class="text-bold">{{report.registered.breastFeedingMother}}</span>
+                                                  class="text-bold">{{report.registered.breastFeedingMotherLess}}</span>
                                           </td>
                                       </tr>
 
+   <tr>
+                                          <td>
+                                              <span class="text-semibold"><g:message code="Pregnant.Women" default="Breastfeeding mothers above 42 days "/></span>
+                                          </td>
+                                          <td><span
+                                                  class="text-bold">{{report.registered.breastFeedingMotherAbove}}</span>
+                                          </td>
+                                      </tr>
 
       <tr>
                                                <td>

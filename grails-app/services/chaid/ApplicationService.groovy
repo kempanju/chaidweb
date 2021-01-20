@@ -211,7 +211,7 @@ class ApplicationService {
                 chadInstance.centroid_x=0
                 chadInstance.centroid_y=0
                 chadInstance.accuracy=0
-                e.printStackTrace()
+               // e.printStackTrace()
             }
             results.each {
                 def code = it.code
@@ -232,6 +232,10 @@ class ApplicationService {
                     chadInstance.interview_status = DictionaryItem.findByCode(answer_code)
                 }
 
+                if (code.equals("CHAD33E")) {
+                    chadInstance.living_with_household = DictionaryItem.findByCode(answer_code)
+                }
+
 
             }
             if (chadInstance.save(failOnError: true,flush: true)) {
@@ -247,7 +251,9 @@ class ApplicationService {
                         try {
                             def breakArray = answer_code.split(",")
                             breakArray.each {
-                                def dictionaryItemList = DictionaryItem.findByCode(it)
+                                String codeselected=it
+                                codeselected=codeselected.trim()
+                                def dictionaryItemList = DictionaryItem.findByCode(codeselected)
                                 def educationInstance = new EducationType()
                                 educationInstance.type = dictionaryItemList
                                 educationInstance.chaid = chadInstance
@@ -286,7 +292,7 @@ class ApplicationService {
                         }
 
                         if((maleNo>0||femaleNo>0)&&houseHoldInstance){
-                            Household.executeUpdate("update Household set male_no=:male_no,female_no=:female_no where id=:houseID",[male_no:maleNo,female_no:femaleNo,houseID:houseHoldInstance.id])
+                            Household.executeUpdate("update Household set male_no=:male_no,female_no=:female_no,facility=:facility where id=:houseID",[male_no:maleNo,female_no:femaleNo,facility:userInstance.facility,houseID:houseHoldInstance.id])
                         }
 
                     }
@@ -296,7 +302,9 @@ class ApplicationService {
                         try {
                             def breakArray = answer_code.split(",")
                             breakArray.each {
-                                def dictionaryItemList = DictionaryItem.findByCode(it)
+                                String codeselected=it
+                                codeselected=codeselected.trim()
+                                def dictionaryItemList = DictionaryItem.findByCode(codeselected)
                                 def activityInstance = new ActivityType()
                                 activityInstance.household = houseHoldInstance
                                 activityInstance.chaid = chadInstance
@@ -312,12 +320,59 @@ class ApplicationService {
 
                     }
 
+                    if (code.equals("CHAD33C")) {
+                        try {
+                            def breakArray = answer_code.split(",")
+                            breakArray.each {
+                                String codeselected=it
+                                codeselected=codeselected.trim()
+                                def dictionaryItemList = DictionaryItem.findByCode(codeselected)
+                                def activityInstance = new HouseSickPersonExamination()
+                                activityInstance.chaid = chadInstance
+                                activityInstance.diseaseType = dictionaryItemList
+                                activityInstance.household=houseHoldInstance
+                                activityInstance.save(flush: true)
+
+                            }
+                        }catch(Exception e){
+
+                        }
+
+
+                    }
+
+
+                    if (code.equals("CHAD33F")) {
+                        try {
+                            def breakArray = answer_code.split(",")
+                            breakArray.each {
+                                String codeselected=it
+                                codeselected=codeselected.trim()
+                                def dictionaryItemList = DictionaryItem.findByCode(codeselected)
+                                def activityInstance = new HealthEducation()
+                                activityInstance.chaid = chadInstance
+                                activityInstance.type = dictionaryItemList
+                                activityInstance.save(flush: true)
+
+                            }
+                        }catch(Exception e){
+
+                        }
+
+
+                    }
+
+
+
+
 
                     if (code.equals("CHAD16")) {
                         try {
                             def breakArray = resultCodeArray
                             breakArray.each {
-                                def dictionaryItemList = DictionaryItem.findByCode(it.code)
+                                String coreRequest=it.code
+                                coreRequest=coreRequest.trim()
+                                def dictionaryItemList = DictionaryItem.findByCode(coreRequest)
                                 def houseHoldDetail =HouseholdDetails.findOrSaveWhere(household:houseHoldInstance,detailsType:dictionaryItemList)
                                 houseHoldDetail.member_no = Integer.parseInt(it.member_no)
                                 houseHoldDetail.save(flush: true)
@@ -434,16 +489,38 @@ class ApplicationService {
                 results.each {
                     def code = it.code
                     def answer_code = it.answer_code
+                    if (code.equals("CHAD32F")) {
+                        try {
 
+                            def breakArray = answer_code.split(",")
+                            breakArray.each {
+                                //println(it)
+                                String codeSelected=it
+                                codeSelected=codeSelected.trim()
+                                def dictionaryItemList = DictionaryItem.findByCode(codeSelected)
+                                def childImmunizationInstance = new ChildUnderFiveImmunization()
+                                childImmunizationInstance.chaid = mkChaid
+                                childImmunizationInstance.childFiveYears = childUnderFiveInstance
+                                childImmunizationInstance.immunization_type = dictionaryItemList
+                                childImmunizationInstance.save()
 
-                    if (code.equals("CHAD32A")) {
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace()
+                        }
+
+                    }
+
+                    if (code.equals("CHAD32B")) {
                         try {
                             def dangerSignExists = false
                             def msgDangerSign = ""
                             def signCount = 1;
                             def breakArray = answer_code.split(",")
                             breakArray.each {
-                                def dictionaryItemList = DictionaryItem.findByCode(it)
+                                String coreRequest=it
+                                coreRequest=coreRequest.trim()
+                                def dictionaryItemList = DictionaryItem.findByCode(coreRequest)
                                 def childSignInstance = new ChildDangerSign()
                                 childSignInstance.childFiveYears = childUnderFiveInstance
                                 childSignInstance.sign_type = dictionaryItemList
@@ -460,8 +537,14 @@ class ApplicationService {
                             def current_time = Calendar.instance
                             def send_at = new java.sql.Timestamp(current_time.time.time)
 
-                            def dangerSignOn = "Reported Child danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
+                           // def dangerSignOn = "Reported Child danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
+
+                            String dangerSignOn=" Name: "+mkChaid?.respondent_name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
+                                    " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign Child "+": %0a "+msgDangerSign
+
+
                             def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
+
                             userLists.each {
                                 saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                             }
@@ -592,7 +675,7 @@ class ApplicationService {
                                // def dangerSignOn = "Reported Mother danger sign with code " + mkChaid.reg_no + ". Some signs are " + msgDangerSign + "."
 
                                 String dangerSignOn=" Name: "+mkChaid?.respondent_name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
-                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign Mother: "+msgDangerSign
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign Mother: %0a"+msgDangerSign
 
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
@@ -798,7 +881,7 @@ class ApplicationService {
 
 
                                 String dangerSignOn=" Name: "+name+" %0a Village: "+mkChaid?.household?.village_id?.name+" %0a" +
-                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign:%0a"+msgDangerSign
+                                        " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign Pregnant: %0a"+msgDangerSign
 
 
                                 def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])

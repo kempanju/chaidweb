@@ -18,7 +18,7 @@ class Facility {
     }
 
     def beforeInsert() {
-        deleted=1
+        deleted=0
     }
 
     static mapping = {

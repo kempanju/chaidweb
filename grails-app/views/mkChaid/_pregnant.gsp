@@ -10,7 +10,7 @@
                                                    </td></tr>
 <tr>
 <td> <span class="text-semibold">Name</span></td>
- <td>
+ <td class="text-capitalize">
  ${fieldValue(bean: pregnantInstance, field: "name")}
                                     </td>
 

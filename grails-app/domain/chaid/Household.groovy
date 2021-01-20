@@ -11,6 +11,7 @@ class Household {
     Street village_id
     SubStreet street
     District district_id
+    Facility facility
     Integer male_no=0,female_no=0
     java.sql.Timestamp created_at
     int total_members
@@ -23,6 +24,7 @@ class Household {
         street nullable:true
         total_members formula:"(male_no+female_no)"
         created_at nullable:true
+        facility nullable:true
     }
 
     def beforeInsert() {

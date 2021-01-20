@@ -4,6 +4,9 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'subStreet.label', default: 'SubStreet')}" />
         <title><g:message code="default.create.label" args="[entityName]" /></title>
+       <asset:javascript src="customjs/applicant_module.js"/>
+
+
     </head>
     <body>
      <div class="register_dv expert" ng-app="myApplication" ng-controller="referrals" ng-init="linkName='${grailsApplication.config.systemLink.toString()}'">
@@ -22,26 +25,41 @@
 
 
  <div class="col-md-12  panel">
-             <g:form method="GET" action="reportByDatePayment" class="form-horizontal">
-                 <div class="col-md-4">
+             <g:form method="GET" action="reportByReferralsGenerated" class="form-horizontal">
+
+              <div class="col-md-3">
+
+                                <div class="form-group">
+                                                    <label class="control-label col-lg-8 text-bold"><g:message code="dictionary" default="Facility Name"/> </label>
+
+                                                    <div class="col-lg-8">
+                                                        <g:select name="facility" id="facility" value="${params?.facility}" ng-model="selectedItem" ng-change="updateReferrals()"
+                                                                  from="${chaid.Facility.findAllByDeleted(false)}" optionKey="id" optionValue="name"
+                                                                  class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select Facility')]"/>
+
+                                                    </div>
+                                                </div>
+                                                </div>
+
+                 <div class="col-md-3">
                      <div class="form-group">
                          <label class="control-label col-lg-5 text-bold">From Date</label>
 
 
                          <div class="col-lg-10 input-append date form_datetime">
-                             <input type="text" name="start_date" readonly required="required" class="form-control"/>
+                             <input type="text" name="start_date" readonly required="required" ng-model="referral.start_date" value="${params.start_date}" class="form-control"/>
                              <span class="add-on"><i class="icon-th"></i></span>
 
                          </div>
                      </div>
                  </div>
 
-                 <div class="col-md-4">
+                 <div class="col-md-3">
                      <div class="form-group">
                          <label class="control-label col-lg-5 text-bold">To Date</label>
 
                          <div class="col-lg-10 input-append date form_datetime">
-                             <input type="text" name="end_date" readonly required="required" class="form-control"/>
+                             <input type="text" name="end_date" readonly required="required" ng-model="referral.end_date" value="${params.end_date}" class="form-control"/>
                              <span class="add-on"><i class="icon-th"></i></span>
 
                          </div>
@@ -63,7 +81,7 @@
    <div class="container col-md-12" style="margin-top: 10px">
 
 
-                        <div class="col-md-6">
+                        <div class="col-md-8">
                                 <table class="table  customers">
                                     <tr>
                                         <td colspan="2"><h5>
@@ -135,7 +153,6 @@
    <script type="text/javascript">
        $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:mm'});
    </script>
-       <asset:javascript src="customjs/applicant_module.js"/>
 
        </body>
    </html>

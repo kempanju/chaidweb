@@ -39,9 +39,9 @@
 
        <tr>
                                     <td>
-                                        <span class="text-semibold"><g:message code="type" default="Household Name"/></span>
+                                        <span class="text-semibold text-capitalize"><g:message code="type" default="Household Name"/></span>
                                     </td>
-                                    <td>
+                                    <td class="text-capitalize">
 
            <g:link class="list" controller="household" action="show" id="${mkChaid?.household?.id}">
                                     ${fieldValue(bean: mkChaid, field: "household.full_name")}</g:link></td>
@@ -71,12 +71,18 @@
                                                  <g:link class="list" controller="household" action="show" id="${mkChaid?.household?.id}">
                                                    ${fieldValue(bean: mkChaid, field: "household.female_no")}</g:link></td>
                                                </tr>
+    <tr>
+                                    <td>
+                                        <span class="text-semibold"><g:message code="type" default="Facility Name"/></span>
+                                    </td>
+                                    <td class="text-capitalize">${fieldValue(bean: mkChaid, field: "facility.name")}</td>
+                                </tr>
 
                                  <tr>
                                     <td>
                                         <span class="text-semibold"><g:message code="type" default="Respondent"/></span>
                                     </td>
-                                    <td>${fieldValue(bean: mkChaid, field: "respondent_name")}</td>
+                                    <td class="text-capitalize">${fieldValue(bean: mkChaid, field: "respondent_name")}</td>
                                 </tr>
 
 

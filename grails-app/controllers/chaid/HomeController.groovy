@@ -21,7 +21,11 @@ ApplicationService applicationService
     def dashboard(){
         session["activePage"] = "dashboard"
 
-        render view:'dashboard'
+        def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household  ")
+
+
+
+                render view:'dashboard',model: [houseHoldMember:houseHoldMember]
     }
 
     def sendMessage(){
@@ -344,20 +348,409 @@ ApplicationService applicationService
         render view: 'registered'
     }
 
+    def reportByReached(){
+        session["activePage"] = "reports"
+
+        render view: 'reached'
+    }
+
     def registeredReport(){
-        def  preginantWomanNo=PreginantDetails.count()
-        def breastFeedingLess=PostDelivery.executeQuery("from PostDelivery where child_age_days<=42").size()
-        def breastFeedingAbove=PostDelivery.executeQuery("from PostDelivery where child_age_days>42").size()
+        String facility=params.facility
+        def pregnantWomanNo=0
+       // def breastFeedingLess=0
+        def breastFeedingMother=0
+        def neonates=0
+        def infants=0
+        def childrenUnder5=0
+        def childTenToNinteenGirl=0
+        def childTenToNinteenBoys=0
+        def totalTenToNinteen=0
 
-        def neonates=CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17D"))
-        def infants=CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17E"))
-        def childrenUnder5=CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17F"))
+        def childYouthGirl=0
+        def childYouthBoys=0
+
+        def totalchildYouth=0
+
+        def fifteenToFourtyGirl=0
+        def fifteenToFourtyBoy=0
+        def totalfifteenToFourty=0
+
+        def above50Girl=0
+        def above50Boy=0
+        def totalAbove=50
 
 
-        def childrenUnderNotImmnunized=CategoryAvailableChildren.countByBaby_provided_immunization(false)
+
+        // def childrenUnderNotImmnunized=0
+
+
+
+        //def childrenUnderNotImmnunized=CategoryAvailableChildren.countByBaby_provided_immunization(false)
+
+
+        if(facility){
+            def facilityInstance=Facility.get(params.facility)
+            if(facilityInstance) {
+                pregnantWomanNo = HouseholdDetails.executeQuery("select sum(member_no)   from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16A"),facility:facilityInstance])[0]
+                breastFeedingMother = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and household.deleted=false and household.facility=:facility",[detailsType:DictionaryItem.findByCode("CHAD16B"),facility:facilityInstance])[0]
+
+
+                neonates = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType   and  household.deleted=false and household.facility=:facility  ",[detailsType:DictionaryItem.findByCode("CHAD16C"),facility:facilityInstance])[0]
+                infants = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16D"),facility:facilityInstance])[0]
+                childrenUnder5 = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility  ",[detailsType:DictionaryItem.findByCode("CHAD16E"),facility:facilityInstance])[0]
+                childTenToNinteenGirl = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16F"),facility:facilityInstance])[0]
+                childTenToNinteenBoys = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16G"),facility:facilityInstance])[0]
+                if(!childTenToNinteenGirl){
+                    childTenToNinteenGirl=0
+                }
+                if(!childTenToNinteenBoys){
+                    childTenToNinteenBoys=0
+                }
+                totalTenToNinteen=childTenToNinteenGirl+childTenToNinteenBoys
+
+                childYouthGirl = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16H"),facility:facilityInstance])[0]
+                childYouthBoys = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16I"),facility:facilityInstance])[0]
+
+                if(!childYouthGirl){
+                    childYouthGirl=0
+                }
+                if(!childYouthBoys){
+                    childYouthBoys=0
+                }
+
+                totalchildYouth=childYouthGirl+childYouthBoys
+
+                fifteenToFourtyGirl = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16J"),facility:facilityInstance])[0]
+                fifteenToFourtyBoy = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16K"),facility:facilityInstance])[0]
+
+                if(!fifteenToFourtyGirl){
+                    fifteenToFourtyGirl=0
+                }
+                if(!fifteenToFourtyBoy){
+                    fifteenToFourtyBoy=0
+                }
+
+                totalfifteenToFourty=fifteenToFourtyGirl+fifteenToFourtyBoy
+
+                above50Girl = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16M"),facility:facilityInstance])[0]
+                above50Boy = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false and household.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16L"),facility:facilityInstance])[0]
+                if(!above50Girl){
+                    above50Girl=0
+                }
+                if(!above50Boy){
+                    above50Boy=0
+                }
+
+                totalAbove=above50Girl+above50Boy
+
+
+            }
+        }else {
+            pregnantWomanNo = HouseholdDetails.executeQuery("select sum(member_no)   from HouseholdDetails where detailsType=:detailsType and  household.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD16A")])[0]
+            breastFeedingMother = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and household.deleted=false ",[detailsType:DictionaryItem.findByCode("CHAD16B")])[0]
+
+
+            neonates = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType   and  household.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD16C")])[0]
+            infants = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD16D")])[0]
+            childrenUnder5 = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false   ",[detailsType:DictionaryItem.findByCode("CHAD16E")])[0]
+            childTenToNinteenGirl = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD16F")])[0]
+            childTenToNinteenBoys = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD16G")])[0]
+
+            if(!childTenToNinteenGirl){
+                childTenToNinteenGirl=0
+            }
+            if(!childTenToNinteenBoys){
+                childTenToNinteenBoys=0
+            }
+            totalTenToNinteen=childTenToNinteenGirl+childTenToNinteenBoys
+
+            childYouthGirl = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false ",[detailsType:DictionaryItem.findByCode("CHAD16H")])[0]
+            childYouthBoys = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD16I")])[0]
+            if(!childYouthGirl){
+                childYouthGirl=0
+            }
+            if(!childYouthBoys){
+                childYouthBoys=0
+            }
+
+            totalchildYouth=childYouthGirl+childYouthBoys
+
+
+            fifteenToFourtyGirl = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD16J")])[0]
+            fifteenToFourtyBoy = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD16K")])[0]
+            if(!fifteenToFourtyGirl){
+                fifteenToFourtyGirl=0
+            }
+            if(!fifteenToFourtyBoy){
+                fifteenToFourtyBoy=0
+            }
+            totalfifteenToFourty=fifteenToFourtyGirl+fifteenToFourtyBoy
+
+
+            above50Girl = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD16M")])[0]
+            above50Boy = HouseholdDetails.executeQuery("select sum(member_no) from HouseholdDetails where detailsType=:detailsType and  household.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD16L")])[0]
+
+            if(!above50Girl){
+                above50Girl=0
+            }
+            if(!above50Boy){
+                above50Boy=0
+            }
+
+            totalAbove=above50Girl+above50Boy
+
+
+        }
+
 
         JSONObject jsonObject=new JSONObject()
-        jsonObject.put("pregnant_no",preginantWomanNo)
+        jsonObject.put("pregnant_no",pregnantWomanNo)
+        jsonObject.put("breast_feeding",breastFeedingMother)
+        jsonObject.put("neonates_no",neonates)
+        jsonObject.put("infants_no",infants)
+        jsonObject.put("children_under_five_no",childrenUnder5)
+        jsonObject.put("breastFeedingMother",breastFeedingMother)
+        jsonObject.put("totalTenToNinteen",totalTenToNinteen)
+        jsonObject.put("totalchildYouth",totalchildYouth)
+        jsonObject.put("totalfifteenToFourty",totalfifteenToFourty)
+        jsonObject.put("totalAbove",totalAbove)
+
+        JSONObject outPutObject=new JSONObject()
+        outPutObject.put("registered",jsonObject)
+        render outPutObject as JSON
+    }
+
+    def reachedReport(){
+
+        String facility=params.facility
+        def pregnantWomanNo=0
+         def breastFeedingMotherLess=0
+        def breastFeedingMotherAbove=0
+        def neonates=0
+        def infants=0
+        def childrenUnder5=0
+        def childTenToNinteenGirl=0
+        def childTenToNinteenBoys=0
+        def totalTenToNinteen=0
+
+        def childYouthGirl=0
+        def childYouthBoys=0
+
+        def totalchildYouth=0
+
+        def fifteenToFourtyGirl=0
+        def fifteenToFourtyBoy=0
+        def totalfifteenToFourty=0
+
+        def above50Girl=0
+        def above50Boy=0
+        def totalAbove=50
+
+
+
+        def childrenUnderNotImmnunized=0
+
+
+
+        //def childrenUnderNotImmnunized=CategoryAvailableChildren.countByBaby_provided_immunization(false)
+
+
+        if(facility){
+            def facilityInstance=Facility.get(params.facility)
+            if(facilityInstance) {
+                pregnantWomanNo = AvailableMemberHouse.executeQuery("select sum(member_no)   from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false and chaid.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD17A"),facility:facilityInstance])[0]
+                breastFeedingMotherLess = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and chaid.deleted=false and chaid.facility=:facility",[detailsType:DictionaryItem.findByCode("CHAD17B"),facility:facilityInstance])[0]
+                breastFeedingMotherAbove = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and chaid.deleted=false and chaid.facility=:facility",[detailsType:DictionaryItem.findByCode("CHAD17C"),facility:facilityInstance])[0]
+
+
+
+                neonates = CategoryAvailableChildren.executeQuery("from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[categoryType:DictionaryItem.findByCode("CHAD17D"),facility:facilityInstance]).size()
+                infants = CategoryAvailableChildren.executeQuery("from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[categoryType:DictionaryItem.findByCode("CHAD17E"),facility:facilityInstance]).size()
+                childrenUnder5 = CategoryAvailableChildren.executeQuery("from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[categoryType:DictionaryItem.findByCode("CHAD17F"),facility:facilityInstance]).size()
+                childrenUnderNotImmnunized = CategoryAvailableChildren.executeQuery("from CategoryAvailableChildren where baby_provided_immunization=false  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[facility:facilityInstance]).size()
+
+
+                childTenToNinteenGirl = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false and chaid.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD17G"),facility:facilityInstance])[0]
+                childTenToNinteenBoys = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false and chaid.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD17H"),facility:facilityInstance])[0]
+                if(!childTenToNinteenGirl){
+                    childTenToNinteenGirl=0
+                }
+                if(!childTenToNinteenBoys){
+                    childTenToNinteenBoys=0
+                }
+                totalTenToNinteen=childTenToNinteenGirl+childTenToNinteenBoys
+
+                childYouthGirl = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false and chaid.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD17I"),facility:facilityInstance])[0]
+                childYouthBoys = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false and chaid.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD17J"),facility:facilityInstance])[0]
+
+                if(!childYouthGirl){
+                    childYouthGirl=0
+                }
+                if(!childYouthBoys){
+                    childYouthBoys=0
+                }
+
+                totalchildYouth=childYouthGirl+childYouthBoys
+
+                fifteenToFourtyGirl = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false and chaid.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD17K"),facility:facilityInstance])[0]
+                fifteenToFourtyBoy = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false and chaid.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD17L"),facility:facilityInstance])[0]
+
+                if(!fifteenToFourtyGirl){
+                    fifteenToFourtyGirl=0
+                }
+                if(!fifteenToFourtyBoy){
+                    fifteenToFourtyBoy=0
+                }
+
+                totalfifteenToFourty=fifteenToFourtyGirl+fifteenToFourtyBoy
+
+                above50Girl = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false and chaid.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16M"),facility:facilityInstance])[0]
+                above50Boy = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false and chaid.facility=:facility ",[detailsType:DictionaryItem.findByCode("CHAD16L"),facility:facilityInstance])[0]
+                if(!above50Girl){
+                    above50Girl=0
+                }
+                if(!above50Boy){
+                    above50Boy=0
+                }
+
+                totalAbove=above50Girl+above50Boy
+
+
+            }
+        }else {
+            pregnantWomanNo = AvailableMemberHouse.executeQuery("select sum(member_no)   from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD17A")])[0]
+            breastFeedingMotherLess = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and chaid.deleted=false ",[detailsType:DictionaryItem.findByCode("CHAD17B")])[0]
+            breastFeedingMotherAbove = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and chaid.deleted=false ",[detailsType:DictionaryItem.findByCode("CHAD17C")])[0]
+
+
+            neonates = CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17D"))
+            infants = CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17E"))
+            childrenUnder5 = CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17F"))
+            childrenUnderNotImmnunized = CategoryAvailableChildren.executeQuery("from CategoryAvailableChildren where baby_provided_immunization=false  and availableMemberHouse.chaid.deleted=false ").size()
+
+
+            childTenToNinteenGirl = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD17G")])[0]
+            childTenToNinteenBoys = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD17H")])[0]
+
+            if(!childTenToNinteenGirl){
+                childTenToNinteenGirl=0
+            }
+            if(!childTenToNinteenBoys){
+                childTenToNinteenBoys=0
+            }
+            totalTenToNinteen=childTenToNinteenGirl+childTenToNinteenBoys
+
+            childYouthGirl = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false ",[detailsType:DictionaryItem.findByCode("CHAD17I")])[0]
+            childYouthBoys = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD17J")])[0]
+            if(!childYouthGirl){
+                childYouthGirl=0
+            }
+            if(!childYouthBoys){
+                childYouthBoys=0
+            }
+
+            totalchildYouth=childYouthGirl+childYouthBoys
+
+
+            fifteenToFourtyGirl = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD17K")])[0]
+            fifteenToFourtyBoy = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD17L")])[0]
+            if(!fifteenToFourtyGirl){
+                fifteenToFourtyGirl=0
+            }
+            if(!fifteenToFourtyBoy){
+                fifteenToFourtyBoy=0
+            }
+            totalfifteenToFourty=fifteenToFourtyGirl+fifteenToFourtyBoy
+
+
+            above50Girl = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD17N")])[0]
+            above50Boy = AvailableMemberHouse.executeQuery("select sum(member_no) from AvailableMemberHouse where type_id=:detailsType and  chaid.deleted=false  ",[detailsType:DictionaryItem.findByCode("CHAD17M")])[0]
+
+            if(!above50Girl){
+                above50Girl=0
+            }
+            if(!above50Boy){
+                above50Boy=0
+            }
+
+            totalAbove=above50Girl+above50Boy
+
+
+        }
+
+
+        JSONObject jsonObject=new JSONObject()
+        jsonObject.put("pregnant_no",pregnantWomanNo)
+        //jsonObject.put("breast_feeding",breastFeedingMother)
+        jsonObject.put("neonates_no",neonates)
+        jsonObject.put("infants_no",infants)
+        jsonObject.put("children_under_five_no",childrenUnder5)
+        jsonObject.put("breastFeedingMotherLess",breastFeedingMotherLess)
+        jsonObject.put("breastFeedingMotherAbove",breastFeedingMotherAbove)
+        jsonObject.put("childrenUnderNotImmnunized",childrenUnderNotImmnunized)
+        jsonObject.put("totalTenToNinteen",totalTenToNinteen)
+        jsonObject.put("totalchildYouth",totalchildYouth)
+        jsonObject.put("totalfifteenToFourty",totalfifteenToFourty)
+        jsonObject.put("totalAbove",totalAbove)
+
+        JSONObject outPutObject=new JSONObject()
+        outPutObject.put("registered",jsonObject)
+        render outPutObject as JSON
+    }
+
+
+
+    def reachedReportOld(){
+      //  childrenUnderNotImmnunized = HouseholdDetails.executeQuery("from CategoryAvailableChildren where baby_provided_immunization=false  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[facility:facilityInstance]).size()
+
+        String facility=params.facility
+        def pregnantWomanNo=0
+        def breastFeedingLess=0
+        def breastFeedingAbove=0
+        def neonates=0
+        def infants=0
+        def childrenUnder5=0
+        def childrenUnderNotImmnunized=0
+
+
+
+        //def childrenUnderNotImmnunized=CategoryAvailableChildren.countByBaby_provided_immunization(false)
+
+
+        if(facility){
+            def facilityInstance=Facility.get(params.facility)
+            if(facilityInstance) {
+                pregnantWomanNo = PreginantDetails.executeQuery("from PreginantDetails where   chaid.deleted=false and chaid.facility=:facility ",[facility:facilityInstance]).size()
+                breastFeedingLess = PostDelivery.executeQuery("from PostDelivery where child_age_days<=42  and chaid.deleted=false and chaid.facility=:facility",[facility:facilityInstance]).size()
+                breastFeedingAbove = PostDelivery.executeQuery("from PostDelivery where child_age_days>42  and chaid.deleted=false and chaid.facility=:facility",[facility:facilityInstance]).size()
+
+
+                neonates = HouseholdDetails.executeQuery("from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[categoryType:DictionaryItem.findByCode("CHAD17D"),facility:facilityInstance]).size()
+                infants = HouseholdDetails.executeQuery("from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[categoryType:DictionaryItem.findByCode("CHAD17E"),facility:facilityInstance]).size()
+                childrenUnder5 = HouseholdDetails.executeQuery("from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[categoryType:DictionaryItem.findByCode("CHAD17F"),facility:facilityInstance]).size()
+                childrenUnderNotImmnunized = HouseholdDetails.executeQuery("from CategoryAvailableChildren where baby_provided_immunization=false  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[facility:facilityInstance]).size()
+
+
+            }
+        }else {
+            pregnantWomanNo = PreginantDetails.executeQuery("from PreginantDetails where  chaid.deleted=false").size()
+            breastFeedingLess = PostDelivery.executeQuery("from PostDelivery where child_age_days<=42  and chaid.deleted=false").size()
+            breastFeedingAbove = PostDelivery.executeQuery("from PostDelivery where child_age_days>42  and chaid.deleted=false").size()
+
+
+            neonates = CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17D"))
+            infants = CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17E"))
+            childrenUnder5 = CategoryAvailableChildren.countByCategoryType(DictionaryItem.findByCode("CHAD17F"))
+            childrenUnderNotImmnunized = CategoryAvailableChildren.executeQuery("from CategoryAvailableChildren where baby_provided_immunization=false  and availableMemberHouse.chaid.deleted=false ").size()
+
+
+            //    def maleAgeBetweenNo=AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village ",[categoryType:admin.DictionaryItem.findByCode("CHAD17K"),village:villageListInstance])
+
+        }
+
+
+        JSONObject jsonObject=new JSONObject()
+        jsonObject.put("pregnant_no",pregnantWomanNo)
         jsonObject.put("breast_feeding_less_no",breastFeedingLess)
         jsonObject.put("breast_feeding_above_no",breastFeedingAbove)
         jsonObject.put("neonates_no",neonates)
@@ -369,6 +762,7 @@ ApplicationService applicationService
         outPutObject.put("registered",jsonObject)
         render outPutObject as JSON
     }
+
 
     def registeredReportByDate(){
         println(params)
@@ -383,18 +777,50 @@ ApplicationService applicationService
         render view: 'referrals'
     }
 
+    def reportByHealthEducation(){
+        session["activePage"] = "reports"
+
+        render view: 'reportbyhealthrducation'
+    }
+
     def reportByReferralsGeneratedJSON(){
-        def referrals_no=MkChaid.executeQuery("from MkChaid where emergence_status<>0").size()
-        def  pregnantWomanNo=PreginantDetails.executeQuery("from PreginantDetails where  is_referrals=true").size()
-        def breastFeedingLess=PostDelivery.executeQuery("from PostDelivery where child_age_days<=42 and is_referrals=true").size()
-        def breastFeedingAbove=PostDelivery.executeQuery("from PostDelivery where child_age_days>42 and is_referrals=true").size()
+        println(params)
+        String facility=params.facility
+        def referrals_no=0
+        def pregnantWomanNo=0
+        def breastFeedingLess=0
+        def breastFeedingAbove=0
+        def neonates=0
+        def infants=0
+        def childrenUnder5=0
+
+        if(facility){
+            def facilityInstance=Facility.get(params.facility)
+            if(facilityInstance) {
+                referrals_no = MkChaid.executeQuery("from MkChaid where emergence_status<>0 and deleted=false and facility=:facility",[facility:facilityInstance]).size()
+                pregnantWomanNo = PreginantDetails.executeQuery("from PreginantDetails where  is_referrals=true and chaid.deleted=false and chaid.facility=:facility ",[facility:facilityInstance]).size()
+                breastFeedingLess = PostDelivery.executeQuery("from PostDelivery where child_age_days<=42 and is_referrals=true and chaid.deleted=false and chaid.facility=:facility",[facility:facilityInstance]).size()
+                breastFeedingAbove = PostDelivery.executeQuery("from PostDelivery where child_age_days>42 and is_referrals=true and chaid.deleted=false and chaid.facility=:facility",[facility:facilityInstance]).size()
 
 
-        def neonates=CategoryAvailableChildren.countByCategoryTypeAndIs_referrals(DictionaryItem.findByCode("CHAD17D"),true)
-        def infants=CategoryAvailableChildren.countByCategoryTypeAndIs_referrals(DictionaryItem.findByCode("CHAD17E"),true)
-        def childrenUnder5=CategoryAvailableChildren.countByCategoryTypeAndIs_referrals(DictionaryItem.findByCode("CHAD17F"),true)
+                neonates = CategoryAvailableChildren.executeQuery("from CategoryAvailableChildren where categoryType=:categoryType and is_referrals=true and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[categoryType:DictionaryItem.findByCode("CHAD17D"),facility:facilityInstance]).size()
+                infants = CategoryAvailableChildren.executeQuery("from CategoryAvailableChildren where categoryType=:categoryType and is_referrals=true and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[categoryType:DictionaryItem.findByCode("CHAD17E"),facility:facilityInstance]).size()
+                childrenUnder5 = CategoryAvailableChildren.executeQuery("from CategoryAvailableChildren where categoryType=:categoryType and is_referrals=true and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.facility=:facility ",[categoryType:DictionaryItem.findByCode("CHAD17F"),facility:facilityInstance]).size()
 
 
+            }
+        }else {
+            referrals_no = MkChaid.executeQuery("from MkChaid where emergence_status<>0 and deleted=false").size()
+            pregnantWomanNo = PreginantDetails.executeQuery("from PreginantDetails where  is_referrals=true and chaid.deleted=false").size()
+            breastFeedingLess = PostDelivery.executeQuery("from PostDelivery where child_age_days<=42 and is_referrals=true and chaid.deleted=false").size()
+            breastFeedingAbove = PostDelivery.executeQuery("from PostDelivery where child_age_days>42 and is_referrals=true and chaid.deleted=false").size()
+
+
+            neonates = CategoryAvailableChildren.countByCategoryTypeAndIs_referrals(DictionaryItem.findByCode("CHAD17D"), true)
+            infants = CategoryAvailableChildren.countByCategoryTypeAndIs_referrals(DictionaryItem.findByCode("CHAD17E"), true)
+            childrenUnder5 = CategoryAvailableChildren.countByCategoryTypeAndIs_referrals(DictionaryItem.findByCode("CHAD17F"), true)
+
+        }
 
         JSONObject jsonObject=new JSONObject()
         jsonObject.put("referrals_no",referrals_no)

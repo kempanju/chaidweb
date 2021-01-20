@@ -17,9 +17,7 @@ class BootStrap {
             MkpRole.findOrSaveWhere(authority: 'ROLE_DATA')
             MkpRole.findOrSaveWhere(authority: 'ROLE_RESPONDENT')
 
-            def adminRole = MkpRole.findOrSaveWhere(authority: 'ROLE_ADMIN')
-
-
+            def adminRole = MkpRole.findOrSaveWhere(authority: 'ROLE_ADM
             def testUser = MkpUser.findOrSaveWhere(username: 'admin', password: '12345', first_name: 'Felix', middle_name: 'M', last_name: 'Joseph', gender: 'Male', phone_number: '255766545878', email: 'felijose82@gmail.com')
 
             MkpUserMkpRole.create testUser, adminRole
@@ -32,7 +30,7 @@ class BootStrap {
             assert MkpRole.count() == 1
             assert MkpRole.count() == 1
             assert MkpUserMkpRole.count() == 1*/
-            MkChaid.executeUpdate("update MkChaid set deleted=false where deleted is null")
+           // Facility.executeUpdate("update Facility set deleted=false where deleted=true")
 
         }catch(Exception e){
             e.printStackTrace()

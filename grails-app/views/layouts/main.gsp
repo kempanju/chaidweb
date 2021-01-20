@@ -35,7 +35,6 @@
     <asset:javascript src="customjs/applicant_module.js"/>
 
     <asset:javascript src="bootstrap-datetimepicker.min.js"/>
-    <asset:javascript src="customjs/applicant_module.js"/>
 
 
     <g:layoutHead/>

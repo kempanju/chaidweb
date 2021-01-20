@@ -55,9 +55,9 @@
                         </li>
 
       <li class="<g:if test="${activePage == 'mkchaid'}">active</g:if>">
-                                                        <a href="#"><i class="icon-select2"></i> <span>Chaid</span></a>
+                                                        <a href="#"><i class="icon-select2"></i> <span>Activity</span></a>
                                                         <ul>
-                                                            <li><g:link controller='mkChaid' action="index">Chaid</g:link></li>
+                                                            <li><g:link controller='mkChaid' action="index">Activity</g:link></li>
 
 
 
@@ -77,6 +77,24 @@
                                                             class=" icon-circle"></i> <span><g:message code="my.publication"
                                                                                                           default="Facilities"/></span></g:link>
                                                 </li>
+
+            <li class="<g:if test="${activePage == 'reports'}">active</g:if>">
+                                                          <a href="#"><i class="icon-file-excel"></i> <span>Reports</span></a>
+                                                          <ul>
+
+                                                     <li><g:link controller='home' action="reportByRegistered">Registered</g:link></li>
+                                                        <li><g:link controller='home' action="reportByReached">Reached</g:link></li>
+
+                                                     <li><g:link controller='home' action="reportByReferralsGenerated">Referrals</g:link></li>
+                                                     <li><g:link controller='home' action="reportByHealthEducation">Health Education</g:link></li>
+                                                        <li><g:link controller='home' action="reportByVillage">By District</g:link></li>
+
+                                                          </ul>
+
+                                   </li>
+
+
+
 <li class="<g:if test="${activePage == 'location'}">active</g:if>">
                                                     <a href="#"><i class="icon-book"></i> <span>Dictionary</span></a>
                                                     <ul>
@@ -106,18 +124,6 @@
                         </li>
 
 
-                           <li class="<g:if test="${activePage == 'reports'}">active</g:if>">
-                                                    <a href="#"><i class="icon-map"></i> <span>Reports</span></a>
-                                                    <ul>
-                                                  <li><g:link controller='home' action="reportByVillage">Report By District</g:link></li>
-
-                                               <li><g:link controller='home' action="reportByRegistered">Registered</g:link></li>
-                                               <li><g:link controller='home' action="reportByReferralsGenerated">Referrals Generated</g:link></li>
-                                               <li><g:link controller='home' action="reportByHealthEducation">Health Education</g:link></li>
-
-                                                    </ul>
-
-                             </li>
 
 
                            <li class="<g:if test="${activePage == 'location'}">active</g:if>">

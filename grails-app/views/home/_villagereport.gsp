@@ -21,7 +21,7 @@ def countNo=1;
 
     <tr>
     <td>${countNo}</td>
-    <td>${villageListInstance.name}</td>
+    <td><span class="text-bold">${villageListInstance.name}</span></td>
         <td>${houseHoldNo}</td>
          <%
             def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where village_id=:street ",[street:villageListInstance] )
@@ -31,43 +31,52 @@ def countNo=1;
  <td>${houseHoldMember[0][2]}</td>
  <td>
  <%
-    def womenAgeBetweenNo=chaid.MkChaid.executeQuery("from MkChaid where street=:street and respondent_gender=:gender and respondent_age>=15 and respondent_age<=49",[street:villageListInstance,gender:'Female'] ).size()
+      def womenAgeBetweenNo=chaid.AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village ",[categoryType:admin.DictionaryItem.findByCode("CHAD17K"),village:villageListInstance])
+
  %>
- ${womenAgeBetweenNo}
+ ${womenAgeBetweenNo[0]}
  </td>
 
 
   <td>
   <%
-     def maleAgeBetweenNo=chaid.MkChaid.executeQuery("from MkChaid where street=:street and respondent_gender=:gender and respondent_age>=15 and respondent_age<=49",[street:villageListInstance,gender:'Male'] ).size()
+     def maleAgeBetweenNo=chaid.AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village ",[categoryType:admin.DictionaryItem.findByCode("CHAD17K"),village:villageListInstance])
+
   %>
-  ${maleAgeBetweenNo}
+  ${maleAgeBetweenNo[0]}
   </td>
 
   <td>
    <%
-       def postDelivery=chaid.PostDelivery.executeQuery("from PostDelivery where chaid.street=:street and child_age_month<1",[street:villageListInstance] ).size()
+       def neonates=chaid.CategoryAvailableChildren.executeQuery("select sum(member_no) from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.street=:village ",[categoryType:admin.DictionaryItem.findByCode("CHAD17D"),village:villageListInstance])
     %>
 
-    ${postDelivery}
+    ${neonates[0]}
   </td>
 
   <td>
-     <%
-         def postDeliveryYear=chaid.PostDelivery.executeQuery("from PostDelivery where chaid.street=:street and child_age_month>0 and child_age_month<=12",[street:villageListInstance] ).size()
-      %>
+   <%
+          def infants=chaid.CategoryAvailableChildren.executeQuery("select sum(member_no)  from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.street=:village ",[categoryType:admin.DictionaryItem.findByCode("CHAD17E"),village:villageListInstance])
+       %>
 
-      ${postDeliveryYear}
+      ${infants[0]}
     </td>
     <td>
 
       <%
-             def pregnantWomen=chaid.PreginantDetails.executeQuery("from PreginantDetails where chaid.street=:street",[street:villageListInstance] ).size()
+                   def pregnantWomen=chaid.AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village ",[categoryType:admin.DictionaryItem.findByCode("CHAD17A"),village:villageListInstance])
+
           %>
-          ${pregnantWomen}
+          ${pregnantWomen[0]}
 
     </td>
     <td>
+  <%
+                   def breastFeedingWomen=chaid.AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village ",[categoryType:admin.DictionaryItem.findByCode("CHAD17B"),village:villageListInstance])
+
+          %>
+          ${breastFeedingWomen[0]}
+
     </td>
 
     </tr>
