@@ -88,5 +88,5 @@ assets {
 }
 
 war {
-    archiveName 'chaid.war'
+    archiveName 'root.war'
 }

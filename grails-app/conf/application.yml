@@ -27,6 +27,8 @@ endpoints:
         enabled: true
 
 ---
+server:
+    port: 9090
 grails:
     mime:
         disable:
@@ -92,8 +94,10 @@ dataSource:
     pooled: true
     jmxExport: true
     driverClassName: org.postgresql.Driver
-    username: postgres
-    password: 'p@ssw0rd'
+    #username: postgres
+    #password: 'p@ssw0rd'
+    username: chaiduser
+    password: 'ch@!d#2021'
 
 environments:
     development:
@@ -128,4 +132,4 @@ environments:
                 testOnReturn: false
                 jdbcInterceptors: ConnectionState
                 defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
-        systemLink: http://www.habarisasa.com:8080/chaid
+        systemLink: http://chaid.mkapafoundation.or.tz

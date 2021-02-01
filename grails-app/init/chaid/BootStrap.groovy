@@ -13,6 +13,15 @@ class BootStrap {
 
 
         try {
+            def adminRole=MkpRole.findOrSaveWhere(authority: 'ROLE_CORE_WEB')
+            def userINstance=MkpUser.findByUsername("admin")
+            MkpUserMkpRole.create userINstance, adminRole
+
+            MkpUserMkpRole.withSession {
+                it.flush()
+                it.clear()
+            }
+
            /* MkpRole.findOrSaveWhere(authority: 'ROLE_DISTRICT')
             MkpRole.findOrSaveWhere(authority: 'ROLE_DATA')
             MkpRole.findOrSaveWhere(authority: 'ROLE_RESPONDENT')

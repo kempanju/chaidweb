@@ -3,7 +3,7 @@ package admin
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
-@Secured("isAuthenticated()")
+@Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
 class WardsController {
 
     WardsService wardsService

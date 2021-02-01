@@ -3,7 +3,7 @@ package admin
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
 import grails.plugin.springsecurity.annotation.Secured
-@Secured("isAuthenticated()")
+@Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
 class DictionaryItemController {
 
     DictionaryItemService dictionaryItemService

@@ -11,9 +11,9 @@ app.controller("myCtrl",["$scope","$http", function($scope,$http) {
     var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-   // linkName="http://3.138.177.11:8080/chaid"
+    linkName="http://chaid.mkapafoundation.or.tz"
     //linkName="http://localhost:8080"
-    linkName="http://www.habarisasa.com:8080/chaid"
+   // linkName="http://www.habarisasa.com:8080/chaid"
 
 callRegisteredMethod("");
 
@@ -72,9 +72,9 @@ app.controller("reached",["$scope","$http", function($scope,$http) {
     var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-   // linkName="http://3.138.177.11:8080/chaid"
+    linkName="http://chaid.mkapafoundation.or.tz"
     //linkName="http://localhost:8080"
-    linkName="http://www.habarisasa.com:8080/chaid"
+    //linkName="http://www.habarisasa.com:8080/chaid"
 
 callRegisteredMethod("");
 
@@ -149,9 +149,9 @@ console.log($scope);
 function callHttpMethod(facility){
  var linkName=$scope.linkName;
     //$scope.linkName = "feli";
-   // linkName="http://3.138.177.11:8080/chaid"
+    linkName="http://chaid.mkapafoundation.or.tz"
    // linkName="http://localhost:8080"
-    linkName="http://www.habarisasa.com:8080/chaid"
+   // linkName="http://www.habarisasa.com:8080/chaid"
 
     $http({
         method: "POST",

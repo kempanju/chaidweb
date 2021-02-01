@@ -18,6 +18,7 @@ class HomeController {
 ApplicationService applicationService
     def index() { }
 
+    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
     def dashboard(){
         session["activePage"] = "dashboard"
 

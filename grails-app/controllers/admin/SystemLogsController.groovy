@@ -4,7 +4,7 @@ import com.chaid.security.MkpUser
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
-@Secured("isAuthenticated()")
+@Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
 class SystemLogsController {
 
     SystemLogsService systemLogsService
