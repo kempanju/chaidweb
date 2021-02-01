@@ -1,0 +1,1 @@
+docker container create --publish 8082:8080 --name my-tomcat-container tomcat:9.0
