@@ -8,9 +8,18 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <asset:link rel="icon" href="favicon.ico" type="image/x-ico"/>
-   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-sanitize.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.js"></script>
+       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.min.js"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.2.2/angular-material.min.js"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/assets-cache.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.2.2/angular-material.css">
 
     <link rel = "stylesheet"
           type = "text/css" href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900"/>
@@ -32,7 +41,6 @@
     <asset:javascript src="core/libraries/jquery.min.js"/>
     <asset:javascript src="jquery-ui/jquery-ui.js"/>
     <asset:javascript src="jquery-ui/jquery-ui.js"/>
-    <asset:javascript src="customjs/applicant_module.js"/>
 
     <asset:javascript src="bootstrap-datetimepicker.min.js"/>
 
@@ -131,12 +139,14 @@
 <asset:javascript src="plugins/uploaders/fileinput.min.js"/>
 <asset:javascript src="core/app.js"/>
 <asset:javascript src="core/libraries/jquery_ui/interactions.min.js"/>
-<asset:javascript src="forms/styling/uniform.min.js"/>
 <asset:javascript src="jquery.elevatezoom.js"/>
 <asset:javascript src="darkbox.js"/>
 <asset:javascript src="bootstrap-datetimepicker.min.js"/>
 <asset:javascript src="pages/uploader_bootstrap.js"/>
-<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+
+    <asset:javascript src="customjs/applicant_module.js"/>
+
 <script>
     $(document).ready(function () {
         $("#modal_form_vertical").modal('show');

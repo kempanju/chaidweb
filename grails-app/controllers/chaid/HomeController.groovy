@@ -358,6 +358,8 @@ ApplicationService applicationService
     def registeredReport(){
         String facility=params.facility
         def pregnantWomanNo=0
+
+
        // def breastFeedingLess=0
         def breastFeedingMother=0
         def neonates=0
@@ -524,6 +526,10 @@ ApplicationService applicationService
     def reachedReport(){
 
         String facility=params.facility
+        def start_date=params.start_date
+        def end_date=params.end_date
+
+
         def pregnantWomanNo=0
          def breastFeedingMotherLess=0
         def breastFeedingMotherAbove=0
@@ -764,11 +770,48 @@ ApplicationService applicationService
         render outPutObject as JSON
     }
 
+    def reachedReportByDate() {
+        println(params)
+        String start_date=params.start_date
+        def end_date=params.end_date
+        // def  startDate=Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",start_date,TimeZone.getTimeZone("UTC"))
+        //println(startDate.toString())
+        def formatedStartDate=applicationService.changeTimeZOne(start_date)
+        def formatedEndDate=applicationService.changeTimeZOne(end_date)
+        def facility=params.facility
+        def  outPutObject=applicationService.reachedReportByDate(facility,formatedStartDate,formatedEndDate)
+        println(outPutObject)
+
+        render outPutObject as JSON
+    }
 
     def registeredReportByDate(){
         println(params)
-        JSONObject outPutObject=new JSONObject()
-        outPutObject.put("registered","john")
+        String start_date=params.start_date
+        def end_date=params.end_date
+       // def  startDate=Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",start_date,TimeZone.getTimeZone("UTC"))
+        //println(startDate.toString())
+        def formatedStartDate=applicationService.changeTimeZOne(start_date)
+        def formatedEndDate=applicationService.changeTimeZOne(end_date)
+        def facility=params.facility
+       def  outPutObject=applicationService.registeredReportByDate(facility,formatedStartDate,formatedEndDate)
+        println(outPutObject)
+
+        render outPutObject as JSON
+    }
+
+    def referralsReportByDate(){
+        println(params)
+        String start_date=params.start_date
+        def end_date=params.end_date
+        // def  startDate=Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",start_date,TimeZone.getTimeZone("UTC"))
+        //println(startDate.toString())
+        def formatedStartDate=applicationService.changeTimeZOne(start_date)
+        def formatedEndDate=applicationService.changeTimeZOne(end_date)
+        def facility=params.facility
+        def  outPutObject=applicationService.referralsReportByDate(facility,formatedStartDate,formatedEndDate)
+        println(outPutObject)
+
         render outPutObject as JSON
     }
 

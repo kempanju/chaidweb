@@ -62,55 +62,7 @@ function drawChartEducationType() {
                class="btn btn-primary">${message(code: 'application.list', default: 'Reports By Health Education')} </a>
         </div>
  </div>
-      <div class="col-md-12  panel">
-                   <g:form method="GET" action="reportByHealthEducation" class="form-horizontal">
-                                          <div class="col-md-3">
 
-                   <div class="form-group">
-                                       <label class="control-label col-lg-8 text-bold"><g:message code="dictionary" default="Facility Name"/> </label>
-
-                                       <div class="col-lg-8">
-                                           <g:select name="facility" id="facility" value="${params?.facility}"
-                                                     from="${chaid.Facility.findAllByDeleted(false)}" optionKey="id" optionValue="name"
-                                                     class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select Facility')]"/>
-
-                                       </div>
-                                   </div>
-                                   </div>
-                       <div class="col-md-3">
-                           <div class="form-group">
-                               <label class="control-label col-lg-5 text-bold">From Date</label>
-
-
-                               <div class="col-lg-10 input-append date form_datetime">
-                                   <input type="text" name="start_date" readonly required="required" value="${params.start_date}" class="form-control"/>
-                                   <span class="add-on"><i class="icon-th"></i></span>
-
-                               </div>
-                           </div>
-                       </div>
-
-                       <div class="col-md-3">
-                           <div class="form-group">
-                               <label class="control-label col-lg-5 text-bold">To Date</label>
-
-                               <div class="col-lg-10 input-append date form_datetime">
-                                   <input type="text" name="end_date" readonly required="required"  value="${params.end_date}" class="form-control"/>
-                                   <span class="add-on"><i class="icon-th"></i></span>
-
-                               </div>
-                           </div>
-                       </div>
-        <div class="col-lg-3">
-                       <div class="text-right col-md-4">
-                                               <label class="control-label col-lg-5 text-bold">..</label>
-
-                           <button type="submit" class="btn btn-primary">SELECT REPORT
-                           </button>
-        </div>
-                       </div>
-                   </g:form>
-               </div>
 <div class="col-lg-12" style="max-height:500px;overflow:auto" id="village-report">
 
 <div class="col-lg-8 text-center" style="padding: 20px">

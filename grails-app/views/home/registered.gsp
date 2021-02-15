@@ -23,13 +23,14 @@
 
  <div class="col-md-12  panel">
 
+ <form name="searchForm" ng-submit="registeredReportByDate()">
+
    <div class="col-md-3">
 
                                  <div class="form-group">
-                                                     <label class="control-label col-lg-8 text-bold"><g:message code="dictionary" default="Facility Name"/> </label>
 
-                                                     <div class="col-lg-8">
-                                                         <g:select name="facility" id="facility" value="${params?.facility}" ng-model="selectedItem" ng-change="updateRegistered()"
+                                                     <div class="col-lg-10">
+                                                         <g:select name="facility" id="facility" value="${params?.facility}" ng-model="insert.facility" ng-change="updateRegistered()"
                                                                    from="${chaid.Facility.findAllByDeleted(false)}" optionKey="id" optionValue="name"
                                                                    class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select Facility')]"/>
 
@@ -37,37 +38,36 @@
                                                  </div>
                                                  </div>
 
+
+
+
                  <div class="col-md-3">
                      <div class="form-group">
-                         <label class="control-label col-lg-5 text-bold">From Date</label>
 
-
-                         <div class="col-lg-10 input-append date form_datetime">
-                             <input type="text" ng-model="start_date" readonly required="required" class="form-control"/>
-                             <span class="add-on"><i class="icon-th"></i></span>
+                         <div class="col-lg-12 ">
+      <md-datepicker md-hide-icons="calendar" md-placeholder="From Date" 	 ng-model="insert.start_date" "></md-datepicker>
 
                          </div>
                      </div>
                  </div>
 
+
                  <div class="col-md-3">
                      <div class="form-group">
-                         <label class="control-label col-lg-5 text-bold">To Date</label>
 
-                         <div class="col-lg-10 input-append date form_datetime">
-                             <input type="text" ng-model="end_date"  readonly required="required" class="form-control"/>
-                             <span class="add-on"><i class="icon-th"></i></span>
+                         <div class="col-lg-12 ">
+                           <md-datepicker md-hide-icons="calendar" md-placeholder="To Date" ng-model="insert.end_date" ng-change="selecteddate()"></md-datepicker>
 
                          </div>
                      </div>
                  </div>
   <div class="col-lg-3">
                  <div class="text-right col-md-3">
-                                         <label class="control-label col-lg-5 text-bold">..</label>
 
-                     <button type="submit" ng-click="registeredReportByDate()" class="btn btn-primary">SELECT REPORT
+                     <button type="submit" class="btn btn-primary">SELECT REPORT
                      </button>
   </div>
+  </form>
                  </div>
 
          </div>
@@ -174,8 +174,12 @@
 
    <script type="text/javascript">
        $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:mm'});
+
+
+
+
+
    </script>
-       <asset:javascript src="customjs/applicant_module.js"/>
 
        </body>
    </html>

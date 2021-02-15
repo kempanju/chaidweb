@@ -25,55 +25,55 @@
 
 
  <div class="col-md-12  panel">
-             <g:form method="GET" action="reportByReferralsGenerated" class="form-horizontal">
 
-              <div class="col-md-3">
+   <form name="searchForm" ng-submit="registeredReportByDate()">
 
-                                <div class="form-group">
-                                                    <label class="control-label col-lg-8 text-bold"><g:message code="dictionary" default="Facility Name"/> </label>
+      <div class="col-md-3">
 
-                                                    <div class="col-lg-8">
-                                                        <g:select name="facility" id="facility" value="${params?.facility}" ng-model="selectedItem" ng-change="updateReferrals()"
-                                                                  from="${chaid.Facility.findAllByDeleted(false)}" optionKey="id" optionValue="name"
-                                                                  class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select Facility')]"/>
+                                    <div class="form-group">
 
+                                                        <div class="col-lg-10">
+                                                            <g:select name="facility" id="facility" value="${params?.facility}" ng-model="insert.facility" ng-change="updateReferrals()"
+                                                                      from="${chaid.Facility.findAllByDeleted(false)}" optionKey="id" optionValue="name"
+                                                                      class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select Facility')]"/>
+
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                </div>
-
-                 <div class="col-md-3">
-                     <div class="form-group">
-                         <label class="control-label col-lg-5 text-bold">From Date</label>
+                                                    </div>
 
 
-                         <div class="col-lg-10 input-append date form_datetime">
-                             <input type="text" name="start_date" readonly required="required" ng-model="referral.start_date" value="${params.start_date}" class="form-control"/>
-                             <span class="add-on"><i class="icon-th"></i></span>
 
-                         </div>
-                     </div>
-                 </div>
 
-                 <div class="col-md-3">
-                     <div class="form-group">
-                         <label class="control-label col-lg-5 text-bold">To Date</label>
+                    <div class="col-md-3">
+                        <div class="form-group">
 
-                         <div class="col-lg-10 input-append date form_datetime">
-                             <input type="text" name="end_date" readonly required="required" ng-model="referral.end_date" value="${params.end_date}" class="form-control"/>
-                             <span class="add-on"><i class="icon-th"></i></span>
+                            <div class="col-lg-12 ">
+         <md-datepicker md-hide-icons="calendar" md-placeholder="From Date" 	 ng-model="insert.start_date" "></md-datepicker>
 
-                         </div>
-                     </div>
-                 </div>
-  <div class="col-lg-3">
-                 <div class="text-right col-md-4">
-                                         <label class="control-label col-lg-5 text-bold">..</label>
+                            </div>
+                        </div>
+                    </div>
 
-                     <button type="submit" class="btn btn-primary">SELECT REPORT
-                     </button>
-  </div>
-                 </div>
-             </g:form>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+
+                            <div class="col-lg-12 ">
+                              <md-datepicker md-hide-icons="calendar" md-placeholder="To Date" ng-model="insert.end_date" ng-change="selecteddate()"></md-datepicker>
+
+                            </div>
+                        </div>
+                    </div>
+     <div class="col-lg-3">
+                    <div class="text-right col-md-3">
+
+                        <button type="submit" class="btn btn-primary">SELECT REPORT
+                        </button>
+     </div>
+     </form>
+
+
+
          </div>
 <input type="text" name="linkName" style="display:none" ng-model="linkName" value="${grailsApplication.config.systemLink.toString()}"/>
 
