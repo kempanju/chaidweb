@@ -6,7 +6,9 @@ import admin.District
 import admin.Street
 import admin.SubStreet
 import admin.Wards
+import com.chaid.security.MkpRole
 import com.chaid.security.MkpUser
+import com.chaid.security.MkpUserMkpRole
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
@@ -798,6 +800,105 @@ ApplicationService applicationService
         println(outPutObject)
 
         render outPutObject as JSON
+    }
+
+    def chwActivity(){
+        session["activePage"] = "reports"
+        render view: 'chwactivity'
+    }
+    def chwReferral(){
+        session["activePage"] = "reports"
+        render view: 'chwreferral'
+    }
+    def reportByCwaActivityJSON(){
+        JSONArray jsonArray=new JSONArray()
+        def roleInstance= MkpRole.findByAuthority("ROLE_CHW")
+        def district=params.district
+        def start_date=params.start_date
+        def end_date=params.end_date
+        def userList=null
+        if(district){
+            def districtInstance=District.get(params.district)
+            userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id=:district",[mkpRole:roleInstance,district:districtInstance])
+        }else{
+            userList= MkpUserMkpRole.findAllByMkpRole(roleInstance)
+        }
+
+
+        userList.each{
+            def userInstance=it.mkpUser
+            JSONObject jsonObject=new JSONObject()
+            jsonObject.put("full_name",userInstance.full_name)
+            jsonObject.put("id",userInstance.id)
+            jsonObject.put("village",userInstance.village_id.name)
+            jsonObject.put("facility",userInstance.facility.name)
+            def chaidCount=0
+            if(start_date&&end_date){
+                def formatedStartDate=applicationService.changeTimeZOne(start_date)
+                def formatedEndDate=applicationService.changeTimeZOne(end_date)
+
+                chaidCount=MkChaid.executeQuery("from MkChaid where deleted=false and created_by=:createdBy and arrival_time>='"+formatedStartDate+"' and arrival_time<='"+formatedEndDate+"'",[createdBy:userInstance]).size()
+            }else {
+                chaidCount = MkChaid.countByDeletedAndCreated_by(false, userInstance)
+            }
+            jsonObject.put("report_no",chaidCount)
+            jsonArray.put(jsonObject)
+        }
+        render jsonArray as JSON
+    }
+
+    def reportByCwaReferralsJSON(){
+        JSONArray jsonArray=new JSONArray()
+        def roleInstance= MkpRole.findByAuthority("ROLE_CHW")
+        def district=params.district
+        def start_date=params.start_date
+        def end_date=params.end_date
+        def userList=null
+        if(district){
+            def districtInstance=District.get(params.district)
+            userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id=:district",[mkpRole:roleInstance,district:districtInstance])
+        }else{
+            userList= MkpUserMkpRole.findAllByMkpRole(roleInstance)
+        }
+
+
+        userList.each{
+            def userInstance=it.mkpUser
+            JSONObject jsonObject=new JSONObject()
+            jsonObject.put("full_name",userInstance.full_name)
+            jsonObject.put("id",userInstance.id)
+            jsonObject.put("village",userInstance.village_id.name)
+            jsonObject.put("facility",userInstance.facility.name)
+            def chaidCount=0
+            if(start_date&&end_date){
+                def formatedStartDate=applicationService.changeTimeZOne(start_date)
+                def formatedEndDate=applicationService.changeTimeZOne(end_date)
+
+                chaidCount=MkChaid.executeQuery("from MkChaid where emergence_status<>0 and deleted=false and created_by=:createdBy and arrival_time>='"+formatedStartDate+"' and arrival_time<='"+formatedEndDate+"'",[createdBy:userInstance]).size()
+            }else {
+                chaidCount=MkChaid.executeQuery("from MkChaid where emergence_status<>0 and deleted=false and created_by=:createdBy ",[createdBy:userInstance]).size()
+
+            }
+
+
+
+            jsonObject.put("referral_no",chaidCount)
+
+            def referralStatus=0
+            if(start_date&&end_date){
+                def formatedStartDate=applicationService.changeTimeZOne(start_date)
+                def formatedEndDate=applicationService.changeTimeZOne(end_date)
+
+                referralStatus=MkChaid.executeQuery("from MkChaid where emergence_status=2 and deleted=false and created_by=:createdBy and arrival_time>='"+formatedStartDate+"' and arrival_time<='"+formatedEndDate+"'",[createdBy:userInstance]).size()
+            }else {
+                referralStatus=MkChaid.executeQuery("from MkChaid where emergence_status=2 and deleted=false and created_by=:createdBy ",[createdBy:userInstance]).size()
+
+            }
+            jsonObject.put("status_change_no",referralStatus)
+
+            jsonArray.put(jsonObject)
+        }
+        render jsonArray as JSON
     }
 
     def referralsReportByDate(){

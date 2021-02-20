@@ -1,4 +1,4 @@
-   <h5>Total Activity : <span>${chaid.MkChaid.countByDeleted(false)}</span></h5>
+   <h5>Total Activity : <span>${chaid.MkChaid.countByDeletedAndCreated_by(false,mkpUser)}</span></h5>
 
     <table  class="table datatable-basic table-bordered table-striped table-hover">
                                         <thead>

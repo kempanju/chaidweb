@@ -11,7 +11,7 @@ import grails.compiler.GrailsCompileStatic
 class MkpUserMkpRole implements Serializable {
 
 	private static final long serialVersionUID = 1
-
+	int id
 	MkpUser mkpUser
 	MkpRole mkpRole
 

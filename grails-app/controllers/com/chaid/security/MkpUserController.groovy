@@ -68,6 +68,15 @@ class MkpUserController {
         userRoleInstance.save()
         redirect(action: 'show', params: [id: params.user_id])
     }
+    @Secured(['ROLE_ADMIN'])
+    @Transactional
+    def deleteRole(){
+        def userInstance=MkpUser.get(params.user_id)
+        def roleInstance=MkpRole.get(params.role_id)
+        MkpUserMkpRole.remove(userInstance,roleInstance)
+        flash.message="Role successfully removed!"
+        redirect(action: 'show', params: [id: params.user_id])
+    }
 
     def edit(Long id) {
         respond mkpUserService.get(id)

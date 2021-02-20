@@ -105,10 +105,7 @@ callRegisteredMethod("");
 
 
     $scope.registeredReportByDate=function(){
-        $start_date=$scope.start_date;
-         $end_date=$scope.end_date;
-         //alert($scope);
-        // $scope.end_date="887";
+
         $http({
             method: "POST",
             url: linkName+"/home/reachedReportByDate",
@@ -173,10 +170,7 @@ callHttpMethod("");
 
 
 $scope.registeredReportByDate=function(){
-        $start_date=$scope.start_date;
-         $end_date=$scope.end_date;
-         //alert($scope);
-        // $scope.end_date="887";
+
         $http({
             method: "POST",
             url: linkName+"/home/referralsReportByDate",
@@ -199,7 +193,6 @@ $scope.updateReferrals=function(){
   $selectedItem=$scope.insert.facility;
 callHttpMethod($selectedItem);
 console.log($scope);
- console.log("called:"+$selectedItem+" "+$start_date+" "+$end_date);
 
 }
 
@@ -221,6 +214,145 @@ function callHttpMethod(facility){
 
     }, function myError(response) {
 
+    });
+}
+
+}]);
+
+
+
+app.controller("chwActivity",["$scope","$http", function($scope,$http) {
+
+    $scope.fname="Felix";
+console.log("called");
+$scope.referral = {};
+$scope.referral.end_date="";
+
+$scope.referral.start_date="";
+
+  var linkName=$scope.linkName;
+    //$scope.linkName = "feli";
+
+    linkName="http://chaid.mkapafoundation.or.tz"
+    //linkName="http://localhost:9090"
+callHttpMethod("");
+
+
+$scope.chwReportByDate=function(){
+
+        $http({
+            method: "POST",
+            url: linkName+"/home/reportByCwaActivityJSON",
+            params: $scope.insert
+
+        }).then(function mySuccess(response) {
+                      var data=response.data;
+                      $scope.report = data;
+                      console.log( $scope.report);
+
+
+                  }, function myError(response) {
+
+                  });
+        console.log($scope);
+    };
+
+
+$scope.updateChwReport=function(){
+  $selectedItem=$scope.insert.district;
+callHttpMethod($selectedItem);
+console.log($scope);
+
+}
+
+
+function callHttpMethod(district){
+
+   // linkName="http://www.habarisasa.com:8080/chaid"
+
+    $http({
+        method: "POST",
+        url:linkName+ "/home/reportByCwaActivityJSON",
+         params: {district: district, draft: true}
+
+    }).then(function mySuccess(response) {
+        var data=response.data;
+        $scope.report = data;
+        console.log($scope.report);
+
+
+    }, function myError(response) {
+        console.log("failed");
+    });
+}
+
+}]);
+
+
+
+
+app.controller("chwReferral",["$scope","$http", function($scope,$http) {
+
+    $scope.fname="Felix";
+console.log("called");
+$scope.referral = {};
+$scope.referral.end_date="";
+
+$scope.referral.start_date="";
+
+  var linkName=$scope.linkName;
+    //$scope.linkName = "feli";
+
+    linkName="http://chaid.mkapafoundation.or.tz"
+    //linkName="http://localhost:9090"
+callHttpMethod("");
+
+
+$scope.chwReportByDate=function(){
+
+        $http({
+            method: "POST",
+            url: linkName+"/home/reportByCwaReferralsJSON",
+            params: $scope.insert
+
+        }).then(function mySuccess(response) {
+                      var data=response.data;
+                      $scope.report = data;
+                      console.log( $scope.report);
+
+
+                  }, function myError(response) {
+
+                  });
+        console.log($scope);
+    };
+
+
+$scope.updateChwReport=function(){
+  $selectedItem=$scope.insert.district;
+callHttpMethod($selectedItem);
+console.log($scope);
+
+}
+
+
+function callHttpMethod(district){
+
+   // linkName="http://www.habarisasa.com:8080/chaid"
+
+    $http({
+        method: "POST",
+        url:linkName+ "/home/reportByCwaReferralsJSON",
+         params: {district: district, draft: true}
+
+    }).then(function mySuccess(response) {
+        var data=response.data;
+        $scope.report = data;
+        console.log($scope.report);
+
+
+    }, function myError(response) {
+        console.log("failed");
     });
 }
 

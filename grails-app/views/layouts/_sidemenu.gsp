@@ -88,6 +88,8 @@
                                                      <li><g:link controller='home' action="reportByReferralsGenerated">Referrals</g:link></li>
                                                      <li><g:link controller='home' action="reportByHealthEducation">Health Education</g:link></li>
                                                         <li><g:link controller='home' action="reportByVillage">By District</g:link></li>
+                                                        <li><g:link controller='home' action="chwActivity">CHW Activity Report</g:link></li>
+                                                        <li><g:link controller='home' action="chwReferral">CHW Referral Report</g:link></li>
 
                                                           </ul>
 

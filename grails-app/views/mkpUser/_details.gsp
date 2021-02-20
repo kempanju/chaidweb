@@ -145,6 +145,10 @@
                                  <tr class="${(i % 2) == 0 ? 'even' : 'odd'} ">
                                      <td>${i + 1}</td>
                                      <td>${fieldValue(bean: roleInstance, field: "mkpRole.authority")}</td>
+                                     <sec:ifAnyGranted roles="ROLE_ADMIN">
+
+                                     <td><g:link controller='mkpUser' action="deleteRole" params="[role_id:roleInstance.mkpRole.id,user_id:roleInstance.mkpUser.id]">Delete</g:link></td>
+                                      </sec:ifAnyGranted>
                                  </tr>
                              </g:each>
 
