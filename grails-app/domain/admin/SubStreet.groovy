@@ -10,7 +10,7 @@ class SubStreet {
     static constraints = {
         deleted nullable: true
 
-        name (unique:['district_id','village_id'])
+        //name (unique:['district_id','village_id'])
 
     }
 

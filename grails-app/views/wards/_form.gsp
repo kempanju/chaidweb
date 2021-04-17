@@ -16,7 +16,7 @@
                 <g:select name="district_id" id="district_id" value="${wards?.district_id?.id}"
                           data-show-subtext="true" data-live-search="true"
                           from="${admin.District.list()}" optionKey="id" optionValue="name"
-                          class="form-control selectpicker" noSelection="['': 'District']"/>
+                          class="form-control " noSelection="['': 'District']"/>
 
             </div>
         </div>

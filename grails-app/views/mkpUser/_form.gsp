@@ -14,7 +14,7 @@
 
             <div class="col-lg-5">
 
-                <input type="text" name="middle_name" placeholder="Second Name" class="form-control" required="required"
+                <input type="text" name="middle_name" placeholder="Second Name" class="form-control"
                        value="${mkpUser?.middle_name}">
 
             </div>
@@ -75,9 +75,9 @@
 
                <div class="col-lg-5">
                    <g:select name="district_id" id="district_id" value="${mkpUser?.district_id?.id}" onchange="getVillages(this)"
-                             data-show-subtext="true" data-live-search="true"
+
                              from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
-                             class="form-control selectpicker" noSelection="['': 'District']"/>
+                             class="form-control " noSelection="['': 'District']"/>
 
                </div>
            </div>

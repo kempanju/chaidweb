@@ -12,7 +12,6 @@ class District {
     }
     static constraints = {
         code nullable: true
-        name unique: true
         d_deleted nullable: true
     }
 

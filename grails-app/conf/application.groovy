@@ -7,7 +7,7 @@ grails.plugin.springsecurity.authority.className = 'com.chaid.security.MkpRole'
 
 grails.plugin.springsecurity.rest.token.validation.headerName = 'X-Auth-Token'
 grails.plugins.cookie.cookieage.default = 864000
-grails.plugin.springsecurity.rest.token.storage.jwt.expiration=3600000
+grails.plugin.springsecurity.rest.token.storage.jwt.expiration=15552000 //6 months
 grails.databinding.dateFormats = ['yyyy-mm-dd']
 
 grails.plugin.springsecurity.logout.postOnly = false

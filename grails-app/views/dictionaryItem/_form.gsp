@@ -13,6 +13,13 @@
         </div>
     </div>
 
+     <div class="form-group">
+            <label  class="control-label col-lg-3"><g:message code="name.en" default="Name(Swahili)"/> </label>
+            <div class="col-lg-7">
+                <input type="text" name="name_en" class="form-control" autocomplete="name_en"  value="${dictionaryItem?.name_en}">
+            </div>
+        </div>
+
 
 
     <div class="form-group">

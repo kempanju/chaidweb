@@ -26,14 +26,19 @@
                 </g:eachError>
             </ul>
             </g:hasErrors>
-            <g:form resource="${this.dictionary}" method="PUT">
+            <g:form resource="${this.dictionary}" method="PUT" class="form-horizontal">
                 <g:hiddenField name="version" value="${this.dictionary?.version}" />
-                <fieldset class="form">
-                    <f:all bean="dictionary"/>
-                </fieldset>
-                <fieldset class="buttons">
-                    <input class="save" type="submit" value="${message(code: 'default.button.update.label', default: 'Update')}" />
-                </fieldset>
+
+
+                  <fieldset class="form">
+                                                   <g:render template="form" bean="dictionary"/>
+                                                   <div class="text-right col-lg-10">
+                                                       <button type="submit" class="btn btn-primary">Save <i
+                                                               class="icon-arrow-right14 position-right"></i>
+                                                       </button>
+
+                                                   </div>
+                                               </fieldset>
             </g:form>
         </div>
     </body>

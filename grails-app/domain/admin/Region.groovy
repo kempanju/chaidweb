@@ -18,7 +18,6 @@ class Region {
     }
 
     static constraints = {
-        name unique: true
         code nullable: true, unique: true
         created_at nullable: true
     }

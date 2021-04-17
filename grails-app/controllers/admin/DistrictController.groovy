@@ -71,7 +71,7 @@ class DistrictController {
 
 
             if (Environment.current != Environment.DEVELOPMENT) {
-                file_path = "/home/felijose/" + namephoto
+                file_path = "/home/mkapauser/chaiddocuments/" + namephoto
             }
 
             File fileDest = new File(file_path)

@@ -4,12 +4,42 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'facility.label', default: 'Facility')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
+      <script>
+                               function facilitySearch(ids) {
+
+                                   var ids = ids.value;
+                                   $.ajax({
+                                       url: '${grailsApplication.config.systemLink.toString()}/facility/searchFacilityList',
+                                       data: {'search_string': ids}, // change this to send js object
+                                       type: "post",
+                                       success: function (data) {
+                                           //document.write(data); just do not use document.write
+                                           $("#list-facility").html(data);
+                                           //console.log(data);
+                                       }
+                                   });
+                               }
+                           </script>
+
     </head>
     <body>
 
      <div class="register_dv expert">
 
                 <div class="center panel_div_list panel-body">
+
+                  <div class="page-header-content">
+
+
+                                        <div class="heading-elements">
+
+                                            <input type="text" value="" name="search_text" class="form-control" onkeyup="facilitySearch(this)"
+                                                   placeholder="Search  Facility">
+
+                                        </div>
+
+                                    </div>
+
         <a href="#list-facility" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
         <div class="nav" role="navigation">
             <ul>
@@ -75,7 +105,24 @@
               </g:if>
             </div>
         </div>
+<div id="dialog" title="CSVfILE">
+                                        <div class="panel-body">
 
+                                            <g:uploadForm name="myUploadFacility" controller="facility"
+                                                          action="myUploadFacility">
+                                                <div class="col-lg-8">
+                                                    <input type="file" name="filename_csv" accept="text/csv"/>
+                                                </div>
+
+                                                <div class="text-right col-lg-10" style="margin-top: 20px">
+                                                    <button type="submit" style="margin-left:4px"
+                                                            class="btn btn-primary">Upload CSV <i
+                                                            class="icon-arrow-right14 position-right"></i>
+                                                    </button>
+                                                </div>
+                                            </g:uploadForm>
+                                        </div>
+                                    </div>
         </div>
         </div>
     </body>

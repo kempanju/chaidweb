@@ -14,6 +14,13 @@
     </div>
 
      <div class="form-group">
+            <label  class="control-label col-lg-3">Name Sw</label>
+            <div class="col-lg-7">
+                <input type="text" name="name_en" class="form-control"   value="${dictionary?.name_en}">
+            </div>
+        </div>
+
+     <div class="form-group">
             <label class="control-label col-lg-3">Active?</label>
 
             <div class="col-lg-5">

@@ -15,7 +15,6 @@
             </ul>
         </div>
         <div id="edit-dictionaryItem" class="content scaffold-edit" role="main">
-            <h1><g:message code="default.edit.label" args="[entityName]" /></h1>
             <g:if test="${flash.message}">
             <div class="message" role="status">${flash.message}</div>
             </g:if>
@@ -26,14 +25,18 @@
                 </g:eachError>
             </ul>
             </g:hasErrors>
-            <g:form resource="${this.dictionaryItem}" method="PUT">
+            <g:form resource="${this.dictionaryItem}" method="PUT" class="form-horizontal">
                 <g:hiddenField name="version" value="${this.dictionaryItem?.version}" />
-                <fieldset class="form">
-                    <f:all bean="dictionaryItem"/>
-                </fieldset>
-                <fieldset class="buttons">
-                    <input class="save" type="submit" value="${message(code: 'default.button.update.label', default: 'Update')}" />
-                </fieldset>
+
+                  <fieldset class="form">
+                                                    <g:render template="form" bean="dictionaryItem"/>
+                                                    <div class="text-right col-lg-8">
+                                                        <button type="submit" class="btn btn-primary"><g:message code="save" default="Save"/> <i
+                                                                class="icon-arrow-right14 position-right"></i>
+                                                        </button>
+
+                                                    </div>
+                                                </fieldset>
             </g:form>
         </div>
     </body>

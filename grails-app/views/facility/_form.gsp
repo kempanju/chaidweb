@@ -24,9 +24,9 @@
 
             <div class="col-lg-5">
                 <g:select name="district_id" id="district_id" value="${facility?.district_id?.id}" onchange="getVillages(this)"
-                          data-show-subtext="true" data-live-search="true"
+
                           from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
-                          class="form-control selectpicker" noSelection="['': 'District']"/>
+                          class="form-control " noSelection="['': 'District']"/>
 
             </div>
         </div>
@@ -41,3 +41,10 @@
 
 </div>
 </field>
+
+<script>
+$( document ).ready(function() {
+var district_id='${facility?.district_id?.id}';
+ getVillages(district_id);
+});
+</script>

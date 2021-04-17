@@ -109,10 +109,11 @@ class MkpUserController {
         def searchText=params.search_string
         String searchstring="%"+searchText+"%"
         searchstring=searchstring.toLowerCase()
+        //println(searchstring)
         params.max=20
 
-        def userInstanceList=MkpUser.executeQuery("from MkpUser where  lower(full_name) like :searchstring or phone_number like :searchstring or  lower(username) like :searchstring or village_id.name like :searchstring or facility.name like :searchstring",[searchstring:searchstring],params)
-
+        def userInstanceList=MkpUser.executeQuery("from MkpUser where  lower(full_name) like :searchstring or phone_number like :searchstring or  lower(username) like :searchstring ",[searchstring:searchstring],params)
+       // println(userInstanceList)
         render(template: 'userlist',model: [mkpUserList:userInstanceList])
 
     }

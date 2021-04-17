@@ -992,14 +992,23 @@ ApplicationService applicationService
     }
 
     def chadSaveData(){
-        def response = request.JSON
-        if(response) {
-            //println("Sent: "+response.toString())
-            applicationService.saveChaid(response.toString())
-            render "Successfully "
+        try {
+            def response = request.JSON
+            if (response) {
+                //println("Sent: "+response.toString())
+                try {
+                    applicationService.saveChaid(response.toString())
+                }catch(Exception e){
+                    e.printStackTrace()
+                }
+                render "Successfully "
 
-        }else{
-            render "Failed ",status:404
+            } else {
+                render "Failed ", status: 404
+            }
+        }catch(Exception e){
+            e.printStackTrace()
+            render "Failed", status: 200
         }
     }
     def getReferralListUser(){
@@ -1134,6 +1143,11 @@ ApplicationService applicationService
              jsonObject.put("id",it.id)
              jsonObject.put("code",it.code)
              jsonObject.put("name",it.name)
+             if(it.name_en){
+                 jsonObject.put("name_sw",it.name_en)
+             }else{
+                 jsonObject.put("name_sw"," ")
+             }
 
              def optionQuestionare= DictionaryItem.findAllByActiveAndDictionary_id(true,it,[order:'asc',sort:'code']) as JSON
              jsonObject.put("options",optionQuestionare.toString())
@@ -1147,7 +1161,7 @@ ApplicationService applicationService
     }
 
     def search_village_list(){
-        println("called")
+      //  println("called")
         def districtInstance= District.get(params.id)
 
         def streetListInstance= Street.findAllByDistrict_id(districtInstance)
