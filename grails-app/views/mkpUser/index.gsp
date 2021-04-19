@@ -27,7 +27,6 @@
         <div class="center panel_div_list panel-body">
          <div class="page-header-content">
 
-
                         <div class="heading-elements">
 
                             <input type="text" value="" name="search_text" class="form-control" onkeyup="userSearch(this)"
