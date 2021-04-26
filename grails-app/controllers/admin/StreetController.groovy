@@ -25,6 +25,20 @@ class StreetController {
         respond new Street(params)
     }
 
+    def searchVillageList(){
+
+        def searchText=params.search_string
+        def searchstring="%"+searchText+"%".toLowerCase()
+        //println(searchstring)
+
+        params.max=20
+        params.sort = 'id'
+        params.order = 'desc'
+        def streetInstanceList=Street.executeQuery("from Street where lower(name) like :searchstring or  lower(ward_id.name) like :searchstring ",[searchstring:searchstring],params)
+
+        render(template: 'village',model: [streetList:streetInstanceList])
+    }
+
     def save(Street street) {
         if (street == null) {
             notFound()

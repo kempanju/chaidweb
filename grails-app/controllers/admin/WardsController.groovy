@@ -21,6 +21,22 @@ class WardsController {
         respond wardsService.get(id)
     }
 
+
+    def searchWardList(){
+
+        def searchText=params.search_string
+        def searchstring="%"+searchText+"%".toLowerCase()
+        //println(searchstring)
+
+        params.max=20
+        params.sort = 'id'
+        params.order = 'desc'
+        def wardInstanceList=Wards.executeQuery("from Wards where lower(name) like :searchstring or  lower(district_id.name) like :searchstring ",[searchstring:searchstring],params)
+
+        render(template: 'wardlist',model: [wardsList:wardInstanceList])
+    }
+
+
     def create() {
         respond new Wards(params)
     }

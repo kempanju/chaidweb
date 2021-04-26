@@ -4,12 +4,44 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'street.label', default: 'Street')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
+
+        <script>
+                                                 function villageSearch(ids) {
+
+                                                     var ids = ids.value;
+                                                     $.ajax({
+                                                         url: '${grailsApplication.config.systemLink.toString()}/street/searchVillageList',
+                                                         data: {'search_string': ids}, // change this to send js object
+                                                         type: "post",
+                                                         success: function (data) {
+                                                             //document.write(data); just do not use document.write
+                                                             $("#list-street").html(data);
+                                                             //console.log(data);
+                                                         }
+                                                     });
+                                                 }
+                                             </script>
     </head>
     <body>
 
       <div class="register_dv expert">
 
      <div class="center panel_div_list panel-body">
+
+
+
+                        <div class="center panel_div_list panel-body">
+                        <div class="page-header-content">
+
+
+                                                                <div class="heading-elements">
+
+                                                                    <input type="text" value="" name="search_text" class="form-control" onkeyup="villageSearch(this)"
+                                                                           placeholder="Search  Village">
+
+                                                                </div>
+
+                                                            </div>
 
         <a href="#list-street" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
         <div class="nav" role="navigation">

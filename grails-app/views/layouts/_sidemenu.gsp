@@ -97,7 +97,7 @@
 
 
 
-<li class="<g:if test="${activePage == 'location'}">active</g:if>">
+<li class="<g:if test="${activePage == 'dictionary'}">active</g:if>">
                                                     <a href="#"><i class="icon-book"></i> <span>Dictionary</span></a>
                                                     <ul>
                          <li class="<g:if test="${activePage == 'dictionary'}">active</g:if>">

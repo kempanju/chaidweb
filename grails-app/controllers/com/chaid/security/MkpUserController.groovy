@@ -1,8 +1,14 @@
 package com.chaid.security
 
+import admin.District
+import admin.Street
+import admin.SubStreet
+import admin.Wards
 import chaid.ApplicationService
+import chaid.Facility
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Environment
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
 @Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
@@ -80,6 +86,118 @@ class MkpUserController {
 
     def edit(Long id) {
         respond mkpUserService.get(id)
+    }
+
+    @Transactional
+    def uploadUsers(){
+        println(params)
+        def palines = 0;
+        int userexists = 0;
+        int usernotexists = 0;
+
+
+        //  println(params)
+
+        def reqFile = request.getFile("filename_csv")
+
+        if(reqFile) {
+            def namephoto = System.currentTimeMillis() + ".csv";
+            def file_path = servletContext.getRealPath("") + "csvfiles/" + namephoto
+
+
+            if (Environment.current != Environment.DEVELOPMENT) {
+                file_path = "/home/mkapauser/chaiddocuments/" + namephoto
+            }
+
+            File fileDest = new File(file_path)
+            reqFile.transferTo(fileDest)
+
+
+            new File(file_path).splitEachLine(",") { fields ->
+
+                try {
+                    if (palines > 0) {
+                        //sleep(500)
+                        def fName = fields[0]
+                        def mName = fields[1]
+                        def lName = fields[2]
+                        def village = fields[3]
+                        def ward = fields[4]
+                        def district = fields[5]
+                        def facility = fields[6]
+                        def mobNo=fields[7]
+                        String userName=fields[8].toLowerCase()
+
+
+
+
+
+
+                        //  println(tempoDistrict+" "+tempoKata+" "+tempoVillage+" "+tempoHelmets)
+
+                        //   def uniquename = districtInstance.id + "/" + tempoKata
+
+                        if(MkpUser.countByUsername(userName)==0) {
+                            def code = getRandomNumber(1000, 9999)
+
+                            def userInstance=new MkpUser()
+                            userInstance.username=userName
+                            userInstance.first_name=fName
+                            userInstance.middle_name=mName
+                            userInstance.last_name=lName
+                            userInstance.phone_number=mobNo
+                            userInstance.password=code
+                            userInstance.accountLocked=0
+                            def districtInstance=District.findByNameIlike(district)
+
+                            userInstance.district_id=districtInstance
+                            userInstance.facility= Facility.findByNameIlikeAndDistrict_id(facility,districtInstance)
+                            userInstance.village_id=Street.findByNameIlikeAndDistrict_id(village,districtInstance)
+                            if(userInstance.save(failOnError: true,flush: true)){
+                                println("passed"+palines)
+                                def adminRole=MkpRole.findByAuthority('ROLE_CHW')
+                                def roleInstance=new MkpUserMkpRole()
+                                roleInstance.mkpUser=userInstance
+                                roleInstance.mkpRole=adminRole
+                                roleInstance.save(failOnError: true)
+
+
+                                try {
+                                    def name = userInstance.first_name+" "+userInstance.last_name
+                                    def phone_number=userInstance.phone_number
+
+                                   // phone_number="255766545878"
+
+                                    def msg="Hello "+name+", Your Chaid Username is "+userInstance.username+" and Password is "+code+". Thanks."
+                                    applicationService.saveSchedualLogs(userInstance,msg)
+
+
+                                } catch (Exception e) {
+                                    // e.printStackTrace()
+                                }
+
+                            }
+                        }else{
+                            def userInstance=MkpUser.findByUsername(userName)
+                            def districtInstance=District.findByNameIlike(district)
+
+                            userInstance.district_id=districtInstance
+                            userInstance.facility= Facility.findByNameIlikeAndDistrict_id(facility,districtInstance)
+                            userInstance.village_id=Street.findByNameIlikeAndDistrict_id(village,districtInstance)
+                            userInstance.save(flush: true)
+                        }
+                        flash.message="Users uploaded!"
+                    }
+                }catch(Exception e){
+                    e.printStackTrace()
+                }
+
+                palines++
+            }
+
+        }
+        redirect action: "index"
+
     }
 
     def update(MkpUser mkpUser) {

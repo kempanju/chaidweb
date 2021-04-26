@@ -146,6 +146,20 @@ class DistrictController {
 
     }
 
+    def searchDistrictList(){
+
+        def searchText=params.search_string
+        def searchstring="%"+searchText+"%".toLowerCase()
+        //println(searchstring)
+
+        params.max=20
+        params.sort = 'id'
+        params.order = 'desc'
+        def districtInstanceList=District.executeQuery("from District where (lower(name) like :searchstring or  lower(region_id.name) like :searchstring) and d_deleted=false ",[searchstring:searchstring],params)
+
+        render(template: 'districtSearch',model: [districtList:districtInstanceList])
+    }
+
     def update(District district) {
         if (district == null) {
             notFound()

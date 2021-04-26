@@ -123,40 +123,40 @@ class RegionController {
 
 
                         if (kata) {
-                            tempoKata = kata
+                            tempoKata = kata.trim()
                         }
                         if (village) {
-                            tempoVillage = village
+                            tempoVillage = village.trim()
                         }
 
                         if (helmets) {
-                            tempoHelmets = helmets
+                            tempoHelmets = helmets.trim()
                         }
                         if (district) {
-                            tempoDistrict = district
+                            tempoDistrict = district.trim()
                         }
 
                       //  println(tempoDistrict+" "+tempoKata+" "+tempoVillage+" "+tempoHelmets)
                         def districtInstance = District.findByName(tempoDistrict)
 
                      //   def uniquename = districtInstance.id + "/" + tempoKata
-                        if(districtInstance) {
+                        if(districtInstance&&Wards.countByDistrict_id(districtInstance)<5) {
                             if (kata) {
                                 // println(districtInstance.name + " " + tempoKata)
 
 
                                 findOrSaveWards = Wards.findOrSaveWhere(district_id: districtInstance, name: kata)
-                                findOrSaveWards.save(flush: true)
+                                //findOrSaveWards.save(flush: true)
                             }
                             if (village) {
                                 villageSave = Street.findOrSaveWhere(district_id: districtInstance, name: village, ward_id: findOrSaveWards)
-                                villageSave.save(flush: true)
+                               // villageSave.save(flush: true)
                             }
 
                             if (helmets) {
                                 try {
                                     helmetSave = SubStreet.findOrSaveWhere(district_id: districtInstance, village_id: villageSave, name: helmets.trim())
-                                    helmetSave.save(flush: true)
+                                  //  helmetSave.save(flush: true)
                                 }catch(Exception e){
                                     e.printStackTrace()
                                 }

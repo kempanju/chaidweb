@@ -16,7 +16,7 @@
                 <g:select name="region_id" id="region_id" value="${district?.region_id?.id}"
                           data-show-subtext="true" data-live-search="true"
                           from="${admin.Region.list()}" optionKey="id" optionValue="name"
-                          class="form-control selectpicker" noSelection="['': 'Region']"/>
+                          class="form-control" noSelection="['': 'Region']"/>
 
             </div>
         </div>

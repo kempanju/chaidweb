@@ -4,13 +4,40 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'district.label', default: 'District')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
+
+         <script>
+                                       function facilitySearch(ids) {
+
+                                           var ids = ids.value;
+                                           $.ajax({
+                                               url: '${grailsApplication.config.systemLink.toString()}/district/searchDistrictList',
+                                               data: {'search_string': ids}, // change this to send js object
+                                               type: "post",
+                                               success: function (data) {
+                                                   //document.write(data); just do not use document.write
+                                                   $("#list-district").html(data);
+                                                   //console.log(data);
+                                               }
+                                           });
+                                       }
+                                   </script>
     </head>
     <body>
      <div class="register_dv expert">
 
   <div class="center panel_div_list panel-body">
 
+ <div class="page-header-content">
 
+
+                                        <div class="heading-elements">
+
+                                            <input type="text" value="" name="search_text" class="form-control" onkeyup="facilitySearch(this)"
+                                                   placeholder="Search  District">
+
+                                        </div>
+
+                                    </div>
         <a href="#list-district" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
         <div class="nav" role="navigation">
             <ul>
