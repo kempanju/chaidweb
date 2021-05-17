@@ -6,6 +6,8 @@
         <title><g:message code="default.edit.label" args="[entityName]" /></title>
     </head>
     <body>
+    <div class="register_dv expert">
+                <div class="center  panel-body">
         <a href="#edit-subStreet" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
         <div class="nav" role="navigation">
             <ul>
@@ -26,15 +28,21 @@
                 </g:eachError>
             </ul>
             </g:hasErrors>
-            <g:form resource="${this.subStreet}" method="PUT">
+            <g:form resource="${this.subStreet}" method="PUT" class="form-horizontal">
                 <g:hiddenField name="version" value="${this.subStreet?.version}" />
+
                 <fieldset class="form">
-                    <f:all bean="subStreet"/>
-                </fieldset>
-                <fieldset class="buttons">
-                    <input class="save" type="submit" value="${message(code: 'default.button.update.label', default: 'Update')}" />
-                </fieldset>
+                                                                   <g:render template="form" bean="subStreet"/>
+                                                                   <div class="text-right col-lg-10">
+                                                                       <button type="submit" class="btn btn-primary">Save <i
+                                                                               class="icon-arrow-right14 position-right"></i>
+                                                                       </button>
+
+                                                                   </div>
+                                                               </fieldset>
             </g:form>
+        </div>
+        </div>
         </div>
     </body>
 </html>

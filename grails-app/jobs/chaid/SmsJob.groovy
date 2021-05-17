@@ -20,7 +20,7 @@ class SmsJob {
         logInstanceList.each{
             def message=it.message
             def phoneNumber=it.user_id.phone_number
-            println(message)
+           // println(message)
             if (Environment.current == Environment.PRODUCTION) {
                 applicationService.sendMessage(phoneNumber, message)
             }

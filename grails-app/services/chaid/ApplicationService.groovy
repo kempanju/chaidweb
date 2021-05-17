@@ -535,7 +535,6 @@ class ApplicationService {
     }
 
     def saveChaid(def data){
-        println(data)
         def jsonData= JSON.parse(data)
 
         def user_id=jsonData.user_id

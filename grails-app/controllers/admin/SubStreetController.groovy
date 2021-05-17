@@ -51,6 +51,21 @@ class SubStreetController {
         respond subStreetService.get(id)
     }
 
+
+    def searchStreetList(){
+
+        def searchText=params.search_string
+        def searchstring="%"+searchText+"%".toLowerCase()
+        //println(searchstring)
+
+        params.max=50
+        params.sort = 'id'
+        params.order = 'desc'
+        def subStreetInstanceList=SubStreet.executeQuery("from SubStreet where lower(name) like :searchstring or  lower(village_id.name) like :searchstring  ",[searchstring:searchstring],params)
+
+        render(template: 'village',model: [subStreetList:subStreetInstanceList])
+    }
+
     def update(SubStreet subStreet) {
         if (subStreet == null) {
             notFound()

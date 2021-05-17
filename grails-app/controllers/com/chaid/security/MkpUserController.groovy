@@ -117,74 +117,87 @@ class MkpUserController {
 
                 try {
                     if (palines > 0) {
-                        //sleep(500)
-                        def fName = fields[0]
-                        def mName = fields[1]
-                        def lName = fields[2]
-                        def village = fields[3]
-                        def ward = fields[4]
-                        def district = fields[5]
-                        def facility = fields[6]
-                        def mobNo=fields[7]
-                        String userName=fields[8].toLowerCase()
-
-
-
-
-
-
-                        //  println(tempoDistrict+" "+tempoKata+" "+tempoVillage+" "+tempoHelmets)
-
-                        //   def uniquename = districtInstance.id + "/" + tempoKata
-
-                        if(MkpUser.countByUsername(userName)==0) {
-                            def code = getRandomNumber(1000, 9999)
-
-                            def userInstance=new MkpUser()
-                            userInstance.username=userName
-                            userInstance.first_name=fName
-                            userInstance.middle_name=mName
-                            userInstance.last_name=lName
-                            userInstance.phone_number=mobNo
-                            userInstance.password=code
-                            userInstance.accountLocked=0
-                            def districtInstance=District.findByNameIlike(district)
-
-                            userInstance.district_id=districtInstance
-                            userInstance.facility= Facility.findByNameIlikeAndDistrict_id(facility,districtInstance)
-                            userInstance.village_id=Street.findByNameIlikeAndDistrict_id(village,districtInstance)
-                            if(userInstance.save(failOnError: true,flush: true)){
-                                println("passed"+palines)
-                                def adminRole=MkpRole.findByAuthority('ROLE_CHW')
-                                def roleInstance=new MkpUserMkpRole()
-                                roleInstance.mkpUser=userInstance
-                                roleInstance.mkpRole=adminRole
-                                roleInstance.save(failOnError: true)
-
-
-                                try {
-                                    def name = userInstance.first_name+" "+userInstance.last_name
-                                    def phone_number=userInstance.phone_number
-
-                                   // phone_number="255766545878"
-
-                                    def msg="Hello "+name+", Your Chaid Username is "+userInstance.username+" and Password is "+code+". Thanks."
-                                    applicationService.saveSchedualLogs(userInstance,msg)
-
-
-                                } catch (Exception e) {
-                                    // e.printStackTrace()
-                                }
-
+                        String username=fields[8]
+                        if(username) {
+                            //sleep(500)
+                            def fName = fields[0]
+                            def mName = fields[1]
+                            def lName = fields[2]
+                            def village = fields[3]
+                            if(village){
+                                village=village.trim()
                             }
-                        }else{
-                            def userInstance=MkpUser.findByUsername(userName)
-                            def districtInstance=District.findByNameIlike(district)
+                            def ward = fields[4]
+                            def district = fields[5]
+                            if(district){
+                                district=district.trim()
+                            }
+                            def facility = fields[6]
+                            if(facility){
+                                facility=facility.trim()
+                            }
+                            def mobNo = fields[7]
+                            String userName = username.toLowerCase()
 
-                            userInstance.district_id=districtInstance
-                            userInstance.facility= Facility.findByNameIlikeAndDistrict_id(facility,districtInstance)
-                            userInstance.village_id=Street.findByNameIlikeAndDistrict_id(village,districtInstance)
-                            userInstance.save(flush: true)
+
+                            //  println(tempoDistrict+" "+tempoKata+" "+tempoVillage+" "+tempoHelmets)
+
+                            //   def uniquename = districtInstance.id + "/" + tempoKata
+
+                            if (MkpUser.countByUsername(userName) == 0) {
+                                def code = getRandomNumber(1000, 9999)
+
+                                def userInstance = new MkpUser()
+                                userInstance.username = userName
+                                userInstance.first_name = fName
+                                userInstance.middle_name = mName
+                                userInstance.last_name = lName
+                                userInstance.phone_number = mobNo
+                                userInstance.password = code
+                                userInstance.accountLocked = 0
+                                def districtInstance = District.findByNameIlike(district)
+
+                                userInstance.district_id = districtInstance
+                                userInstance.facility = Facility.findByNameIlikeAndDistrict_id(facility, districtInstance)
+                                userInstance.village_id = Street.findByNameIlikeAndDistrict_id(village, districtInstance)
+                                if (userInstance.save(failOnError: true, flush: true)) {
+                                  //  println("passed" + palines)
+                                    def adminRole = MkpRole.findByAuthority('ROLE_CHW')
+                                    def roleInstance = new MkpUserMkpRole()
+                                    roleInstance.mkpUser = userInstance
+                                    roleInstance.mkpRole = adminRole
+                                    roleInstance.save(failOnError: true)
+
+
+                                    try {
+                                        def name = userInstance.first_name + " " + userInstance.last_name
+                                        def phone_number = userInstance.phone_number
+
+                                        // phone_number="255766545878"
+
+                                        def msg = "Hello " + name + ", Your Chaid Username is " + userInstance.username + " and Password is " + code + ". Thanks."
+                                        applicationService.saveSchedualLogs(userInstance, msg)
+
+
+                                    } catch (Exception e) {
+                                        // e.printStackTrace()
+                                    }
+
+                                }
+                            } else {
+                                def userInstance = MkpUser.findByUsername(userName)
+                                def districtInstance = District.findByNameIlike(district)
+
+                                userInstance.district_id = districtInstance
+                                userInstance.facility = Facility.findByNameIlikeAndDistrict_id(facility, districtInstance)
+                                def villageInstance= Street.findByNameIlikeAndDistrict_id(village, districtInstance)
+                                userInstance.village_id =villageInstance
+
+                               // System.out.println(village+" " +villageInstance)
+
+
+                                userInstance.save(flush: true)
+                            }
                         }
                         flash.message="Users uploaded!"
                     }
@@ -228,9 +241,16 @@ class MkpUserController {
         String searchstring="%"+searchText+"%"
         searchstring=searchstring.toLowerCase()
         //println(searchstring)
-        params.max=20
+        params.max=150
 
-        def userInstanceList=MkpUser.executeQuery("from MkpUser where  lower(full_name) like :searchstring or phone_number like :searchstring or  lower(username) like :searchstring ",[searchstring:searchstring],params)
+        def userInstanceList=MkpUser.executeQuery("from MkpUser m " +
+                " left join m.facility left join m.village_id left join m.district_id where " +
+                " lower(m.district_id.region_id.name) like :searchstring or " +
+                " lower(m.district_id.name) like :searchstring or " +
+                " lower(m.village_id.name) like :searchstring or " +
+                " lower(m.facility.name) like :searchstring or  " +
+                "lower(m.full_name) like :searchstring or m.phone_number like :searchstring or  lower(m.username) like :searchstring  " +
+                " ",[searchstring:searchstring],params)
        // println(userInstanceList)
         render(template: 'userlist',model: [mkpUserList:userInstanceList])
 

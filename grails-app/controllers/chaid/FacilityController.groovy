@@ -147,7 +147,7 @@ class FacilityController {
         def searchstring="%"+searchText+"%".toLowerCase()
         //println(searchstring)
 
-        params.max=20
+        params.max=150
         params.sort = 'id'
         params.order = 'desc'
         def facilityInstanceList=Facility.executeQuery("from Facility where lower(name) like :searchstring or lower(number) like :searchstring or lower(district_id.name) like :searchstring ",[searchstring:searchstring],params)

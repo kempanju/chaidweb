@@ -47,7 +47,7 @@
                 <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
             </ul>
         </div>
-        <div id="list-facility" class="content scaffold-list" role="main">
+        <div id="list-facility" style="max-height:600px;overflow: auto;" class="content scaffold-list" role="main">
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>

@@ -28,18 +28,19 @@
                                         ${i + 1 + offset}
 
                                     </td>
-                                    <td>${fieldValue(bean: zUserListInstance, field: "full_name")}</td>
-                                    <td>${fieldValue(bean: zUserListInstance, field: "village_id.name")}</td>
-                                    <td>${fieldValue(bean: zUserListInstance, field: "phone_number")}</td>
+                                    <td>${zUserListInstance[0]?.full_name} </td>
+                                    <td>${zUserListInstance[0]?.village_id?.name} </td>
+                                    <td>${zUserListInstance[0]?.phone_number} </td>
 
                                     <td class="text-center">
 
-                                        <g:link class="create" action="show" id="${zUserListInstance.id}"
-                                                resource="${this.zUserListInstance}">
+                                      <g:link class="create" action="show" id="${zUserListInstance[0]?.id}"
+                                                                                    >
 
-                                            <i class="icon-menu-open"></i><span> <g:message code="view" default="View"/></span>
+                                                                                <i class="icon-menu-open"></i><span> <g:message code="view" default="View"/></span>
 
-                                        </g:link>
+                                                                            </g:link>
+
 
                                     </td>
                                 </tr>

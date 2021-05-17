@@ -19,7 +19,21 @@
 
             </div>
         </div>
+
+
      <div class="form-group" id="list-village">
+     <g:if test="${params.id}">
+
+     <label class="control-label col-lg-3">Village</label>
+
+                 <div class="col-lg-5">
+                     <g:select name="village_id" id="village_id"
+                               from="${admin.Street.findAllByDistrict_id(subStreet?.district_id)}" optionKey="id" value="${subStreet.village_id.id}" optionValue="name"
+                               class="form-control " noSelection="['': 'Village']"/>
+
+                 </div>
+
+     </g:if>
 
 </div>
 

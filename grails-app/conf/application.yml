@@ -98,16 +98,16 @@ dataSource:
     pooled: true
     jmxExport: true
     driverClassName: org.postgresql.Driver
-    #username: postgres
-    #password: 'p@ssw0rd'
-    username: chaiduser
-    password: 'ch@!d#2021'
+    username: postgres
+    password: 'p@ssw0rd'
+    #username: chaiduser
+    #password: 'ch@!d#2021'
 
 environments:
     development:
         dataSource:
             dbCreate: update
-            url: jdbc:postgresql://localhost:5432/chaddb
+            url: jdbc:postgresql://localhost:5432/chaid_june
         systemLink: http://localhost:9090
 
     test:

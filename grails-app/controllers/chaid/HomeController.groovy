@@ -830,8 +830,9 @@ ApplicationService applicationService
             JSONObject jsonObject=new JSONObject()
             jsonObject.put("full_name",userInstance.full_name)
             jsonObject.put("id",userInstance.id)
-            jsonObject.put("village",userInstance.village_id.name)
-            jsonObject.put("facility",userInstance.facility.name)
+
+            jsonObject.put("village",userInstance?.village_id?.name)
+            jsonObject.put("facility",userInstance?.facility?.name)
             def chaidCount=0
             if(start_date&&end_date){
                 def formatedStartDate=applicationService.changeTimeZOne(start_date)
@@ -867,8 +868,8 @@ ApplicationService applicationService
             JSONObject jsonObject=new JSONObject()
             jsonObject.put("full_name",userInstance.full_name)
             jsonObject.put("id",userInstance.id)
-            jsonObject.put("village",userInstance.village_id.name)
-            jsonObject.put("facility",userInstance.facility.name)
+            jsonObject.put("village",userInstance?.village_id?.name)
+            jsonObject.put("facility",userInstance?.facility?.name)
             def chaidCount=0
             if(start_date&&end_date){
                 def formatedStartDate=applicationService.changeTimeZOne(start_date)
@@ -996,9 +997,12 @@ ApplicationService applicationService
             def response = request.JSON
             if (response) {
                 //println("Sent: "+response.toString())
+                String data=response.toString()
                 try {
-                    applicationService.saveChaid(response.toString())
+                    applicationService.saveChaid(data)
                 }catch(Exception e){
+                    println("Failed: "+data)
+
                     e.printStackTrace()
                 }
                 render "Successfully "
@@ -1123,17 +1127,22 @@ ApplicationService applicationService
         JSONObject jsonDetails=new JSONObject()
         jsonDetails.put("full_name",userInstance.full_name)
         jsonDetails.put("id",userInstance.id)
-        jsonDetails.put("village_id",userInstance.village_id.id)
-         jsonDetails.put("village_name",userInstance.village_id.name)
+        jsonDetails.put("village_id",userInstance?.village_id?.id)
+         jsonDetails.put("village_name",userInstance?.village_id?.name)
 
-         jsonDetails.put("facility_name",userInstance.facility.name)
-         jsonDetails.put("facility_mobile_number",userInstance.facility.mobile_number)
+         jsonDetails.put("facility_name",userInstance?.facility?.name)
+         jsonDetails.put("facility_mobile_number",userInstance?.facility?.mobile_number)
+        if(userInstance.village_id) {
+            def streetList = SubStreet.findAllByVillage_id(userInstance.village_id) as JSON
+            jsonDetails.put("street", streetList.toString())
 
-         def streetList= SubStreet.findAllByVillage_id(userInstance.village_id) as JSON
-         jsonDetails.put("street",streetList.toString())
+            def houselistList = Household.findAllByVillage_id(userInstance.village_id) as JSON
+            jsonDetails.put("house_hold_list", houselistList.toString())
+        }else{
+            jsonDetails.put("street", "null")
+            jsonDetails.put("house_hold_list", "null")
+        }
 
-         def houselistList= Household.findAllByVillage_id(userInstance.village_id) as JSON
-         jsonDetails.put("house_hold_list",houselistList.toString())
          jsonDetails.put("pregnant_list","null")
 
          def chaidDataList= Dictionary.findAllByActiveAndIs_questionnaireAndActive(true,true,true,[order:'asc',sort:'id'])
@@ -1168,6 +1177,8 @@ ApplicationService applicationService
         //println(streetListInstance.toString())
         render (template:'villageoptions',model:[streetListInstance:streetListInstance])
     }
+
+
 
     def search_ward_list(){
         def districtInstance= District.get(params.id)

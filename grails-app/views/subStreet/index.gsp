@@ -4,6 +4,24 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'subStreet.label', default: 'SubStreet')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
+
+
+        <script>
+                                                         function helmetSearch(ids) {
+
+                                                             var ids = ids.value;
+                                                             $.ajax({
+                                                                 url: '${grailsApplication.config.systemLink.toString()}/subStreet/searchStreetList',
+                                                                 data: {'search_string': ids}, // change this to send js object
+                                                                 type: "post",
+                                                                 success: function (data) {
+                                                                     //document.write(data); just do not use document.write
+                                                                     $("#list-subStreet").html(data);
+                                                                     //console.log(data);
+                                                                 }
+                                                             });
+                                                         }
+                                                     </script>
     </head>
     <body>
 
@@ -17,6 +35,18 @@
                 <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
             </ul>
         </div>
+
+        <div class="page-header-content">
+
+
+                                                                        <div class="heading-elements">
+
+                                                                            <input type="text" value="" name="search_text" class="form-control" onkeyup="helmetSearch(this)"
+                                                                                   placeholder="Search  Helmet">
+
+                                                                        </div>
+
+                                                                    </div>
         <div id="list-subStreet" class="content scaffold-list" role="main">
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>

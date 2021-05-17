@@ -24,7 +24,7 @@
  </div>
 
 
- <div class="col-md-12  panel">
+ <div class="col-md-12  panel"  style="max-height:600px;overflow: auto;">
 
    <form name="searchForm" ng-submit="chwReportByDate()">
 
