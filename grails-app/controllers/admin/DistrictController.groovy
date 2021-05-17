@@ -151,7 +151,6 @@ class DistrictController {
         def searchText=params.search_string
         def searchstring="%"+searchText+"%".toLowerCase()
         //println(searchstring)
-
         params.max=20
         params.sort = 'id'
         params.order = 'desc'
