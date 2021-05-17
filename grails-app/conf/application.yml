@@ -108,6 +108,7 @@ environments:
         dataSource:
             dbCreate: update
             url: jdbc:postgresql://localhost:5432/chaid_june
+            logSql: true
         systemLink: http://localhost:9090
 
     test:

@@ -1178,6 +1178,15 @@ ApplicationService applicationService
         render (template:'villageoptions',model:[streetListInstance:streetListInstance])
     }
 
+    def searchFacilityByDistrict(){
+        def districtInstance= District.get(params.id)
+
+        def facilityList=Facility.findAllByDistrict_idAndDeleted(districtInstance,false)
+       // println(facilityList)
+        render (template:'facilityoptions',model:[facilityListInstance:facilityList])
+
+    }
+
 
 
     def search_ward_list(){

@@ -60,6 +60,16 @@
                                                    </td>
                                                </tr>
 
+                <tr>
+                                                                  <td>
+                                                                      <span class="text-semibold"><g:message code="name.en" default="Region"/></span>
+                                                                  </td>
+                                                                  <td><span
+                                                                          class="text-bold">${fieldValue(bean: facility, field: "district_id.region_id.name")}</span>
+
+                                                                  </td>
+                                                              </tr>
+
               <tr>
                                                    <td>
                                                        <span class="text-semibold"><g:message code="name.en" default="District"/></span>

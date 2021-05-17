@@ -64,6 +64,20 @@
                 });
 
 
+
+                  $.ajax({
+                                    url: '${grailsApplication.config.systemLink.toString()}/home/searchFacilityByDistrict',
+                                    data: {'id': ids}, // change this to send js object
+                                    type: "post",
+                                    success: function (data) {
+                                   // alert("Done");
+                                        //document.write(data); just do not use document.write
+                                        $("#list-facility").html(data);
+                                        //console.log(data);
+                                    }
+                                });
+
+
     }
 
 

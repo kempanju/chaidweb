@@ -54,7 +54,16 @@
                                       </td>
 
            </tr>
+  <tr>
+                                   <td>
+                                       <span class="text-semibold">Region</span>
+                                   </td>
+                                   <td>
+                                       ${fieldValue(bean: mkpUser, field: "district_id.region_id.name")}
 
+                                   </td>
+
+        </tr>
     <tr>
                                    <td>
                                        <span class="text-semibold">District</span>

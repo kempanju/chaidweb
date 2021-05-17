@@ -53,22 +53,7 @@
                 </div>
             </div>
 
-            <g:if test="${params.id}">
-
-              <div class="form-group">
-                    <label class="control-label col-lg-3"><g:message code="dictionary" default="Facility Name"/> <span class="text-danger">*</span></label>
-
-                    <div class="col-lg-5">
-                        <g:select name="facility" id="facility" value="${mkpUser?.facility?.id}"
-                                  from="${chaid.Facility.findAllByDistrict_id(mkpUser?.district_id)}" optionKey="id" optionValue="name"
-                                  class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select Facility')]"/>
-
-                    </div>
-                </div>
-
-            </g:if>
-
-
+         
 
    <div class="form-group">
                <label class="control-label col-lg-3">Wilaya</label>
@@ -81,11 +66,30 @@
 
                </div>
            </div>
+  
+
+              <div class="form-group" id="list-facility">
+                    <label class="control-label col-lg-3"><g:message code="dictionary" default="Facility Name"/> <span class="text-danger">*</span></label>
+
+                    <div class="col-lg-5">
+                        <g:select name="facility" id="facility" value="${mkpUser?.facility?.id}"
+                                  from="${chaid.Facility.findAllByDistrict_id(mkpUser?.district_id)}" optionKey="id" optionValue="name"
+                                  class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select Facility')]"/>
+
+                    </div>
+                </div>
+
+    
+
+
+
+
         <div class="form-group" id="list-village">
          <label class="control-label col-lg-3">Village</label>
  <div class="col-lg-5">
 <input type="text" name="village_name" placeholder="Village" disabled="disabled" class="form-control"
                        value="${mkpUser?.village_id?.name}">
 </div>
+
    </div>
 
