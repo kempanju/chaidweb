@@ -164,7 +164,6 @@ class DistrictController {
             notFound()
             return
         }
-
         try {
             districtService.save(district)
         } catch (ValidationException e) {
