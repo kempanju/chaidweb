@@ -171,6 +171,7 @@ class DistrictController {
             return
         }
 
+
         request.withFormat {
             form multipartForm {
                 flash.message = message(code: 'default.updated.message', args: [message(code: 'district.label', default: 'District'), district.id])
