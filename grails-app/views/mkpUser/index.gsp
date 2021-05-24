@@ -56,14 +56,14 @@
                             <thead>
                             <tr>
                                 <g:sortableColumn property="id" title="${message(code: 'comapny.name.email', default: 'No')}"/>
-                                <g:sortableColumn property="code"
+                                <g:sortableColumn property="full_name"
                                                   title="${message(code: 'company.name.category', default: 'Full Name')}"/>
 
 
-                                <g:sortableColumn property="form_four_no"
+                                <g:sortableColumn property="village_id"
                                                   title="${message(code: 'company.name.label', default: 'Village')}"/>
-                                <g:sortableColumn property="sex"
-                                                  title="${message(code: 'company.name.label', default: 'Phone No')}"/>
+                                <g:sortableColumn property="facility"
+                                                  title="${message(code: 'company.name.label', default: 'Facility Name')}"/>
 
                                 <th class="text-center">Actions</th>
 
@@ -84,7 +84,7 @@
                                     </td>
                                     <td>${fieldValue(bean: zUserListInstance, field: "full_name")}</td>
                                     <td>${fieldValue(bean: zUserListInstance, field: "village_id.name")}</td>
-                                    <td>${fieldValue(bean: zUserListInstance, field: "phone_number")}</td>
+                                    <td>${fieldValue(bean: zUserListInstance, field: "facility.name")}</td>
 
                                     <td class="text-center">
 
