@@ -1120,9 +1120,8 @@ ApplicationService applicationService
     }
      def initialData(){
          def username=params.username
-
          //println("Initial Data")
-         println(params)
+        // println(params)
         def userInstance= MkpUser.findByUsername(username)
         JSONObject jsonDetails=new JSONObject()
         jsonDetails.put("full_name",userInstance.full_name)
@@ -1133,7 +1132,16 @@ ApplicationService applicationService
          jsonDetails.put("facility_name",userInstance?.facility?.name)
          jsonDetails.put("facility_mobile_number",userInstance?.facility?.mobile_number)
         if(userInstance.village_id) {
+            def countVillage=SubStreet.countByVillage_id(userInstance.village_id)
+            if(countVillage==0){
+               def subStreetInstnce=new SubStreet()
+                subStreetInstnce.district_id=userInstance.district_id
+                subStreetInstnce.village_id=userInstance.village_id
+                subStreetInstnce.name=userInstance.village_id.name
+                subStreetInstnce.save(flush:true)
+            }
             def streetList = SubStreet.findAllByVillage_id(userInstance.village_id) as JSON
+
             jsonDetails.put("street", streetList.toString())
 
             def houselistList = Household.findAllByVillage_id(userInstance.village_id) as JSON
