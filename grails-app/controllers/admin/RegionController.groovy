@@ -146,17 +146,17 @@ class RegionController {
 
 
                                 findOrSaveWards = Wards.findOrSaveWhere(district_id: districtInstance, name: kata)
-                                //findOrSaveWards.save(flush: true)
+                                findOrSaveWards.save(flush: true)
                             }
                             if (village) {
                                 villageSave = Street.findOrSaveWhere(district_id: districtInstance, name: village, ward_id: findOrSaveWards)
-                               // villageSave.save(flush: true)
+                                villageSave.save(flush: true)
                             }
 
                             if (helmets) {
                                 try {
                                     helmetSave = SubStreet.findOrSaveWhere(district_id: districtInstance, village_id: villageSave, name: helmets.trim())
-                                  //  helmetSave.save(flush: true)
+                                    helmetSave.save(flush: true)
                                 }catch(Exception e){
                                     e.printStackTrace()
                                 }
