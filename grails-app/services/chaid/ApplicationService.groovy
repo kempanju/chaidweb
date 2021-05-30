@@ -926,18 +926,24 @@ class ApplicationService {
                             def signCount = 1;
                             def breakArray = answer_code.split(",")
                             breakArray.each {
-                                String coreRequest=it
-                                coreRequest=coreRequest.trim()
-                                def dictionaryItemList = DictionaryItem.findByCode(coreRequest)
-                                def childSignInstance = new ChildDangerSign()
-                                childSignInstance.childFiveYears = childUnderFiveInstance
-                                childSignInstance.sign_type = dictionaryItemList
-                                childSignInstance.save()
+                                String coreRequest = it
 
-                                msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList.name
+                                try {
+                                    coreRequest = coreRequest.trim()
+                                    def dictionaryItemList = DictionaryItem.findByCode(coreRequest)
+                                    def childSignInstance = new ChildDangerSign()
+                                    childSignInstance.childFiveYears = childUnderFiveInstance
+                                    childSignInstance.sign_type = dictionaryItemList
+                                    childSignInstance.save()
+
+                                    msgDangerSign = msgDangerSign + " " + signCount + ". " + dictionaryItemList?.name
 
 
-                                signCount++
+                                    signCount++
+                                }catch(Exception e){
+                                    println("Code failed: "+ coreRequest)
+                                    e.printStackTrace()
+                                }
 
                             }
 

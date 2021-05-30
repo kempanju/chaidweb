@@ -72,28 +72,32 @@
 
         </div>
 
-    <div id="dialog" title="CSVfILE">
-                                            <div class="panel-body">
-
-                                                <g:uploadForm name="uploadCVRegion" controller="region"
-                                                              action="uploadCVRegion">
-                                                    <div class="col-lg-8">
-                                                        <input type="file" name="filename_csv" accept="text/csv"/>
-                                                    </div>
-
-                                                    <div class="text-right col-lg-10" style="margin-top: 20px">
-                                                        <button type="submit" style="margin-left:4px"
-                                                                class="btn btn-primary">Upload CSV <i
-                                                                class="icon-arrow-right14 position-right"></i>
-                                                        </button>
-                                                    </div>
-                                                </g:uploadForm>
-                                            </div>
-                                        </div>
-
-
 
         </div>
+
+    <div id="dialog" title="CSVfILE">
+                                              <div class="panel-body">
+
+                                                  <g:uploadForm name="uploadCVRegion" controller="region"
+                                                                action="uploadCVRegion">
+                                                      <div class="col-lg-8">
+                                                          <input type="file" name="filename_csv" accept="text/csv"/>
+                                                      </div>
+
+                                                      <div class="text-right col-lg-10" style="margin-top: 20px">
+                                                          <button type="submit" style="margin-left:4px"
+                                                                  class="btn btn-primary">Upload CSV <i
+                                                                  class="icon-arrow-right14 position-right"></i>
+                                                          </button>
+                                                      </div>
+                                                  </g:uploadForm>
+                                              </div>
+                                          </div>
+
+
+
+
+
         </div>
     </body>
 </html>

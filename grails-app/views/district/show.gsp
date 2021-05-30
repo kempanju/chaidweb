@@ -43,6 +43,29 @@
                                                     </td>
                                                 </tr>
 
+ <%
+                    def wardsNo=admin.Wards.executeQuery("from Wards where district_id=:district",[district:district]).size()
+                    def villageNo=admin.Street.executeQuery("from Street where district_id=:district",[district:district]).size()
+
+             %>
+                  <tr>
+                              <td>
+                                  <span class="text-semibold"><g:message code="code" default="Wards No"/></span>
+                              </td>
+                              <td><span
+                                      class="text-bold">${wardsNo}</span>
+                              </td>
+                          </tr>
+                   <tr>
+                               <td>
+                                   <span class="text-semibold"><g:message code="code" default="Village No"/></span>
+                               </td>
+                               <td><span
+                                       class="text-bold">${villageNo}</span>
+                               </td>
+                           </tr>
+
+
                             <tr>
                                 <td colspan="2">
                                     <g:if test="${flash.message}">
