@@ -46,6 +46,7 @@
  <%
                     def wardsNo=admin.Wards.executeQuery("from Wards where district_id=:district",[district:district]).size()
                     def villageNo=admin.Street.executeQuery("from Street where district_id=:district",[district:district]).size()
+                    def facilityNo=chaid.Facility.executeQuery("from Facility where district_id=:district and deleted=false",[district:district]).size()
 
              %>
                   <tr>
@@ -62,6 +63,14 @@
                                </td>
                                <td><span
                                        class="text-bold">${villageNo}</span>
+                               </td>
+                           </tr>
+            <tr>
+                               <td>
+                                   <span class="text-semibold"><g:message code="code" default="Facility No"/></span>
+                               </td>
+                               <td><span
+                                       class="text-bold">${facilityNo}</span>
                                </td>
                            </tr>
 

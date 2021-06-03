@@ -136,7 +136,7 @@ class RegionController {
                             tempoDistrict = district.trim()
                         }
 
-                      //  println(tempoDistrict+" "+tempoKata+" "+tempoVillage+" "+tempoHelmets)
+                        //println(tempoDistrict+" "+tempoKata+" "+tempoVillage+" "+tempoHelmets)
                         def districtInstance = District.findByName(tempoDistrict)
 
                      //   def uniquename = districtInstance.id + "/" + tempoKata

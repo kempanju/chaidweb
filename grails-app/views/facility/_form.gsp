@@ -19,6 +19,19 @@
                         <input type="text" name="mobile_number" class="form-control" autocomplete="mobile_number"  value="${facility?.mobile_number}">
                     </div>
                 </div>
+
+
+    <div class="form-group">
+        <label class="control-label col-lg-3"><g:message code="dictionary" default="Facility Type"/> <span class="text-danger">*</span></label>
+
+        <div class="col-lg-7">
+            <g:select name="type" id="facilityType" value="${facility?.type?.id}"
+                      from="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("FAUCYTYPE"))}" optionKey="id" optionValue="name"
+                      class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select Type')]"/>
+
+        </div>
+    </div>
+
  <div class="form-group">
             <label class="control-label col-lg-3">Wilaya</label>
 

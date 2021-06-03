@@ -32,7 +32,7 @@
         <div class="nav" role="navigation">
             <ul>
                 <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+                <li><g:link class="create" action="create">Create Hamlet</g:link></li>
             </ul>
         </div>
 
@@ -42,7 +42,7 @@
                                                                         <div class="heading-elements">
 
                                                                             <input type="text" value="" name="search_text" class="form-control" onkeyup="helmetSearch(this)"
-                                                                                   placeholder="Search  Helmet">
+                                                                                   placeholder="Search  Hamlet">
 
                                                                         </div>
 

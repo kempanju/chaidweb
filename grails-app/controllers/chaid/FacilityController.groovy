@@ -68,10 +68,10 @@ class FacilityController {
                         def facilityNo = fields[0]
                         def facilityName = fields[1]
                         def region = fields[2]
-                        def district = fields[3]
+                        def district = fields[4]
                         def facilityType = fields[5]
-                        if(Facility.countByNumber(facilityNo)==0) {
-                            if (region) {
+                       // if(Facility.countByNumber(facilityNo)<10) {
+                          /*  if (region) {
                                 regionSave = Region.findOrSaveWhere(name: region)
                                 regionSave.save(flush: true)
                             }
@@ -84,25 +84,36 @@ class FacilityController {
                             }
 
 
+
+*/
+                             findOrSaveDistrict=District.findByName(district)
                             /*   if(helmets){
                             helmetSave= SubStreet.findOrSaveWhere(district_id: districtInstance,village_id:villageSave,name:helmets)
                         }*/
+                        System.out.println(palines+" "+district)
 
-                            if (facilityName) {
+                            if (facilityName&&findOrSaveDistrict) {
 
                                 // String codeDictionary=
-                                def dictionatyItem = DictionaryItem.findOrSaveWhere(dictionary_id: dictionary, name: facilityType, code: facilityType.toUpperCase())
-                                dictionatyItem.save(flush: true)
-                                facilitySave = Facility.findOrSaveWhere(number: facilityNo, name: facilityName, district_id: findOrSaveDistrict, type: dictionatyItem)
-                                facilitySave.save(flush: true)
+                                if(Facility.countByNumber(facilityNo)==0) {
+                                    println("created")
+
+                                    def dictionatyItem = DictionaryItem.findOrSaveWhere(dictionary_id: dictionary, name: facilityType, code: facilityType.toUpperCase())
+                                    dictionatyItem.save(flush: true)
+
+                                    facilitySave = Facility.findOrSaveWhere(number: facilityNo, name: facilityName, district_id: findOrSaveDistrict, type: dictionatyItem)
+                                    facilitySave.save(flush: true)
+                                }else{
+                                    println("updated")
+                                    Facility.executeUpdate("update Facility set district_id=:district_id where number=:number",[district_id:findOrSaveDistrict,number:facilityNo])
+                                }
 
 
                             }
                             //
                             //  println(tempoKata + " " + tempoVillage + " " + tempoHelmets + " " + tempoFacility)
                             //    sleep(2000)
-                        }
-                        System.out.println(palines)
+
                     }
                 }catch(Exception e){
                     e.printStackTrace()

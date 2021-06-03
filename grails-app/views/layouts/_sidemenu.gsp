@@ -140,7 +140,7 @@
 
                                                          <li><g:link controller='street' action="index">Village</g:link>
                                                                                                                 </li>
-  <li><g:link controller='subStreet' action="index">Street</g:link>
+  <li><g:link controller='subStreet' action="index">Hamlets</g:link>
                                                                                                                 </li>
 
 
