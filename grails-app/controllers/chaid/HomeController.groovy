@@ -4,6 +4,7 @@ import admin.Dictionary
 import admin.DictionaryItem
 import admin.District
 import admin.Street
+import admin.Region
 import admin.SubStreet
 import admin.Wards
 import com.chaid.security.MkpRole
@@ -987,9 +988,27 @@ ApplicationService applicationService
         render view: 'reportbyvillage'
     }
     def searchVillageReport(){
-        println(params)
         def districtInstance=District.get(params.id)
         render template: 'villagereport',model: [districtInstance:districtInstance]
+    }
+    def searchDistrictReport(){
+        def regionInstance=Region.get(params.id)
+        render template: 'regionreport',model: [regionInstance:regionInstance]
+    }
+    def searchReportByDate(){
+        def  selectedOption= params.selectedOption
+        def from_date=params.from_date
+        def end_date=params.end_date
+
+        if( selectedOption&& selectedOption.equals("region")){
+            def regionInstance=Region.get(params.region_id)
+            render template: 'regionreport',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
+        }else if(selectedOption&& selectedOption.equals("district")){
+            def districtInstance=District.get(params.district_id)
+            render template: 'villagereport',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
+        }else {
+            render template: 'countryreport',model: [from_date:from_date,end_date:end_date]
+        }
     }
 
     def chadSaveData(){
