@@ -15,6 +15,8 @@ class Household {
     Integer male_no=0,female_no=0
     java.sql.Timestamp created_at
     int total_members
+    static hasMany = [subChaids:MkChaid]
+
     static constraints = {
         deleted nullable:true
         number nullable:true,maxSize:20

@@ -17,6 +17,17 @@ class DictionaryItemController {
         respond dictionaryItemService.list(params), model:[dictionaryItemCount: dictionaryItemService.count()]
     }
 
+    def searchDictionaryList(){
+        def searchText=params.search_string
+        String searchstring="%"+searchText+"%"
+       // searchstring=searchstring.toLowerCase()
+        //println(searchstring)
+        def dictionaryInstanceList= DictionaryItem.executeQuery("from DictionaryItem where  name like :searchstring or name_en like :searchstring or code like :searchstring or dictionary_id.name like :searchstring ",[searchstring:searchstring],params)
+
+        render(template: 'dictionaryItem',model: [dictionaryItemList:dictionaryInstanceList])
+
+    }
+
     def show(Long id) {
         respond dictionaryItemService.get(id)
     }

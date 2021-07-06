@@ -1132,6 +1132,10 @@ select:active {
 	border-top-right-radius: 5px;
 }
 
+.report-item td{
+ width: 120px !important;
+ padding: 4px !important;
+}
 
 
 

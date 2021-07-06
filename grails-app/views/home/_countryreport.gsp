@@ -1,3 +1,4 @@
+
 <table class="table">
 <thead>
 <tr class="active">
@@ -60,13 +61,15 @@ def totalVisit=0;
         %>
         <td>${houseHoldNo}</td>
          <%
-         def houseHoldMember=0
-             if(end_date&&from_date){
-               houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where district_id.region_id=:region and deleted=false and created_at between '"+from_date+"' and '"+end_date+"'",[region:regionListInstance] )
-             }else{
-             houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where district_id.region_id=:region and deleted=false",[region:regionListInstance] )
+              def houseHoldMember=0
 
-             }
+                 if(end_date&&from_date){
+                                      houseHoldMember=chaid.MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where   deleted=false and created_at between '"+from_date+"' and '"+end_date+"'")
+                                    }else{
+                                    houseHoldMember=chaid.MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where  deleted=false" )
+
+                                    }
+
          %>
     <td >${houseHoldMember[0][0]}</td>
  <td>${houseHoldMember[0][1]}</td>
@@ -158,6 +161,40 @@ def totalVisit=0;
     </td>
 
     </tr>
+
+      <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD4"))}" var="visitDataInstance">
+
+          <tr>
+          <td></td>
+          <td>${visitDataInstance.name}</td>
+
+             <%
+                    def chadNoH=0;
+                     if(end_date&&from_date){
+                     chadNoH=chaid.MkChaid.executeQuery("from MkChaid where  deleted=false and visit_type=:visit_type and arrival_time between '"+from_date+"' and '"+end_date+"'",[visit_type:visitDataInstance]).size()
+
+                     }else{
+                    chadNoH=chaid.MkChaid.countByDeletedAndVisit_type(false,visitDataInstance)
+                    }
+                %>
+            <td>${chadNoH}</td>
+            <td></td>
+
+             <%
+                    def houseHoldMemberH=0;
+                        if(end_date&&from_date){
+                          houseHoldMemberH=chaid.MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where  visit_type=:visit_type and deleted=false and created_at between '"+from_date+"' and '"+end_date+"'",[visit_type:visitDataInstance] )
+                        }else{
+                        houseHoldMemberH=chaid.MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where  visit_type=:visit_type and deleted=false",[visit_type:visitDataInstance] )
+
+                        }
+                    %>
+               <td >${houseHoldMemberH[0][0]}</td>
+            <td>${houseHoldMemberH[0][1]}</td>
+            <td>${houseHoldMemberH[0][2]}</td>
+
+          </tr>
+        </g:each>
     <%
     if(houseHoldMember[0][0]){
     totalMember=totalMember+houseHoldMember[0][0];

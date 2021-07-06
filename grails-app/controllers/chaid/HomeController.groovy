@@ -32,6 +32,16 @@ ApplicationService applicationService
                 render view:'dashboard',model: [houseHoldMember:houseHoldMember]
     }
 
+    def testHql(){
+       def houseHoldMember=chaid.Household.executeQuery(" from Household where  subChaids.visit_type.id=7",[max:10])
+        println(houseHoldMember.subChaids)
+        render "Ok"
+    }
+
+    def reportTool(){
+        render view: "reportTool"
+    }
+
     def sendMessage(){
         applicationService.sendMessage("255766545878"," hello")
        // String url="https://apisms.bongolive.africa/v1/send"
@@ -1008,6 +1018,22 @@ ApplicationService applicationService
             render template: 'villagereport',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
         }else {
             render template: 'countryreport',model: [from_date:from_date,end_date:end_date]
+        }
+    }
+
+    def reportByDate(){
+        def  selectedOption= params.selectedOption
+        def from_date=params.from_date
+        def end_date=params.end_date
+
+        if( selectedOption&& selectedOption.equals("region")){
+            def regionInstance=Region.get(params.region_id)
+            render template: '/report/regionreport',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
+        }else if(selectedOption&& selectedOption.equals("district")){
+            def districtInstance=District.get(params.district_id)
+            render template: '/report/villagereport',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
+        }else {
+            render template: '/report/countryreport',model: [from_date:from_date,end_date:end_date]
         }
     }
 

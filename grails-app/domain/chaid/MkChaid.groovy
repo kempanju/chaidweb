@@ -5,9 +5,9 @@ import admin.District
 import admin.Street
 import com.chaid.security.MkpUser
 
+
 class MkChaid {
     int id,version
-    Household household
     DictionaryItem visit_type,meeting_type,objective_type,relationship_status,interview_status,living_with_household
     java.sql.Timestamp arrival_time
     String respondent_name,respondent_gender,uniquecode,reg_no,sick_person_name
@@ -19,6 +19,8 @@ class MkChaid {
     MkpUser created_by
     Facility facility
     String message,app_logs
+    static belongsTo = [household: Household]
+
     static constraints = {
         visit_type nullable:true
         meeting_type nullable:true
