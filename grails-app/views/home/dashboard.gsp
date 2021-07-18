@@ -10,92 +10,48 @@
 
 
     <script type="text/javascript">
-        google.charts.load("current", {packages: ["corechart"]});
-
-        google.charts.setOnLoadCallback(drawChartGender);
-        google.charts.setOnLoadCallback(drawChartCategory);
-        google.charts.setOnLoadCallback(drawChartCrimeType);
-        google.charts.setOnLoadCallback(drawChartPopulationType);
-
-        function drawChartGender() {
-            var data = google.visualization.arrayToDataTable([
-                ['Task', 'Chad numbers'],
-                ['Male', ${houseHoldMember[0][1]}],
-                ['Female', ${houseHoldMember[0][2]}],
-
-            ]);
-
-            var options = {
-                title: 'Gender Graph',
-                is3D: true,
-            };
-
-            var chart = new google.visualization.PieChart(document.getElementById('piechart_3d_comp_gender'));
-            chart.draw(data, options);
-        }
-
-
-        function drawChartCategory() {
-            var data = google.visualization.arrayToDataTable([
-                ['Task', ' Visit Type'],
-                <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD4"))}" var="lawyerDataInstance">
-
-                ["${lawyerDataInstance.name}", ${chaid.MkChaid.executeQuery("from MkChaid where visit_type=:visit_type",[visit_type:lawyerDataInstance]).size()}],
-                </g:each>
-
-            ]);
-
-            var options = {
-                title: 'Visit Type',
-                is3D: true,
-            };
-
-            var chart = new google.visualization.PieChart(document.getElementById('piechart_3d_comp_population'));
-            chart.draw(data, options);
-        }
-
-
-         function drawChartPopulationType() {
-                    var data = google.visualization.arrayToDataTable([
-                        ['Task', ' Available Members'],
-                        <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD17"))}" var="lawyerDataInstance">
-
-                        ["${lawyerDataInstance.name}", ${chaid.AvailableMemberHouse.executeQuery("from AvailableMemberHouse where type_id=:visit_type and chaid.deleted=false",[visit_type:lawyerDataInstance]).size()}],
-                        </g:each>
-
-                    ]);
-
-                    var options = {
-                        title: 'Available Members',
-                        is3D: true,
-                    };
-
-                    var chart = new google.visualization.PieChart(document.getElementById('piechart_3d_comp'));
-                    chart.draw(data, options);
-                }
 
 
 
-        function drawChartCrimeType() {
-            var data = google.visualization.arrayToDataTable([
-                ['Task', ' Meeting Type'],
-                <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD5"))}" var="lawyerDataInstances">
+function callOption (data){
+var selectedItem=data.value;
+$("#village-report").empty();
+if(selectedItem=="district"){
+    $("#districtId").show();
+    $("#regionId").hide();
 
-                ["${lawyerDataInstances.name}", ${chaid.MkChaid.executeQuery("from MkChaid where meeting_type=:meeting_type",[meeting_type:lawyerDataInstances]).size()}],
-                </g:each>
+}
+else if(selectedItem=="region"){
+$("#districtId").hide();
+$("#regionId").show();
 
-            ]);
-
-            var options = {
-                title: 'Meeting Type',
-                is3D: true,
-            };
-
-            var chart = new google.visualization.PieChart(document.getElementById('piechart_3d_comp_crime'));
-            chart.draw(data, options);
-        }
+}else{
+$("#regionId").hide();
+$("#districtId").hide();
+}
+}
 
 
+function getReports(){
+var district_id=$("#district_id").val();
+var region_id=$("#region_id").val();
+var selectedOption=$("#selectedOption").val();
+
+  $.ajax({
+                        url: '${grailsApplication.config.systemLink.toString()}/home/dashboardFilter',
+                        data: {'district_id': district_id,'region_id':region_id,'selectedOption':selectedOption}, // change this to send js object
+                        type: "post",
+                        success: function (data) {
+                       // alert("Done");
+                            //document.write(data); just do not use document.write
+                            $("#dashboard-data").html(data);
+                            //console.log(data);
+                        }
+                    });
+
+
+
+}
 
     </script>
 
@@ -126,78 +82,41 @@
             </div>
         </div>
 
+ <div class="col-lg-12  panel-body">
+  <form name="searchForm" ng-submit="registeredReportByDate()">
 
 
-        <div class="container col-lg-12" style="margin-top: 10px">
-            <div class="row ">
-                <div class="col-md-4">
-                    <div class="card-counter primary">
-                        <i class="fa fa-code-fork"></i>
-                        <span class="count-numbers">${chaid.MkChaid.countByDeleted(false)}</span>
-                        <span class="count-name">Activity</span>
-                    </div>
-                </div>
+         <div class="form-group">
 
-                <div class="col-md-4">
-                    <div class="card-counter danger">
-                        <i class="fa fa-legal"></i>
-                        <span class="count-numbers">${chaid.Household.count()}</span>
-                        <span class="count-name">Households</span>
-                    </div>
-                </div>
+           <div class="col-lg-2">
+           <select id="selectedOption" name="selectedOption" onchange="callOption(this)">
+           <option value="country">Country</option>
+           <option value="region">Region</option>
+           <option value="district">District</option>
+           </select>
+           </div>
 
-                <div class="col-md-4">
-                    <div class="card-counter success">
-                        <i class="fa fa-database"></i>
-                        <span class="count-numbers">${chaid.Facility.countByDeleted(false)}</span>
-                        <span class="count-name">Facilities</span>
-                    </div>
-                </div>
+                        <div class="col-lg-3" id="districtId" style="display:none">
+                            <g:select name="district_id" id="district_id" value="" onchange="getReports(this)"
+                                      data-show-subtext="true" data-live-search="true"
+                                      from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
+                                      class="form-control " noSelection="['': 'District']"/>
 
+                        </div>
+            <div class="col-lg-3" id="regionId" style="display:none">
+                             <g:select name="region_id" id="region_id" value="" onchange="getReports(this)"
+                                       data-show-subtext="true" data-live-search="true"
+                                       from="${admin.Region.list()}" optionKey="id" optionValue="name"
+                                       class="form-control " noSelection="['': 'Region']"/>
 
+                         </div>
+</div>
+</form>
+</div>
 
-                <div class="col-md-4">
-                    <div class="card-counter info">
-                        <i class="fa fa-building-o"></i>
-
-                        <span class="count-numbers">${houseHoldMember[0][0]}</span>
-                        <span class="count-name">Population</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card-counter info">
-                        <i class="fa fa-file"></i>
-                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where emergence_status<>0 and deleted=false").size()}</span>
-                        <span class="count-name">Referrals</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card-counter info">
-                        <i class="fa fa-users"></i>
-                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where emergence_status=2 and deleted=false").size()}</span>
-                        <span class="count-name">Responded Referrals</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6 text-center" style="padding: 10px">
-            <div id="piechart_3d_comp_gender" style="width: 100%;min-height: 300px;margin-top: 5px"></div>
-
-        </div>
-        <div class="col-lg-6 text-center" style="padding: 10px">
-            <div id="piechart_3d_comp" style="width: 100%;min-height: 300px;margin-top: 5px"></div>
-
-        </div>
-
-        <div class="col-lg-6 text-center" style="padding: 10px">
-            <div id="piechart_3d_comp_crime" style="width: 100%;min-height: 300px;margin-top: 1px"></div>
-
-        </div>
-<div class="col-lg-6 text-center" style="padding: 10px">
-            <div id="piechart_3d_comp_population" style="width: 100%;min-height: 300px;margin-top: 1px"></div>
-
-        </div>
+<div id="dashboard-data">
+<g:render template="dashboardcountry" />
+</div>
 
 
         </div>

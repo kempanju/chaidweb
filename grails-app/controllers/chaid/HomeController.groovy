@@ -31,6 +31,28 @@ ApplicationService applicationService
 
                 render view:'dashboard',model: [houseHoldMember:houseHoldMember]
     }
+    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
+    def dashboardFilter(){
+        def selectedOption=params.selectedOption
+        print(params)
+        if(selectedOption.equals("region")){
+            def regionInstance=Region.read(params.region_id)
+            def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where deleted=false and district_id.region_id=:regionInstance ",[regionInstance:regionInstance])
+
+            render template: 'dashboardregion',model: [regionInstance:regionInstance,houseHoldMember:houseHoldMember]
+        }else if(selectedOption.equals("district")){
+            def districtInstance=District.read(params.district_id)
+            def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where deleted=false and  district_id=:districtInstance",[districtInstance:districtInstance])
+
+            render template: 'dashboarddistrict',model: [districtInstance:districtInstance,houseHoldMember:houseHoldMember]
+        }else{
+            def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where deleted=false ")
+
+            render template: 'dashboardcountry',model: [houseHoldMember:houseHoldMember]
+
+        }
+       // render "Done"
+    }
 
     def testHql(){
        def houseHoldMember=chaid.Household.executeQuery(" from Household where  subChaids.visit_type.id=7",[max:10])

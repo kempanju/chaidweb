@@ -79,7 +79,8 @@
 
 
    <div class="col-md-12" style="margin-top: 10px">
-
+        <div class="panel-body success"><div class="col-lg-5"><h5>Total CHW: {{report.length}}</h5></div>
+         <div class="col-lg-5"><h5>Sum of Reports:{{calculateTotal(report)|number}}</h5></div>
 
                         <div class="col-md-12">
                                 <table class="table  table-bordered">

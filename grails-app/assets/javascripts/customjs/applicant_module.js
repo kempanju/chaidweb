@@ -234,10 +234,18 @@ $scope.referral.start_date="";
     //$scope.linkName = "feli";
 
     linkName="http://chaid.mkapafoundation.or.tz"
-    //linkName="http://localhost:9090"
+   // linkName="http://localhost:9090"
 callHttpMethod("");
 
+$scope.calculateTotal = function(filteredArray){
 
+    var total = 0;
+    angular.forEach(filteredArray, function(item){
+        total += item.report_no;
+        console.log(total);
+    });
+    return total;
+};
 $scope.chwReportByDate=function(){
 
         $http({

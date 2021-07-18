@@ -98,10 +98,10 @@ dataSource:
     pooled: true
     jmxExport: true
     driverClassName: org.postgresql.Driver
-    #username: postgres
-    #password: 'p@ssw0rd'
-    username: chaiduser
-    password: 'ch@!d#2021'
+    username: postgres
+    password: 'p@ssw0rd'
+    #username: chaiduser
+    #password: 'ch@!d#2021'
 
 environments:
     development:
