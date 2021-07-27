@@ -3,13 +3,14 @@ package chaid
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
-@Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
+@Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION'])
 class HouseholdController {
+    def springSecurityService
 
     HouseholdService householdService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-
+    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
     def index(Integer max) {
         session["activePage"] = "household"
         if(!params.order) {
@@ -20,6 +21,22 @@ class HouseholdController {
         params.max = Math.min(max ?: 10, 100)
         respond householdService.list(params), model:[householdCount: householdService.count()]
     }
+
+    @Secured(['ROLE_REGION'])
+    def byRegion(Integer max) {
+        session["activePage"] = "household"
+        if(!params.order) {
+            params.sort = 'id'
+            params.order = 'desc'
+        }
+        def currentUser=springSecurityService.getCurrentUser()
+
+        params.max = Math.min(max ?: 10, 100)
+        def householdList=Household.executeQuery(" from Household  where district_id.region_id=:region and deleted=false",[region:currentUser.region],params)
+        def householdCount=Household.executeQuery(" from Household  where district_id.region_id=:region and deleted=false",[region:currentUser.region] ).size()
+        render view: 'byRegion',model:[householdList:householdList,householdCount: householdCount]
+    }
+
 
     def show(Long id) {
         respond householdService.get(id)

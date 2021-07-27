@@ -32,14 +32,26 @@
 
                                     <div class="form-group">
 
-                                                        <div class="col-lg-10">
-                                                            <g:select name="district" id="district" value="${params?.district}" ng-model="insert.district" ng-change="updateChwReport()"
-                                                                      from="${admin.District.list()}" optionKey="id" optionValue="name"
-                                                                      class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select District')]"/>
+                    <div class="col-lg-10">
 
-                                                        </div>
-                                                    </div>
-                                                    </div>
+
+                          <sec:ifAnyGranted roles="ROLE_REGION">
+
+            <g:select name="district" id="district" value="${params?.district}" ng-model="insert.district" ng-change="updateChwReport()"
+                      from="${admin.District.findAllByRegion_idAndD_deleted(currentUser.region,false)}" optionKey="id" optionValue="name"
+                      class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select District')]"/>
+                            </sec:ifAnyGranted>
+                              <sec:ifAnyGranted roles="ROLE_ADMIN">
+
+                        <g:select name="district" id="district" value="${params?.district}" ng-model="insert.district" ng-change="updateChwReport()"
+                                  from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
+                                  class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select District')]"/>
+                                                </sec:ifAnyGranted>
+
+                    </div>
+
+                </div>
+                </div>
 
 
 

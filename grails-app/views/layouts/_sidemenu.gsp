@@ -53,6 +53,7 @@
                                     class=" icon-user"></i> <span><g:message code="my.application"
                                                                                   default="Dashboard"/></span></g:link>
                         </li>
+                    <sec:ifAnyGranted roles="ROLE_CORE_WEB,ROLE_ADMIN">
 
       <li class="<g:if test="${activePage == 'mkchaid'}">active</g:if>">
                                                         <a href="#"><i class="icon-select2"></i> <span>Activity</span></a>
@@ -151,12 +152,45 @@
                             <g:link controller='applicant' action="password"><i class="icon-key"></i> <span><g:message
                                     code="password" default="Password Setting"/></span></g:link>
                         </li>
-                        <li class="<g:if test="${activePage == 'attachment'}">active</g:if>">
+
+                    </sec:ifAnyGranted>
+                        <sec:ifAnyGranted roles="ROLE_REGION">
+    <li class="<g:if test="${activePage == 'mkchaid'}">active</g:if>">
+                            <g:link class="list" controller="mkChaid" action="byRegion"><i
+                                    class=" icon-select2"></i> <span><g:message code="my.activity.application"
+                                                                                  default="Activity"/></span></g:link>
+                        </li>
+
+        <li class="<g:if test="${activePage == 'household'}">active</g:if>">
+                                <g:link class="list" controller="household" action="byRegion"><i
+                                        class="icon-clipboard3"></i> <span><g:message code="my.publication"
+                                                                                      default="Households"/></span></g:link>
+                            </li>
+     <li class="<g:if test="${activePage == 'facility'}">active</g:if>">
+                                    <g:link class="list" controller="facility" action="byRegion"><i
+                                            class=" icon-circle"></i> <span><g:message code="my.publication"
+                                                                                          default="Facilities"/></span></g:link>
+                                </li>
+  <li class="<g:if test="${activePage == 'reports'}">active</g:if>">
+                                                          <a href="#"><i class="icon-file-excel"></i> <span>Reports</span></a>
+                                                          <ul>
+                                                        <li><g:link controller='home' action="reportByRegion">General Reports</g:link></li>
+                                                        <li><g:link controller='home' action="chwActivity">CHW Activity Report</g:link></li>
+                                                        <li><g:link controller='home' action="chwReferral">CHW Referral Report</g:link></li>
+
+                                                          </ul>
+
+                                   </li>
+
+
+
+
+    </sec:ifAnyGranted>
+ <li class="<g:if test="${activePage == 'attachment'}">active</g:if>">
                             <g:link class="list" controller="logout"><i
                                     class="icon-switch"></i>  <span><g:message code="log.out"
                                                                                default="Log out"/></span></g:link>
                         </li>
-
                     </sec:ifLoggedIn>
 
                 </ul>

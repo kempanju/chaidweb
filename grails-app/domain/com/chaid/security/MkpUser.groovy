@@ -2,6 +2,8 @@ package com.chaid.security
 
 import admin.District
 import admin.Street
+import admin.Region
+
 import chaid.Facility
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
@@ -23,6 +25,7 @@ class MkpUser implements Serializable {
     String first_name,middle_name,last_name,email,phone_number,gender,full_name
     Street village_id;
     District district_id
+    Region region
     Facility facility
     Set<MkpRole> getAuthorities() {
         (MkpUserMkpRole.findAllByMkpUser(this) as List<MkpUserMkpRole>)*.mkpRole as Set<MkpRole>
@@ -39,6 +42,7 @@ class MkpUser implements Serializable {
         village_id nullable:true
         district_id nullable:true
         facility nullable:true
+        region nullable: true
     }
 
     static mapping = {

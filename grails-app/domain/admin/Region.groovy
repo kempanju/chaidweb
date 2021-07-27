@@ -11,6 +11,7 @@ class Region {
     def user
     def springSecurityService
 
+
     static mapping = {
         table name: 'gen_region'
         //country_id column:'country_id'

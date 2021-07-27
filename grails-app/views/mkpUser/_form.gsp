@@ -53,7 +53,17 @@
                 </div>
             </div>
 
-         
+         <div class="form-group">
+                     <label class="control-label col-lg-3">Region</label>
+
+                     <div class="col-lg-5">
+                         <g:select name="region" id="region_id" value="${mkpUser?.region?.id}"
+                                   data-show-subtext="true" data-live-search="true"
+                                   from="${admin.Region.list()}" optionKey="id" optionValue="name"
+                                   class="form-control" noSelection="['': 'Region']"/>
+
+                     </div>
+                 </div>
 
    <div class="form-group">
                <label class="control-label col-lg-3">Wilaya</label>
@@ -69,7 +79,7 @@
   
 
               <div class="form-group" id="list-facility">
-                    <label class="control-label col-lg-3"><g:message code="dictionary" default="Facility Name"/> <span class="text-danger">*</span></label>
+                    <label class="control-label col-lg-3"><g:message code="dictionary" default="Facility Name"/> </label>
 
                     <div class="col-lg-5">
                         <g:select name="facility" id="facility" value="${mkpUser?.facility?.id}"

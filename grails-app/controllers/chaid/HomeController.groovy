@@ -19,22 +19,22 @@ import org.grails.web.json.JSONObject
 @Secured("isAuthenticated()")
 class HomeController {
 ApplicationService applicationService
+    def springSecurityService
+
     def index() { }
 
-    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
+    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION'])
     def dashboard(){
         session["activePage"] = "dashboard"
+        def currentUser=springSecurityService.getCurrentUser()
 
         def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household  ")
-
-
-
-                render view:'dashboard',model: [houseHoldMember:houseHoldMember]
+        render view:'dashboard',model: [houseHoldMember:houseHoldMember,currentUser:currentUser]
     }
-    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
+    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION'])
     def dashboardFilter(){
         def selectedOption=params.selectedOption
-        print(params)
+        //print(params)
         if(selectedOption.equals("region")){
             def regionInstance=Region.read(params.region_id)
             def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where deleted=false and district_id.region_id=:regionInstance ",[regionInstance:regionInstance])
@@ -837,11 +837,15 @@ ApplicationService applicationService
 
     def chwActivity(){
         session["activePage"] = "reports"
-        render view: 'chwactivity'
+        def currentUser = springSecurityService.getCurrentUser()
+
+        render view: 'chwactivity',model: [currentUser:currentUser]
     }
     def chwReferral(){
         session["activePage"] = "reports"
-        render view: 'chwreferral'
+        def currentUser = springSecurityService.getCurrentUser()
+
+        render view: 'chwreferral',model: [currentUser:currentUser]
     }
     def reportByCwaActivityJSON(){
         JSONArray jsonArray=new JSONArray()
@@ -854,7 +858,15 @@ ApplicationService applicationService
             def districtInstance=District.get(params.district)
             userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id=:district",[mkpRole:roleInstance,district:districtInstance])
         }else{
-            userList= MkpUserMkpRole.findAllByMkpRole(roleInstance)
+            if (springSecurityService.principal.authorities.any { it.authority == 'ROLE_REGION'}) {
+                def currentUser=springSecurityService.getCurrentUser()
+
+                userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id.region_id=:region",[mkpRole:roleInstance,region:currentUser.region])
+
+            }else{
+                userList = MkpUserMkpRole.findAllByMkpRole(roleInstance)
+
+            }
         }
 
 
@@ -892,7 +904,13 @@ ApplicationService applicationService
             def districtInstance=District.get(params.district)
             userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id=:district",[mkpRole:roleInstance,district:districtInstance])
         }else{
-            userList= MkpUserMkpRole.findAllByMkpRole(roleInstance)
+            if (springSecurityService.principal.authorities.any { it.authority == 'ROLE_REGION'}) {
+                def currentUser = springSecurityService.getCurrentUser()
+                userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id.region_id=:region",[mkpRole:roleInstance,region:currentUser.region])
+
+            }else {
+                userList = MkpUserMkpRole.findAllByMkpRole(roleInstance)
+            }
         }
 
 
@@ -1018,6 +1036,13 @@ ApplicationService applicationService
     def reportByVillage(){
         session["activePage"] = "reports"
         render view: 'reportbyvillage'
+    }
+
+    def reportByRegion(){
+        session["activePage"] = "reports"
+        def currentUser=springSecurityService.getCurrentUser()
+
+        render view: 'reportbyregion',model: [currentUser:currentUser]
     }
     def searchVillageReport(){
         def districtInstance=District.get(params.id)

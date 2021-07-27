@@ -12,20 +12,30 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Environment
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
-@Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
+@Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION'])
 class FacilityController {
 
     FacilityService facilityService
+    def springSecurityService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-
+    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN'])
     def index(Integer max) {
         session["activePage"] = "facility"
 
         params.max = Math.min(max ?: 10, 100)
         respond facilityService.list(params), model:[facilityCount: facilityService.count()]
     }
+    @Secured(['ROLE_REGION'])
+    def byRegion(Integer max){
+        params.max = Math.min(max ?: 10, 100)
+        def currentUser=springSecurityService.getCurrentUser()
 
+        def facilityList=Facility.executeQuery("from Facility where deleted=false and district_id.region_id=:regionInstance ",[regionInstance:currentUser.region],params)
+        def facilityCount=Facility.executeQuery("from Facility where deleted=false and district_id.region_id=:regionInstance ",[regionInstance:currentUser.region]).size()
+
+        render view: 'byregion',model: [facilityList:facilityList,facilityCount:facilityCount]
+    }
     def show(Long id) {
         respond facilityService.get(id)
     }

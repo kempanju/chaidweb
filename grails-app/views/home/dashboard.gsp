@@ -8,6 +8,8 @@
 
     <title>Dashboard</title>
 
+                    <sec:ifAnyGranted roles="ROLE_CORE_WEB,ROLE_ADMIN">
+
 
     <script type="text/javascript">
 
@@ -54,7 +56,55 @@ var selectedOption=$("#selectedOption").val();
 }
 
     </script>
+ </sec:ifAnyGranted>
 
+
+ <sec:ifAnyGranted roles="ROLE_REGION">
+
+
+     <script type="text/javascript">
+
+$( document ).ready(function() {
+  $("#districtId").show();
+
+  getReports();
+});
+
+
+ function callOption (data){
+ var selectedItem=data.value;
+ $("#village-report").empty();
+ $("#districtId").show();
+
+ }
+
+
+ function getReports(){
+ var district_id=$("#district_id").val();
+ var region_id=$("#region_id").val();
+ var selectedOption=$("#selectedOption").val();
+ if(district_id){
+ selectedOption="district";
+ }
+
+   $.ajax({
+                         url: '${grailsApplication.config.systemLink.toString()}/home/dashboardFilter',
+                         data: {'district_id': district_id,'region_id':region_id,'selectedOption':selectedOption}, // change this to send js object
+                         type: "post",
+                         success: function (data) {
+                        // alert("Done");
+                             //document.write(data); just do not use document.write
+                             $("#dashboard-data").html(data);
+                             //console.log(data);
+                         }
+                     });
+
+
+
+ }
+
+     </script>
+  </sec:ifAnyGranted>
       <style>
         /* Set the size of the div element that contains the map */
         #map {
@@ -79,6 +129,17 @@ var selectedOption=$("#selectedOption").val();
 
                 <a href="#"
                    class="btn btn-default">${message(code: 'dashboard', default: 'Dashboard')}</a>
+
+                  <a href="#"
+                               class="btn btn-primary">
+                        <sec:ifAnyGranted roles="ROLE_REGION">
+                        ${currentUser?.region?.name}
+                        </sec:ifAnyGranted>
+                                      <sec:ifAnyGranted roles="ROLE_CORE_WEB,ROLE_ADMIN">
+                                      National
+ </sec:ifAnyGranted>
+
+                               </a>
             </div>
         </div>
 
@@ -87,6 +148,7 @@ var selectedOption=$("#selectedOption").val();
 
 
          <div class="form-group">
+                    <sec:ifAnyGranted roles="ROLE_CORE_WEB,ROLE_ADMIN">
 
            <div class="col-lg-2">
            <select id="selectedOption" name="selectedOption" onchange="callOption(this)">
@@ -95,31 +157,52 @@ var selectedOption=$("#selectedOption").val();
            <option value="district">District</option>
            </select>
            </div>
-
-                        <div class="col-lg-3" id="districtId" style="display:none">
-                            <g:select name="district_id" id="district_id" value="" onchange="getReports(this)"
-                                      data-show-subtext="true" data-live-search="true"
-                                      from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
-                                      class="form-control " noSelection="['': 'District']"/>
-
-                        </div>
             <div class="col-lg-3" id="regionId" style="display:none">
-                             <g:select name="region_id" id="region_id" value="" onchange="getReports(this)"
-                                       data-show-subtext="true" data-live-search="true"
-                                       from="${admin.Region.list()}" optionKey="id" optionValue="name"
-                                       class="form-control " noSelection="['': 'Region']"/>
+                                        <g:select name="region_id" id="region_id" value="" onchange="getReports(this)"
+                                                  data-show-subtext="true" data-live-search="true"
+                                                  from="${admin.Region.list()}" optionKey="id" optionValue="name"
+                                                  class="form-control " noSelection="['': 'Region']"/>
 
-                         </div>
+                                    </div>
+                                      <div class="col-lg-3" id="districtId" style="display:none">
+                                                                <g:select name="district_id" id="district_id" value="" onchange="getReports(this)"
+                                                                          data-show-subtext="true" data-live-search="true"
+                                                                          from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
+                                                                          class="form-control " noSelection="['': 'District']"/>
+
+                                                            </div>
+
+ </sec:ifAnyGranted>
+  <sec:ifAnyGranted roles="ROLE_REGION">
+  <g:hiddenField name="region_id" id="region_id" value="${currentUser?.region?.id}"/>
+    <g:hiddenField name="region_id" id="region_id" value="${currentUser?.region?.id}"/>
+
+  <div class="col-lg-3" id="districtId" style="display:none">
+    <g:select name="district_id" id="district_id" value="" onchange="getReports(this)"
+              data-show-subtext="true" data-live-search="true"
+              from="${admin.District.findAllByD_deletedAndRegion_id(false,currentUser.region)}" optionKey="id" optionValue="name"
+              class="form-control " noSelection="['': 'District']"/>
+
+</div>
+  </sec:ifAnyGranted>
+
+
 </div>
 </form>
 </div>
 
 <div id="dashboard-data">
+                    <sec:ifAnyGranted roles="ROLE_CORE_WEB,ROLE_ADMIN">
+
 <g:render template="dashboardcountry" />
+                    </sec:ifAnyGranted>
+
+</div>
 </div>
 
 
         </div>
+                    <sec:ifAnyGranted roles="ROLE_CORE_WEB,ROLE_ADMIN">
 
     <div id="map" class="col-lg-10"></div>
        <script>
@@ -168,6 +251,7 @@ var selectedOption=$("#selectedOption").val();
 
            }
        </script>
+                    </sec:ifAnyGranted>
 
 
 </div>
