@@ -2,8 +2,8 @@
 <html>
     <head>
         <meta name="layout" content="main" />
-        <g:set var="entityName" value="${message(code: 'subStreet.label', default: 'SubStreet')}" />
-        <title><g:message code="default.create.label" args="[entityName]" /></title>
+        <g:set var="entityName" value="CHW Activity" />
+        <title>CHW Activity</title>
        <asset:javascript src="customjs/applicant_module.js"/>
 
 
@@ -33,6 +33,7 @@
                                     <div class="form-group">
 
                                                         <div class="col-lg-10">
+
                             <sec:ifAnyGranted roles="ROLE_REGION">
 
         <g:select name="district" id="district" value="${params?.district}" ng-model="insert.district" ng-change="updateChwReport()"

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="main" />
-        <g:set var="entityName" value="${message(code: 'subStreet.label', default: 'SubStreet')}" />
+        <g:set var="entityName" value="CHW Activity" />
         <title>Reports</title>
 <style>
 th {

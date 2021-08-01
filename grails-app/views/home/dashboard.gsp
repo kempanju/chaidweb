@@ -105,6 +105,57 @@ $( document ).ready(function() {
 
      </script>
   </sec:ifAnyGranted>
+
+
+   <sec:ifAnyGranted roles="ROLE_DISTRICT">
+
+
+       <script type="text/javascript">
+
+  $( document ).ready(function() {
+    $("#districtId").show();
+
+    getReports();
+  });
+
+
+   function callOption (data){
+   var selectedItem=data.value;
+   $("#village-report").empty();
+   $("#districtId").show();
+
+   }
+
+
+   function getReports(){
+   var district_id="${currentUser?.district_id?.id}";
+   var region_id=$("#region_id").val();
+   var selectedOption=$("#selectedOption").val();
+   if(district_id){
+   selectedOption="district";
+   }
+
+     $.ajax({
+                           url: '${grailsApplication.config.systemLink.toString()}/home/dashboardFilter',
+                           data: {'district_id': district_id,'region_id':region_id,'selectedOption':selectedOption}, // change this to send js object
+                           type: "post",
+                           success: function (data) {
+                          // alert("Done");
+                               //document.write(data); just do not use document.write
+                               $("#dashboard-data").html(data);
+                               //console.log(data);
+                           }
+                       });
+
+
+
+   }
+
+       </script>
+    </sec:ifAnyGranted>
+
+
+
       <style>
         /* Set the size of the div element that contains the map */
         #map {
@@ -135,6 +186,10 @@ $( document ).ready(function() {
                         <sec:ifAnyGranted roles="ROLE_REGION">
                         ${currentUser?.region?.name}
                         </sec:ifAnyGranted>
+
+                           <sec:ifAnyGranted roles="ROLE_DISTRICT">
+                                                ${currentUser?.district_id?.name}
+                                                </sec:ifAnyGranted>
                                       <sec:ifAnyGranted roles="ROLE_CORE_WEB,ROLE_ADMIN">
                                       National
  </sec:ifAnyGranted>

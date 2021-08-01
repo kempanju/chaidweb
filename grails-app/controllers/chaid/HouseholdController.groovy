@@ -3,7 +3,7 @@ package chaid
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
-@Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION'])
+@Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION','ROLE_DISTRICT'])
 class HouseholdController {
     def springSecurityService
 
@@ -37,6 +37,20 @@ class HouseholdController {
         render view: 'byRegion',model:[householdList:householdList,householdCount: householdCount]
     }
 
+    @Secured(['ROLE_DISTRICT'])
+    def byDistrict(Integer max) {
+        session["activePage"] = "household"
+        if(!params.order) {
+            params.sort = 'id'
+            params.order = 'desc'
+        }
+        def currentUser=springSecurityService.getCurrentUser()
+
+        params.max = Math.min(max ?: 10, 100)
+        def householdList=Household.executeQuery(" from Household  where district_id=:district and deleted=false",[district:currentUser.district_id],params)
+        def householdCount=Household.executeQuery(" from Household  where district_id=:district and deleted=false",[district:currentUser.district_id] ).size()
+        render view: 'byDistrict',model:[householdList:householdList,householdCount: householdCount]
+    }
 
     def show(Long id) {
         respond householdService.get(id)

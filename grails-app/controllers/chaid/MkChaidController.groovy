@@ -7,7 +7,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
-@Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION'])
+@Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION','ROLE_DISTRICT'])
 class MkChaidController {
 
     MkChaidService mkChaidService
@@ -37,6 +37,22 @@ class MkChaidController {
         def activityCount=chaid.MkChaid.executeQuery(" from MkChaid  where distric.region_id=:region and deleted=false",[region:currentUser.region] ).size()
 
         render view: 'byregion',model:[mkChaidList:activityList,mkChaidCount:activityCount]
+
+    }
+
+    @Secured(['ROLE_DISTRICT'])
+    def byDistrict(Integer max){
+        session["activePage"] = "mkchaid"
+        if(!params.order) {
+            params.sort = 'id'
+            params.order = 'desc'
+        }
+        params.max = Math.min(max ?: 10, 100)
+        def currentUser=springSecurityService.getCurrentUser()
+        def activityList=chaid.MkChaid.executeQuery(" from MkChaid  where distric=:district and deleted=false",[district:currentUser.district_id],params)
+        def activityCount=chaid.MkChaid.executeQuery(" from MkChaid  where distric=:district and deleted=false",[district:currentUser.district_id] ).size()
+
+        render view: 'bydistrict',model:[mkChaidList:activityList,mkChaidCount:activityCount]
 
     }
     @Transactional

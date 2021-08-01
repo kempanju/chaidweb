@@ -23,7 +23,7 @@ ApplicationService applicationService
 
     def index() { }
 
-    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION'])
+    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION','ROLE_DISTRICT'])
     def dashboard(){
         session["activePage"] = "dashboard"
         def currentUser=springSecurityService.getCurrentUser()
@@ -31,7 +31,7 @@ ApplicationService applicationService
         def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household  ")
         render view:'dashboard',model: [houseHoldMember:houseHoldMember,currentUser:currentUser]
     }
-    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION'])
+    @Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION','ROLE_DISTRICT'])
     def dashboardFilter(){
         def selectedOption=params.selectedOption
         //print(params)
@@ -848,14 +848,22 @@ ApplicationService applicationService
         render view: 'chwreferral',model: [currentUser:currentUser]
     }
     def reportByCwaActivityJSON(){
+        println(params)
         JSONArray jsonArray=new JSONArray()
         def roleInstance= MkpRole.findByAuthority("ROLE_CHW")
         def district=params.district
+        if (springSecurityService.principal.authorities.any { it.authority == 'ROLE_DISTRICT'}){
+            def currentUser=springSecurityService.getCurrentUser()
+            district=currentUser?.district_id?.id
+          //  println("DOne:"+district)
+        }
+
+
         def start_date=params.start_date
         def end_date=params.end_date
         def userList=null
         if(district){
-            def districtInstance=District.get(params.district)
+            def districtInstance=District.get(district)
             userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id=:district",[mkpRole:roleInstance,district:districtInstance])
         }else{
             if (springSecurityService.principal.authorities.any { it.authority == 'ROLE_REGION'}) {
@@ -899,11 +907,18 @@ ApplicationService applicationService
         def district=params.district
         def start_date=params.start_date
         def end_date=params.end_date
+        def region=null
         def userList=null
+        if (springSecurityService.principal.authorities.any { it.authority == 'ROLE_DISTRICT'}){
+            def currentUser=springSecurityService.getCurrentUser()
+            district=currentUser?.district_id?.id
+            //  println("DOne:"+district)
+        }
         if(district){
-            def districtInstance=District.get(params.district)
+            def districtInstance=District.get(district)
             userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id=:district",[mkpRole:roleInstance,district:districtInstance])
-        }else{
+        }
+        else{
             if (springSecurityService.principal.authorities.any { it.authority == 'ROLE_REGION'}) {
                 def currentUser = springSecurityService.getCurrentUser()
                 userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id.region_id=:region",[mkpRole:roleInstance,region:currentUser.region])
@@ -1043,6 +1058,13 @@ ApplicationService applicationService
         def currentUser=springSecurityService.getCurrentUser()
 
         render view: 'reportbyregion',model: [currentUser:currentUser]
+    }
+
+    def reportByDistrict(){
+        session["activePage"] = "reports"
+        def currentUser=springSecurityService.getCurrentUser()
+
+        render view: 'reportbydistrict',model: [currentUser:currentUser]
     }
     def searchVillageReport(){
         def districtInstance=District.get(params.id)

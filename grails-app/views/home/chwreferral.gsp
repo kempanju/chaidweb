@@ -3,7 +3,7 @@
     <head>
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'subStreet.label', default: 'SubStreet')}" />
-        <title><g:message code="default.create.label" args="[entityName]" /></title>
+        <title>CHW Referrals</title>
        <asset:javascript src="customjs/applicant_module.js"/>
 
 

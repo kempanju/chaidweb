@@ -38,12 +38,12 @@ $( document ).ready(function() {
 
 
 function getReports(){
-var district_id=$("#district_id").val();
-var region_id=$("#region_id").val();
+var district_id="${currentUser.district_id.id}";
+var region_id="";
 var end_date=$("#end_date").val();
 var from_date=$("#from_date").val();
-var selectedOption=$("#selectedOption").val();
-if((end_date&&from_date)||selectedOption=="country"){
+var selectedOption="district";
+if((end_date&&from_date)||selectedOption=="district"){
 
   $.ajax({
                         url: '${grailsApplication.config.systemLink.toString()}/home/searchReportByDate',
@@ -84,30 +84,8 @@ if((end_date&&from_date)||selectedOption=="country"){
 
         <div class="form-group">
 
-          <div class="col-lg-2">
-          <select id="selectedOption" name="selectedOption" onchange="callOption(this)">
-          <option value="country">Country</option>
-          <option value="region">Region</option>
-          <option value="district">District</option>
-          </select>
-          </div>
 
-                       <div class="col-lg-3" id="districtId" style="display:none">
-                           <g:select name="district_id" id="district_id" value="" onchange="getVillageReports(this)"
-                                     data-show-subtext="true" data-live-search="true"
-                                     from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
-                                     class="form-control " noSelection="['': 'District']"/>
-
-                       </div>
-           <div class="col-lg-3" id="regionId" style="display:none">
-                            <g:select name="region_id" id="region_id" value="" onchange="getDistrictReports(this)"
-                                      data-show-subtext="true" data-live-search="true"
-                                      from="${admin.Region.list()}" optionKey="id" optionValue="name"
-                                      class="form-control " noSelection="['': 'Region']"/>
-
-                        </div>
-
-  <div class="col-lg-3">
+  <div class="col-lg-4">
                         <div class="form-group">
                             <div class="col-lg-10 input-append date form_datetime">
                                 <input type="text" id="from_date" placeholder="From Date" onchange="getReports()" name="from_date" value="${params.end_date}" readonly required="required" class="form-control"/>
@@ -116,7 +94,7 @@ if((end_date&&from_date)||selectedOption=="country"){
                             </div>
                         </div>
                     </div>
-     <div class="col-lg-3">
+     <div class="col-lg-4">
                         <div class="form-group">
                             <div class="col-lg-10 input-append date form_datetime">
                                 <input type="text" placeholder="To Date" id="end_date" name="end_date" value="${params.end_date}" readonly required="required" onchange="getReports()" class="form-control"/>
