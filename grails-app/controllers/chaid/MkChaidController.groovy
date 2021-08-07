@@ -85,10 +85,8 @@ class MkChaidController {
     }
 
     def memberDetailsShow(){
-        println(params)
         def availableMemberInstance=AvailableMemberHouse.get(params.id)
         def categoryInstance=CategoryAvailableChildren.findByAvailableMemberHouse(availableMemberInstance)
-        println(categoryInstance)
         render template:'availableMemberDetails',model: [categoryInstance:categoryInstance]
     }
 

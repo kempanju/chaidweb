@@ -30,7 +30,7 @@
                     <div class="card-counter info">
                         <i class="fa fa-building-o"></i>
 
-                        <span class="count-numbers">${houseHoldMember[0][0]}</span>
+                        <span class="count-numbers">${formatAmountString(name: (int)houseHoldMember[0][0])}</span>
                         <span class="count-name">Population reached</span>
                     </div>
                 </div>
@@ -103,7 +103,7 @@ function drawChartGender() {
                 ['Task', ' Visit Type'],
                 <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD4"))}" var="lawyerDataInstance">
 
-                ["${lawyerDataInstance.name}", ${chaid.MkChaid.executeQuery("from MkChaid where visit_type=:visit_type and distric.region_id=:regionInstance and deleted=false",[visit_type:lawyerDataInstance,regionInstance:regionInstance]).size()}],
+                ["${lawyerDataInstance.name}", ${materialize.view.ChaidVisitType.executeQuery("select sum(visitcount) from ChaidVisitType where visit_type=:visit_type and region=:regionInstance",[visit_type:lawyerDataInstance,regionInstance:regionInstance])[0]}],
                 </g:each>
 
             ]);
@@ -123,7 +123,7 @@ function drawChartGender() {
                         ['Task', ' Available Members'],
                         <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD17"))}" var="lawyerDataInstance">
 
-                        ["${lawyerDataInstance.name}", ${chaid.AvailableMemberHouse.executeQuery("from AvailableMemberHouse where type_id=:visit_type and chaid.deleted=false and chaid.distric.region_id=:regionInstance",[visit_type:lawyerDataInstance,regionInstance:regionInstance]).size()}],
+                        ["${lawyerDataInstance.name}", ${materialize.view.AvailableMember.executeQuery("select sum(meetingcount) from AvailableMember where type_id=:visit_type  and region=:regionInstance",[visit_type:lawyerDataInstance,regionInstance:regionInstance])[0]}],
                         </g:each>
 
                     ]);
@@ -143,8 +143,13 @@ function drawChartGender() {
             var data = google.visualization.arrayToDataTable([
                 ['Task', ' Types of gathering reached'],
                 <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD5"))}" var="lawyerDataInstances">
-
-                ["${lawyerDataInstances.name}", ${chaid.MkChaid.executeQuery("from MkChaid where meeting_type=:meeting_type and distric.region_id=:regionInstance and deleted=false",[meeting_type:lawyerDataInstances,regionInstance:regionInstance]).size()}],
+                <%
+                                def countTotal=materialize.view.ChaidMeetingType.executeQuery("select meetingcount from ChaidMeetingType where meeting_type=:meeting_type and region=:regionInstance",[meeting_type:lawyerDataInstances,regionInstance:regionInstance])[0];
+                                if(!countTotal){
+                                countTotal=0;
+                                }
+                                %>
+                ["${lawyerDataInstances.name}", ${countTotal}],
                 </g:each>
 
             ]);

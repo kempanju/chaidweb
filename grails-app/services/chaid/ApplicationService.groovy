@@ -548,6 +548,7 @@ class ApplicationService {
         def results=jsonData.results
         def house_hold_sick_person=jsonData.house_hold_sick_person
         def house_hold_sick_person_age=jsonData.house_hold_sick_person_age
+        def house_hold_sick_person_name=jsonData.house_hold_sick_person_name
 
         def latitude=jsonData.latitude
         def longitude=jsonData.longitude
@@ -587,10 +588,11 @@ class ApplicationService {
             chadInstance.facility=userInstance.facility
             chadInstance.age_sick_person=house_hold_sick_person_age
             chadInstance.sick_person=house_hold_sick_person
+            chadInstance.sick_person_name=house_hold_sick_person_name
             chadInstance.uniquecode=uniquecode
             chadInstance.relationship_status = DictionaryItem.findByCode(relationshipstatus)
             chadInstance.care_giver=care_giver
-            chadInstance.app_logs=data
+           // chadInstance.app_logs=data
 
             try{
                 int countChaid=MkChaid.countByStreet(userInstance.village_id)+1
@@ -728,7 +730,7 @@ class ApplicationService {
 
                     }
 
-                    if (code.equals("CHAD33C")) {
+                    if (code.equals("CHAD33C")||code.equals("CHAD41")) {
                         try {
                             def breakArray = answer_code.split(",")
                             breakArray.each {
@@ -740,6 +742,27 @@ class ApplicationService {
                                 activityInstance.diseaseType = dictionaryItemList
                                 activityInstance.household=houseHoldInstance
                                 activityInstance.save(flush: true)
+
+                            }
+                        }catch(Exception e){
+
+                        }
+
+
+                    }
+
+
+                    if (code.equals("CHAD22A")||code.equals("CHAD29")) {
+                        try {
+                            def breakArray = answer_code.split(",")
+                            breakArray.each {
+                                String codeselected=it
+                                codeselected=codeselected.trim()
+                                def dictionaryItemList = DictionaryItem.findByCode(codeselected)
+                                def planningInstance = new PostFamilyPlanningType()
+                                planningInstance.chaid = chadInstance
+                                planningInstance.type = dictionaryItemList
+                                planningInstance.save(flush: true)
 
                             }
                         }catch(Exception e){

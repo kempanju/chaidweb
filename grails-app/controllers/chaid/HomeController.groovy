@@ -27,31 +27,36 @@ ApplicationService applicationService
     def dashboard(){
         session["activePage"] = "dashboard"
         def currentUser=springSecurityService.getCurrentUser()
+        def houseHoldMember=materialize.view.HouseHoldData.executeQuery("select sum(totalcount),sum(male_no),sum(female_no) from HouseHoldData ")
 
-        def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household  ")
         render view:'dashboard',model: [houseHoldMember:houseHoldMember,currentUser:currentUser]
     }
     @Secured(['ROLE_CORE_WEB','ROLE_ADMIN','ROLE_REGION','ROLE_DISTRICT'])
     def dashboardFilter(){
         def selectedOption=params.selectedOption
-        //print(params)
         if(selectedOption.equals("region")){
             def regionInstance=Region.read(params.region_id)
-            def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where deleted=false and district_id.region_id=:regionInstance ",[regionInstance:regionInstance])
+            def houseHoldMember=materialize.view.HouseHoldData.executeQuery("select sum(totalcount),sum(male_no),sum(female_no) from HouseHoldData where region=:regionInstance ",[regionInstance:regionInstance])
 
             render template: 'dashboardregion',model: [regionInstance:regionInstance,houseHoldMember:houseHoldMember]
         }else if(selectedOption.equals("district")){
             def districtInstance=District.read(params.district_id)
-            def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where deleted=false and  district_id=:districtInstance",[districtInstance:districtInstance])
+            def houseHoldMember=materialize.view.HouseHoldData.executeQuery("select sum(totalcount),sum(male_no),sum(female_no) from HouseHoldData where district=:districtInstance ",[districtInstance:districtInstance])
 
             render template: 'dashboarddistrict',model: [districtInstance:districtInstance,houseHoldMember:houseHoldMember]
         }else{
-            def houseHoldMember=chaid.Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where deleted=false ")
+            def houseHoldMember=materialize.view.HouseHoldData.executeQuery("select sum(totalcount),sum(male_no),sum(female_no) from HouseHoldData ")
 
             render template: 'dashboardcountry',model: [houseHoldMember:houseHoldMember]
 
         }
        // render "Done"
+    }
+
+    def map(){
+        session["activePage"] = "reports"
+
+        render view: 'map'
     }
 
     def testHql(){
@@ -1110,7 +1115,6 @@ ApplicationService applicationService
         try {
             def response = request.JSON
             if (response) {
-                //println("Sent: "+response.toString())
                 String data=response.toString()
                 try {
                     applicationService.saveChaid(data)
