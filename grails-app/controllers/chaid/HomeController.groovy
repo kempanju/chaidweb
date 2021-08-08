@@ -66,7 +66,7 @@ ApplicationService applicationService
     }
 
     def reportTool(){
-        render view: "reportTool"
+        render view: "reportMonthly"
     }
 
     def sendMessage(){
@@ -853,7 +853,6 @@ ApplicationService applicationService
         render view: 'chwreferral',model: [currentUser:currentUser]
     }
     def reportByCwaActivityJSON(){
-        println(params)
         JSONArray jsonArray=new JSONArray()
         def roleInstance= MkpRole.findByAuthority("ROLE_CHW")
         def district=params.district
@@ -1001,7 +1000,6 @@ ApplicationService applicationService
     }
 
     def reportByReferralsGeneratedJSON(){
-        println(params)
         String facility=params.facility
         def referrals_no=0
         def pregnantWomanNo=0
@@ -1107,7 +1105,7 @@ ApplicationService applicationService
             def districtInstance=District.get(params.district_id)
             render template: '/report/villagereport',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
         }else {
-            render template: '/report/countryreport',model: [from_date:from_date,end_date:end_date]
+            render template: '/report/countrymonthlyreport',model: [from_date:from_date,end_date:end_date]
         }
     }
 

@@ -671,7 +671,7 @@ class ApplicationService {
 
                             }
                         }catch(Exception e){
-
+                            e.printStackTrace()
                         }
 
                     }
@@ -724,7 +724,7 @@ class ApplicationService {
 
                             }
                         }catch(Exception e){
-
+                            e.printStackTrace()
                         }
 
 
@@ -745,7 +745,7 @@ class ApplicationService {
 
                             }
                         }catch(Exception e){
-
+                            e.printStackTrace()
                         }
 
 
@@ -766,7 +766,7 @@ class ApplicationService {
 
                             }
                         }catch(Exception e){
-
+                            e.printStackTrace()
                         }
 
 
@@ -787,7 +787,7 @@ class ApplicationService {
 
                             }
                         }catch(Exception e){
-
+                            e.printStackTrace()
                         }
 
 
@@ -812,7 +812,7 @@ class ApplicationService {
 
                             }
                         }catch(Exception e){
-
+                            e.printStackTrace()
                         }
                     }
 
@@ -1224,7 +1224,7 @@ class ApplicationService {
     def pregnantWomen(MkChaid mkChaid,Household household,def jsonData,def userInstance){
 
         try {
-            println("passed")
+
             def name = jsonData.pregnant_woman.name
             def phone_number = jsonData.pregnant_woman.phone_number
             def age = jsonData.pregnant_woman.age
