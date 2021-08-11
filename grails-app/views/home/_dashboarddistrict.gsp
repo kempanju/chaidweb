@@ -29,8 +29,13 @@
                 <div class="col-md-4">
                     <div class="card-counter info">
                         <i class="fa fa-building-o"></i>
-
-                        <span class="count-numbers">${formatAmountString(name: (int)houseHoldMember[0][0])}</span>
+ <%
+                         def populationreached=houseHoldMember[0][0]
+                         if(!populationreached){
+                         populationreached=0
+                         }
+                        %>
+                        <span class="count-numbers">${formatAmountString(name: (int)populationreached)}</span>
                         <span class="count-name">Population reached</span>
                     </div>
                 </div>

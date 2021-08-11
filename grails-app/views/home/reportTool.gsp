@@ -43,10 +43,10 @@ var region_id=$("#region_id").val();
 var end_date=$("#end_date").val();
 var from_date=$("#from_date").val();
 var selectedOption=$("#selectedOption").val();
-if((end_date&&from_date)||selectedOption=="country"){
+if((end_date&&from_date)||selectedOption=="country"||selectedOption=="region"){
 
   $.ajax({
-                        url: '${grailsApplication.config.systemLink.toString()}/home/reportByDate',
+                        url: '${grailsApplication.config.systemLink.toString()}/home/reportByDateTool',
                         data: {'district_id': district_id,'region_id':region_id,'end_date':end_date,'from_date':from_date,'selectedOption':selectedOption}, // change this to send js object
                         type: "post",
                         success: function (data) {
@@ -92,15 +92,9 @@ if((end_date&&from_date)||selectedOption=="country"){
           </select>
           </div>
 
-                       <div class="col-lg-3" id="districtId" style="display:none">
-                           <g:select name="district_id" id="district_id" value="" onchange="getVillageReports(this)"
-                                     data-show-subtext="true" data-live-search="true"
-                                     from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
-                                     class="form-control " noSelection="['': 'District']"/>
 
-                       </div>
            <div class="col-lg-3" id="regionId" style="display:none">
-                            <g:select name="region_id" id="region_id" value="" onchange="getDistrictReports(this)"
+                            <g:select name="region_id" id="region_id" value="" onchange="getReports(this)"
                                       data-show-subtext="true" data-live-search="true"
                                       from="${admin.Region.list()}" optionKey="id" optionValue="name"
                                       class="form-control " noSelection="['': 'Region']"/>

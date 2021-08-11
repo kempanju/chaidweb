@@ -66,7 +66,7 @@ ApplicationService applicationService
     }
 
     def reportTool(){
-        render view: "reportMonthly"
+        render view: "reportTool"
     }
 
     def sendMessage(){
@@ -811,7 +811,6 @@ ApplicationService applicationService
     }
 
     def reachedReportByDate() {
-        println(params)
         String start_date=params.start_date
         def end_date=params.end_date
         // def  startDate=Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",start_date,TimeZone.getTimeZone("UTC"))
@@ -820,7 +819,6 @@ ApplicationService applicationService
         def formatedEndDate=applicationService.changeTimeZOne(end_date)
         def facility=params.facility
         def  outPutObject=applicationService.reachedReportByDate(facility,formatedStartDate,formatedEndDate)
-        println(outPutObject)
 
         render outPutObject as JSON
     }
@@ -1097,10 +1095,26 @@ ApplicationService applicationService
         def  selectedOption= params.selectedOption
         def from_date=params.from_date
         def end_date=params.end_date
-
+        println(params)
         if( selectedOption&& selectedOption.equals("region")){
             def regionInstance=Region.get(params.region_id)
             render template: '/report/regionreport',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
+        }else if(selectedOption&& selectedOption.equals("district")){
+            def districtInstance=District.get(params.district_id)
+            render template: '/report/villagereport',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
+        }else {
+            render template: '/report/countryreport',model: [from_date:from_date,end_date:end_date]
+        }
+    }
+
+    def reportByDateTool(){
+        def  selectedOption= params.selectedOption
+        def from_date=params.from_date
+        def end_date=params.end_date
+        println(params)
+        if( selectedOption&& selectedOption.equals("region")){
+            def regionInstance=Region.get(params.region_id)
+            render template: '/report/regionmonthlyreport',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
         }else if(selectedOption&& selectedOption.equals("district")){
             def districtInstance=District.get(params.district_id)
             render template: '/report/villagereport',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
@@ -1114,6 +1128,7 @@ ApplicationService applicationService
             def response = request.JSON
             if (response) {
                 String data=response.toString()
+              //  println(data)
                 try {
                     applicationService.saveChaid(data)
                 }catch(Exception e){

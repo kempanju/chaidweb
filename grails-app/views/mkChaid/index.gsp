@@ -81,7 +81,16 @@
                                                                                                      ${i + 1 + offset}
 
                                                 </td>
-                                                <td class="text-capitalize">${fieldValue(bean: mkchaidListInstance, field: "respondent_name")}</td>
+                                                <td class="text-capitalize">
+                                                        <g:if test="${mkchaidListInstance.visit_type.code=='CHAD4B'}">
+                                                         ${fieldValue(bean: mkchaidListInstance, field: "meeting_type.name")}
+                                                        </g:if>
+                                                        <g:else>
+
+                                                ${fieldValue(bean: mkchaidListInstance, field: "respondent_name")}
+                                                </g:else>
+
+                                                </td>
                                                 <td>
                                                                                                  <g:link class="list" controller="district" action="show" id="${mkchaidListInstance.distric.id}">
 

@@ -27,7 +27,7 @@
                                                         <td style="word-break:break-word">${fieldValue(bean: mkChaid, field: "visit_type.name")}</td>
                                                     </tr>
 
-        <g:if test="${mkChaid.meeting_type}">
+        <g:if test="${mkChaid.visit_type.code=='CHAD4B'}">
 
              <tr>
                                                                <td>
@@ -35,7 +35,15 @@
                                                                </td>
                                                                <td style="word-break:break-word">${fieldValue(bean: mkChaid, field: "meeting_type.name")}</td>
                                                            </tr>
+
+                                                               <td>
+                                                                   <span class="text-semibold"><g:message code="description" default="Idadi ya wajumbe katika mkutano"/></span>
+                                                               </td>
+                                                               <td style="word-break:break-word">KE: ${fieldValue(bean: mkChaid, field: "members_female")}, ME: ${fieldValue(bean: mkChaid, field: "members_male")}</td>
+                                                           </tr>
+
            </g:if>
+        <g:if test="${mkChaid.visit_type.code!='CHAD4B'}">
 
        <tr>
                                     <td>
@@ -71,8 +79,23 @@
                                                  <g:link class="list" controller="household" action="show" id="${mkChaid?.household?.id}">
                                                    ${fieldValue(bean: mkChaid, field: "household.female_no")}</g:link></td>
                                                </tr>
+                       <tr>
+                                                         <td>
+                                                             <span class="text-semibold"><g:message code="description" default="Gender"/></span>
+                                                         </td>
+                                                         <td style="word-break:break-word">${fieldValue(bean: mkChaid, field: "respondent_gender")}</td>
+                                                     </tr>
+                          <tr>
+                                                         <td>
+                                                             <span class="text-semibold"><g:message code="description" default="Age"/></span>
+                                                         </td>
+                                                         <td style="word-break:break-word">${fieldValue(bean: mkChaid, field: "respondent_age")}</td>
+                                                     </tr>
+
+                   </g:if>
     <tr>
                                     <td>
+
                                         <span class="text-semibold"><g:message code="type" default="Facility Name"/></span>
                                     </td>
                                     <td class="text-capitalize">${fieldValue(bean: mkChaid, field: "facility.name")}</td>
@@ -100,18 +123,7 @@
                                     </td>
                                 </tr>
 
-                                <tr>
-                                    <td>
-                                        <span class="text-semibold"><g:message code="description" default="Gender"/></span>
-                                    </td>
-                                    <td style="word-break:break-word">${fieldValue(bean: mkChaid, field: "respondent_gender")}</td>
-                                </tr>
-     <tr>
-                                    <td>
-                                        <span class="text-semibold"><g:message code="description" default="Age"/></span>
-                                    </td>
-                                    <td style="word-break:break-word">${fieldValue(bean: mkChaid, field: "respondent_age")}</td>
-                                </tr>
+
    <tr>
                                     <td>
                                         <span class="text-semibold"><g:message code="type" default="Marriage Status"/></span>
@@ -250,6 +262,26 @@ ${fieldValue(bean: mkChaid, field: "age_sick_person")}
 </g:each>
              </tr>
         </g:if>
+
+
+   <g:if test="${chaid.Adolescent.countByChaid(mkChaid)>0}">
+
+
+            <tr>
+                                               <td colspan="2">
+                                                  <h5>Adolescent</h5>
+                                               </td>
+   <g:each in="${chaid.Adolescent.findAllByChaid(mkChaid)}" status="i" var="activityListInstance">
+   <tr>
+   <td>${i+1}</td>
+    <td>
+    ${fieldValue(bean: activityListInstance, field: "name")} , ${fieldValue(bean: activityListInstance, field: "phone_number")}
+                                       </td>
+
+   </tr>
+   </g:each>
+                </tr>
+           </g:if>
 
 
         <g:if test="${chaid.AvailableMemberHouse.countByChaid(mkChaid)>0}">

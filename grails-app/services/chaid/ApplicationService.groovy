@@ -645,6 +645,27 @@ class ApplicationService {
                 if (code.equals("CHAD33E")) {
                     chadInstance.living_with_household = DictionaryItem.findByCode(answer_code)
                 }
+                if (code.equals("CHAD43")||code.equals("CHAD46")) {
+                    try {
+
+                        answer_code.each {
+
+                            def codeValue=it.code
+                            String member_no=it.member_no
+                            if(codeValue.equals("CHAD43A")||codeValue.equals("CHAD46A")){
+
+                                chadInstance.members_female=Integer.parseInt(member_no)
+                            }
+                            if(codeValue.equals("CHAD43B")||codeValue.equals("CHAD46B")){
+                                chadInstance.members_male=Integer.parseInt(member_no)
+
+                            }
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace()
+                    }
+
+                }
 
 
             }
@@ -657,7 +678,7 @@ class ApplicationService {
                     String comment = it.comment
                     def resultCodeArray=it.answer_code
                    // println("passed twice:"+code)
-                    if (code.equals("CHAD6")) {
+                    if (code.equals("CHAD6")||code.equals("CHAD44")) {
                         try {
                             def breakArray = answer_code.split(",")
                             breakArray.each {
@@ -816,7 +837,10 @@ class ApplicationService {
                         }
                     }
 
+                    if(code.equals("CHAD47")){
+                        saveAdolescent(chadInstance, houseHoldInstance, jsonData, userInstance,results)
 
+                    }
 
                     if (code.equals("CHAD17")) {
                         try {
@@ -898,7 +922,152 @@ class ApplicationService {
 
     }
 
+    def saveAdolescent(MkChaid mkChaid,Household household,def jsonData,def userInstance,def results){
+        def adolescentInstance=new  Adolescent()
+        adolescentInstance.chaid=mkChaid
+        results.each {
+            def code = it.code
+            def answer_code = it.answer_code
+            String comment = it.comment
+            def resultCodeArray = it.answer_code
+            if (code.equals("CHAD48")) {
+                adolescentInstance.phone_number=answer_code
+            }
 
+            if (code.equals("CHAD51A")) {
+                adolescentInstance.health_center=answer_code
+            }
+
+
+
+            if (code.equals("CHAD54B")) {
+                adolescentInstance.sexual_abused_user = DictionaryItem.findByCode(answer_code).name
+            }
+
+            if (code.equals("CHAD55A")) {
+                adolescentInstance.referrals = DictionaryItem.findByCode(answer_code).name
+            }
+
+            if (code.equals("CHAD47") ) {
+
+                try {
+
+                    answer_code.each {
+
+                        def codeValue = it.code
+                        String member_no = it.member_no
+                        if (codeValue.equals("CHAD47A")) {
+
+                            adolescentInstance.name = member_no
+                        }
+                        if (codeValue.equals("CHAD47B") ) {
+                            adolescentInstance.age = Integer.parseInt(member_no)
+
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace()
+                }
+
+            }
+
+            if (code.equals("CHAD50") ) {
+
+                try {
+
+                    answer_code.each {
+                        def codeValue = it.code
+                        String member_no = it.member_no
+                        if (codeValue.equals("CHAD50A")) {
+
+                            adolescentInstance.lower_school = member_no
+                        }
+                        if (codeValue.equals("CHAD50B") ) {
+                            adolescentInstance.higher_school = member_no
+
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace()
+                }
+
+            }
+
+        }
+        if(adolescentInstance.save(failOnError: true,flush: true)){
+            results.each {
+                def code = it.code
+                def answer_code = it.answer_code
+            if (code.equals("CHAD53")) {
+                try {
+                    def breakArray = answer_code.split(",")
+                    breakArray.each {
+                        String codeselected = it
+                        codeselected = codeselected.trim()
+                        def dictionaryItemList = DictionaryItem.findByCode(codeselected)
+                        def activityInstance = new HealthEducation()
+                        activityInstance.chaid = mkChaid
+                        activityInstance.type = dictionaryItemList
+                        activityInstance.save(flush: true)
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace()
+                }
+
+            }
+
+                if (code.equals("CHAD54C")) {
+                    try {
+                        def breakArray = answer_code.split(",")
+                        breakArray.each {
+                            String codeselected = it
+                            codeselected = codeselected.trim()
+                            def dictionaryItemList = DictionaryItem.findByCode(codeselected)
+                            def activityInstance = new AdolescentAbuse()
+                            activityInstance.chaid = mkChaid
+                            activityInstance.adolescent=adolescentInstance
+                            activityInstance.type = dictionaryItemList
+                            activityInstance.save(flush: true)
+
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace()
+                    }
+
+                }
+
+
+                if (code.equals("CHAD54C")) {
+                    try {
+                        def breakArray = answer_code.split(",")
+                        breakArray.each {
+                            String codeselected = it
+                            codeselected = codeselected.trim()
+                            def dictionaryItemList = DictionaryItem.findByCode(codeselected)
+                            def activityInstance = new ReferalAdolescent()
+                            activityInstance.chaid = mkChaid
+                            activityInstance.adolescent=adolescentInstance
+                            activityInstance.type = dictionaryItemList
+                            activityInstance.save(flush: true)
+
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace()
+                    }
+
+                }
+
+
+
+
+
+            }
+
+        }
+
+
+    }
 
     def childUnderFive(MkChaid mkChaid,Household household,def jsonData,def userInstance){
         try {
