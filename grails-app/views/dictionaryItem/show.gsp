@@ -70,6 +70,39 @@
 
                                        </td>
                                    </tr>
+
+   <tr>
+                                        <td>
+                                            <span class="text-semibold"><g:message code="name.en" default="Abbreviation"/></span>
+                                        </td>
+                                        <td><span
+                                                class="text-bold">${fieldValue(bean: dictionaryItem, field: "abbreviation")}</span>
+
+                                        </td>
+                                    </tr>
+
+       <tr>
+                                            <td>
+                                                <span class="text-semibold"><g:message code="name.en" default="Display Order"/></span>
+                                            </td>
+                                            <td><span
+                                                    class="text-bold">${fieldValue(bean: dictionaryItem, field: "displayOrder")}</span>
+
+                                            </td>
+                                        </tr>
+
+        <tr>
+                                             <td>
+                                                 <span class="text-semibold"><g:message code="name.en" default="Display in Report"/></span>
+                                             </td>
+                                             <td><span
+                                                     class="text-bold">${fieldValue(bean: dictionaryItem, field: "displayReport")}</span>
+
+                                             </td>
+                                         </tr>
+
+
+
     <tr>
 
                                </table>

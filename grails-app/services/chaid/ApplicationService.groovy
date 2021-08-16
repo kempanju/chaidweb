@@ -488,7 +488,7 @@ class ApplicationService {
                         immunizationAvailable.categoryAvailableChildren = categoryAvailableInstance
                         def dictionaryItemList = DictionaryItem.findByCode(reqCode)
                         immunizationAvailable.immunization_type = dictionaryItemList
-                        immunizationAvailable.save()
+                        immunizationAvailable.save(failOnError: true)
                     }
                 }
                 if (danger_sign) {
@@ -518,7 +518,7 @@ class ApplicationService {
                             " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign "+nameSign+": %0a "+msgDangerSign
 
                     //println(mkChaid.created_by.facility)
-                    def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:mkChaid.created_by.facility])
+                    def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_CHF",facility:mkChaid.created_by.facility])
 
                     userLists.each {
                         //println(it)
@@ -1149,7 +1149,7 @@ class ApplicationService {
                                     " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign Child "+": %0a "+msgDangerSign
 
 
-                            def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
+                            def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_CHF",facility:userInstance.facility])
 
                             userLists.each {
                                 saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
@@ -1284,7 +1284,7 @@ class ApplicationService {
                                         " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign Mother: %0a"+msgDangerSign
 
 
-                                def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
+                                def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_CHF",facility:userInstance.facility])
                                 userLists.each {
                                     saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                                 }
@@ -1335,7 +1335,7 @@ class ApplicationService {
                                         " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign Child: "+msgDangerSign
 
 
-                                def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
+                                def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_CHF",facility:userInstance.facility])
                                 userLists.each {
                                     saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                                 }
@@ -1490,7 +1490,7 @@ class ApplicationService {
                                         " Hamlets: "+mkChaid?.household?.street?.name+"%0a Reference: "+mkChaid.reg_no+"%0a Household: "+mkChaid?.household?.full_name+".%0a Danger Sign Pregnant: %0a"+msgDangerSign
 
 
-                                def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_DISTRICT",facility:userInstance.facility])
+                                def userLists= MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole.authority=:authority and mkpUser.facility=:facility",[authority:"ROLE_CHF",facility:userInstance.facility])
                                 userLists.each {
                                     saveSchedualMessages(it.mkpUser, dangerSignOn, 0, send_at,mkChaid)
                                 }

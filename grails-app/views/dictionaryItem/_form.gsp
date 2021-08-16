@@ -20,6 +20,12 @@
             </div>
         </div>
 
+  <div class="form-group">
+            <label  class="control-label col-lg-3"><g:message code="name.en" default="Abbreviation"/> </label>
+            <div class="col-lg-7">
+                <input type="text" name="abbreviation" class="form-control" autocomplete="abbreviation"  value="${dictionaryItem?.abbreviation}">
+            </div>
+        </div>
 
 
     <div class="form-group">
@@ -41,4 +47,21 @@
 
         </div>
     </div>
+
+     <div class="form-group">
+            <label class="control-label col-lg-3">Display in Report?</label>
+
+            <div class="col-lg-5">
+                <g:checkBox name="displayReport"  value="${dictionaryItem?.displayReport}"/>
+
+            </div>
+        </div>
+
+          <div class="form-group">
+                    <label  class="control-label col-lg-3"><g:message code="name.en" default="Display Order"/> </label>
+                    <div class="col-lg-7">
+                        <input type="number" name="displayOrder" class="form-control" autocomplete="displayOrder"  value="${dictionaryItem?.displayOrder}">
+                    </div>
+                </div>
+
 </fieldset>
