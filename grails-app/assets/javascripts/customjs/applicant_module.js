@@ -25,8 +25,8 @@ app.controller("myCtrl",["$scope","$http", function($scope,$http) {
     //$scope.linkName = "feli";
 
 
-    //linkName="http://chaid.mkapafoundation.or.tz"
-    linkName="http://localhost:9090"
+    linkName="http://chaid.mkapafoundation.or.tz"
+   // linkName="http://localhost:9090"
    // linkName="http://www.habarisasa.com:8080/chaid"
 
    callRegisteredMethod("");
@@ -97,8 +97,8 @@ app.controller("reached",["$scope","$http", function($scope,$http) {
     var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-   //linkName="http://chaid.mkapafoundation.or.tz"
-    linkName="http://localhost:9090"
+   linkName="http://chaid.mkapafoundation.or.tz"
+   // linkName="http://localhost:9090"
     //linkName="http://www.habarisasa.com:8080/chaid"
 
 callRegisteredMethod("");
@@ -164,8 +164,8 @@ $scope.referral.start_date="";
   var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-   // linkName="http://chaid.mkapafoundation.or.tz"
-    linkName="http://localhost:9090"
+    linkName="http://chaid.mkapafoundation.or.tz"
+    //linkName="http://localhost:9090"
 callHttpMethod("");
 
 
@@ -234,8 +234,8 @@ $scope.referral.start_date="";
   var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-   // linkName="http://chaid.mkapafoundation.or.tz"
-    linkName="http://localhost:9090"
+    linkName="http://chaid.mkapafoundation.or.tz"
+   // linkName="http://localhost:9090"
 callHttpMethod("");
 
 $scope.calculateTotal = function(filteredArray){
@@ -332,8 +332,8 @@ $scope.referral.start_date="";
   var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-    //linkName="http://chaid.mkapafoundation.or.tz"
-    linkName="http://localhost:9090"
+    linkName="http://chaid.mkapafoundation.or.tz"
+   // linkName="http://localhost:9090"
 callHttpMethod("");
 
 
