@@ -39,7 +39,7 @@
                                                                <td>
                                                                    <span class="text-semibold"><g:message code="description" default="Idadi ya wajumbe katika mkutano"/></span>
                                                                </td>
-                                                               <td style="word-break:break-word">KE: ${fieldValue(bean: mkChaid, field: "members_female")}, ME: ${fieldValue(bean: mkChaid, field: "members_male")}</td>
+                                                               <td style="word-break:break-word">KE:<span  class="badge  badge-primary"> ${fieldValue(bean: mkChaid, field: "members_female")} </span> , ME: <span  class="badge  badge-success">${fieldValue(bean: mkChaid, field: "members_male")}</span></td>
                                                            </tr>
 
            </g:if>
@@ -243,6 +243,26 @@ ${fieldValue(bean: mkChaid, field: "age_sick_person")}
              </tr>
         </g:if>
 
+
+  <g:if test="${chaid.Survey.countByChaid(mkChaid)>0}">
+
+
+         <tr>
+                                            <td colspan="2">
+                                               <h5>Huduma Nyinginezo</h5>
+                                            </td>
+<g:each in="${chaid.Survey.findAllByChaid(mkChaid)}" status="i" var="surveyListInstance">
+<tr>
+<td>${i+1}</td>
+ <td>
+ ${fieldValue(bean: surveyListInstance, field: "type.name")}
+ <span  class="badge  badge-primary">${fieldValue(bean: surveyListInstance, field: "survey_no")}</span>
+                                    </td>
+
+</tr>
+</g:each>
+             </tr>
+        </g:if>
 
  <g:if test="${chaid.ActivityType.countByChaid(mkChaid)>0}">
 

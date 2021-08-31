@@ -40,10 +40,20 @@ ApplicationService applicationService
 
             render template: 'dashboardregion',model: [regionInstance:regionInstance,houseHoldMember:houseHoldMember]
         }else if(selectedOption.equals("district")){
-            def districtInstance=District.read(params.district_id)
-            def houseHoldMember=materialize.view.HouseHoldData.executeQuery("select sum(totalcount),sum(male_no),sum(female_no) from HouseHoldData where district=:districtInstance ",[districtInstance:districtInstance])
 
-            render template: 'dashboarddistrict',model: [districtInstance:districtInstance,houseHoldMember:houseHoldMember]
+            def village_id=params.village_id
+            if(village_id){
+                def streetInstance=Street.read(village_id)
+
+                def houseHoldMember=Household.executeQuery("select sum(total_members),sum(male_no),sum(female_no) from Household where village_id=:village_id ",[village_id:streetInstance])
+                render template: 'dashboardvillage', model: [streetInstance: streetInstance, houseHoldMember: houseHoldMember]
+
+            }else {
+                def districtInstance = District.read(params.district_id)
+                def houseHoldMember = materialize.view.HouseHoldData.executeQuery("select sum(totalcount),sum(male_no),sum(female_no) from HouseHoldData where district=:districtInstance ", [districtInstance: districtInstance])
+
+                render template: 'dashboarddistrict', model: [districtInstance: districtInstance, houseHoldMember: houseHoldMember]
+            }
         }else{
             def houseHoldMember=materialize.view.HouseHoldData.executeQuery("select sum(totalcount),sum(male_no),sum(female_no) from HouseHoldData ")
 
@@ -854,6 +864,7 @@ ApplicationService applicationService
         JSONArray jsonArray=new JSONArray()
         def roleInstance= MkpRole.findByAuthority("ROLE_CHW")
         def district=params.district
+        def village=params.village
         if (springSecurityService.principal.authorities.any { it.authority == 'ROLE_DISTRICT'}){
             def currentUser=springSecurityService.getCurrentUser()
             district=currentUser?.district_id?.id
@@ -865,8 +876,14 @@ ApplicationService applicationService
         def end_date=params.end_date
         def userList=null
         if(district){
-            def districtInstance=District.get(district)
-            userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id=:district",[mkpRole:roleInstance,district:districtInstance])
+            if(village){
+                def villageInstance=Street.read(village)
+                userList = MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.village_id=:villageInstance", [mkpRole: roleInstance, villageInstance: villageInstance])
+
+            }else {
+                def districtInstance = District.read(district)
+                userList = MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id=:district", [mkpRole: roleInstance, district: districtInstance])
+            }
         }else{
             if (springSecurityService.principal.authorities.any { it.authority == 'ROLE_REGION'}) {
                 def currentUser=springSecurityService.getCurrentUser()
@@ -907,6 +924,8 @@ ApplicationService applicationService
         JSONArray jsonArray=new JSONArray()
         def roleInstance= MkpRole.findByAuthority("ROLE_CHW")
         def district=params.district
+        def village=params.village
+
         def start_date=params.start_date
         def end_date=params.end_date
         def region=null
@@ -917,8 +936,14 @@ ApplicationService applicationService
             //  println("DOne:"+district)
         }
         if(district){
-            def districtInstance=District.get(district)
-            userList=MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id=:district",[mkpRole:roleInstance,district:districtInstance])
+            if(village){
+                def villageInstance=Street.read(village)
+                userList = MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.village_id=:villageInstance", [mkpRole: roleInstance, villageInstance: villageInstance])
+
+            }else {
+                def districtInstance = District.get(district)
+                userList = MkpUserMkpRole.executeQuery("from MkpUserMkpRole where mkpRole=:mkpRole and mkpUser.district_id=:district", [mkpRole: roleInstance, district: districtInstance])
+            }
         }
         else{
             if (springSecurityService.principal.authorities.any { it.authority == 'ROLE_REGION'}) {
@@ -1111,13 +1136,19 @@ ApplicationService applicationService
         def  selectedOption= params.selectedOption
         def from_date=params.from_date
         def end_date=params.end_date
-        println(params)
         if( selectedOption&& selectedOption.equals("region")){
-            def regionInstance=Region.get(params.region_id)
-            render template: '/report/regionmonthlyreport',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
+            def regionInstance=Region.read(params.region_id)
+            render template: '/report/regiontoolreport',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
         }else if(selectedOption&& selectedOption.equals("district")){
-            def districtInstance=District.get(params.district_id)
-            render template: '/report/villagereport',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
+            def village_id=params.village_id
+            if(village_id){
+                def villageInstance=Street.read(village_id)
+                render template: '/report/villagemonthlyreport', model: [villageInstance: villageInstance, from_date: from_date, end_date: end_date]
+
+            }else {
+                def districtInstance = District.read(params.district_id)
+                render template: '/report/districtmonthlyreport', model: [districtInstance: districtInstance, from_date: from_date, end_date: end_date]
+            }
         }else {
             render template: '/report/countrymonthlyreport',model: [from_date:from_date,end_date:end_date]
         }
@@ -1128,11 +1159,11 @@ ApplicationService applicationService
             def response = request.JSON
             if (response) {
                 String data=response.toString()
-              //  println(data)
+                //println(data)
                 try {
                     applicationService.saveChaid(data)
                 }catch(Exception e){
-                    println("Failed: "+data)
+                 //   println("Failed: "+data)
 
                     e.printStackTrace()
                 }
@@ -1222,7 +1253,6 @@ ApplicationService applicationService
          render jsonArray as JSON
     }
     def initialDataAdmin(){
-        println(params)
         def username=params.username
         def userInstance= MkpUser.findByUsername(username)
         JSONObject jsonDetails=new JSONObject()
@@ -1308,13 +1338,31 @@ ApplicationService applicationService
         render jsonDetails as JSON
     }
 
+    def getVillageList(){
+
+        def districtInstance= District.get(params.id)
+
+        def streetListInstance= Street.findAllByDistrict_id(districtInstance)
+        render streetListInstance as JSON
+    }
+
+
     def search_village_list(){
-      //  println("called")
+
+        def src=params.src
+        if(!src){
+            src="2"
+        }
         def districtInstance= District.get(params.id)
 
         def streetListInstance= Street.findAllByDistrict_id(districtInstance)
         //println(streetListInstance.toString())
-        render (template:'villageoptions',model:[streetListInstance:streetListInstance])
+        if(src=="1"){
+            render(template: 'villagebydistrict', model: [streetListInstance: streetListInstance])
+
+        }else {
+            render(template: 'villageoptions', model: [streetListInstance: streetListInstance])
+        }
     }
 
     def searchFacilityByDistrict(){

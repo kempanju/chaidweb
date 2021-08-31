@@ -52,7 +52,7 @@
 
 
                 $.ajax({
-                    url: '${grailsApplication.config.systemLink.toString()}/home/search_village_list',
+                    url: '${grailsApplication.config.systemLink.toString()}/home/search_village_list?src=2',
                     data: {'id': ids}, // change this to send js object
                     type: "post",
                     success: function (data) {
@@ -159,9 +159,13 @@
 
                 <!-- Page container -->
                 <div class="content-wrapper">
-
                 <g:layoutBody/>
+
                 </div>
+ <div class="loader" style="display:none">
+                                <img height="50px"
+                                                src="${createLinkTo(dir: 'images', file: 'ajaxloader.gif')}"/>
+                                </div>
             </div>
 
         </div>

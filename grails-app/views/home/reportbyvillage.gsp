@@ -44,6 +44,7 @@ var end_date=$("#end_date").val();
 var from_date=$("#from_date").val();
 var selectedOption=$("#selectedOption").val();
 if((end_date&&from_date)||selectedOption=="country"){
+    $('.loader').show();
 
   $.ajax({
                         url: '${grailsApplication.config.systemLink.toString()}/home/searchReportByDate',
@@ -54,6 +55,7 @@ if((end_date&&from_date)||selectedOption=="country"){
                             //document.write(data); just do not use document.write
                             $("#village-report").html(data);
                             //console.log(data);
+                              $('.loader').hide();
                         }
                     });
 

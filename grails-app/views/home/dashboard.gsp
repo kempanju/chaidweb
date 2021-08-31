@@ -40,24 +40,51 @@ $("#districtId").hide();
 function getReports(){
 var district_id=$("#district_id").val();
 var region_id=$("#region_id").val();
+var village_id=$("#village_id").val();
 var selectedOption=$("#selectedOption").val();
+$('.loader').show();
 
   $.ajax({
                         url: '${grailsApplication.config.systemLink.toString()}/home/dashboardFilter',
-                        data: {'district_id': district_id,'region_id':region_id,'selectedOption':selectedOption}, // change this to send js object
+                        data: {'district_id': district_id,'region_id':region_id,'village_id':village_id,'selectedOption':selectedOption}, // change this to send js object
                         type: "post",
                         success: function (data) {
-                       // alert("Done");
                             //document.write(data); just do not use document.write
                             $("#dashboard-data").html(data);
                             //console.log(data);
+                            $('.loader').hide();
+
                         }
                     });
 
+var lengthDistrict=document.getElementById("village_id");
+
+
+if(selectedOption=="district"&&!lengthDistrict){
+getVillagesByDistrict(district_id);
+}
 
 
 }
+ function getVillagesByDistrict(ids){
 
+
+                 $.ajax({
+                     url: '${grailsApplication.config.systemLink.toString()}/home/search_village_list?src=1',
+                     data: {'id': ids}, // change this to send js object
+                     type: "post",
+                     success: function (data) {
+                    // alert("Done");
+                         //document.write(data); just do not use document.write
+                         $("#list-village").html(data);
+                         $("#list-village").show();
+
+                         //console.log(data);
+                     }
+                 });
+
+
+     }
     </script>
  </sec:ifAnyGranted>
 
@@ -92,6 +119,7 @@ $( document ).ready(function() {
  if(district_id){
   selectedOption="district";
   }
+                            $('.loader').show();
 
    $.ajax({
                          url: '${grailsApplication.config.systemLink.toString()}/home/dashboardFilter',
@@ -101,13 +129,34 @@ $( document ).ready(function() {
                         // alert("Done");
                              //document.write(data); just do not use document.write
                              $("#dashboard-data").html(data);
+                             $('.loader').hide();
+
                              //console.log(data);
                          }
                      });
 
 
-
+getVillagesByDistrict(district_id);
  }
+
+  function getVillagesByDistrict(idsData){
+     var ids = idsData.value;
+
+
+                 $.ajax({
+                     url: '${grailsApplication.config.systemLink.toString()}/home/search_village_list?src=1',
+                     data: {'id': ids}, // change this to send js object
+                     type: "post",
+                     success: function (data) {
+                    // alert("Done");
+                         //document.write(data); just do not use document.write
+                         $("#list-village").html(data);
+                         //console.log(data);
+                     }
+                 });
+
+
+     }
 
      </script>
   </sec:ifAnyGranted>
@@ -232,7 +281,8 @@ $( document ).ready(function() {
                                                                           class="form-control " noSelection="['': 'District']"/>
 
                                                             </div>
-
+            <div class="col-lg-3" id="list-village" style="display:none">
+          </div>
  </sec:ifAnyGranted>
   <sec:ifAnyGranted roles="ROLE_REGION">
   <g:hiddenField name="region_id" id="region_id" value="${currentUser?.region?.id}"/>

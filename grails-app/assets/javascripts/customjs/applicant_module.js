@@ -25,8 +25,8 @@ app.controller("myCtrl",["$scope","$http", function($scope,$http) {
     //$scope.linkName = "feli";
 
 
-    linkName="http://chaid.mkapafoundation.or.tz"
-    //linkName="http://localhost:9090"
+    //linkName="http://chaid.mkapafoundation.or.tz"
+    linkName="http://localhost:9090"
    // linkName="http://www.habarisasa.com:8080/chaid"
 
    callRegisteredMethod("");
@@ -97,8 +97,8 @@ app.controller("reached",["$scope","$http", function($scope,$http) {
     var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-   linkName="http://chaid.mkapafoundation.or.tz"
-    //linkName="http://localhost:9090"
+   //linkName="http://chaid.mkapafoundation.or.tz"
+    linkName="http://localhost:9090"
     //linkName="http://www.habarisasa.com:8080/chaid"
 
 callRegisteredMethod("");
@@ -164,8 +164,8 @@ $scope.referral.start_date="";
   var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-    linkName="http://chaid.mkapafoundation.or.tz"
-    //linkName="http://localhost:9090"
+   // linkName="http://chaid.mkapafoundation.or.tz"
+    linkName="http://localhost:9090"
 callHttpMethod("");
 
 
@@ -227,14 +227,15 @@ app.controller("chwActivity",["$scope","$http", function($scope,$http) {
 console.log("called");
 $scope.referral = {};
 $scope.referral.end_date="";
+$scope.villageList = null;
 
 $scope.referral.start_date="";
 
   var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-    linkName="http://chaid.mkapafoundation.or.tz"
-   // linkName="http://localhost:9090"
+   // linkName="http://chaid.mkapafoundation.or.tz"
+    linkName="http://localhost:9090"
 callHttpMethod("");
 
 $scope.calculateTotal = function(filteredArray){
@@ -246,6 +247,24 @@ $scope.calculateTotal = function(filteredArray){
     });
     return total;
 };
+
+function getVillageByDistrict(district){
+
+        $http({
+            method: "POST",
+            url: linkName+"/home/getVillageList",
+         params: {id: district, draft: true}
+
+        }).then(function mySuccess(response) {
+                      var data=response.data;
+                      $scope.villageList = data;
+
+                  }, function myError(response) {
+
+                  });
+    };
+
+
 $scope.chwReportByDate=function(){
 
         $http({
@@ -268,20 +287,21 @@ $scope.chwReportByDate=function(){
 
 $scope.updateChwReport=function(){
   $selectedItem=$scope.insert.district;
-callHttpMethod($selectedItem);
+  $selectedVillage=$scope.insert.village;
+callHttpMethod($selectedItem,$selectedVillage);
+getVillageByDistrict($selectedItem);
 console.log($scope);
 
 }
 
 
-function callHttpMethod(district){
+function callHttpMethod(district,village){
 
    // linkName="http://www.habarisasa.com:8080/chaid"
-
     $http({
         method: "POST",
         url:linkName+ "/home/reportByCwaActivityJSON",
-         params: {district: district, draft: true}
+         params: {district: district,village:village, draft: true}
 
     }).then(function mySuccess(response) {
         var data=response.data;
@@ -305,14 +325,15 @@ app.controller("chwReferral",["$scope","$http", function($scope,$http) {
 console.log("called");
 $scope.referral = {};
 $scope.referral.end_date="";
+$scope.villageList = null;
 
 $scope.referral.start_date="";
 
   var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-    linkName="http://chaid.mkapafoundation.or.tz"
-    //linkName="http://localhost:9090"
+    //linkName="http://chaid.mkapafoundation.or.tz"
+    linkName="http://localhost:9090"
 callHttpMethod("");
 
 
@@ -335,23 +356,43 @@ $scope.chwReportByDate=function(){
         console.log($scope);
     };
 
+function getVillageByDistrict(district){
+
+        $http({
+            method: "POST",
+            url: linkName+"/home/getVillageList",
+         params: {id: district, draft: true}
+
+        }).then(function mySuccess(response) {
+                      var data=response.data;
+                      $scope.villageList = data;
+
+                  }, function myError(response) {
+
+                  });
+    };
+
 
 $scope.updateChwReport=function(){
   $selectedItem=$scope.insert.district;
-callHttpMethod($selectedItem);
+  $selectedVillage=$scope.insert.village;
+
+callHttpMethod($selectedItem,$selectedVillage);
+getVillageByDistrict($selectedItem);
+
 console.log($scope);
 
 }
 
 
-function callHttpMethod(district){
+function callHttpMethod(district,village){
 
    // linkName="http://www.habarisasa.com:8080/chaid"
 
     $http({
         method: "POST",
         url:linkName+ "/home/reportByCwaReferralsJSON",
-         params: {district: district, draft: true}
+         params: {district: district,village:village, draft: true}
 
     }).then(function mySuccess(response) {
         var data=response.data;

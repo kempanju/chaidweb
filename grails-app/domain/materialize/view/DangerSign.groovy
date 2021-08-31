@@ -11,5 +11,6 @@ class DangerSign {
     static mapping = {
         table 'mst_danger_signs_view'
         version false
+        id false
     }
 }

@@ -1,5 +1,6 @@
 package chaid
 
+import admin.Dictionary
 import admin.DictionaryItem
 import admin.SubStreet
 import admin.SystemLogs
@@ -748,6 +749,24 @@ class ApplicationService {
                             e.printStackTrace()
                         }
 
+
+                    }
+
+                    if (code.equals("CHAD56A")||code.equals("CHAD56B")||code.equals("CHAD56C")
+                            ||code.equals("CHAD56D")||code.equals("CHAD57A")
+                            ||code.equals("CHAD57B")||code.equals("CHAD57C")||code.equals("CHAD57D")
+                            ||code.equals("CHAD58B")||code.equals("CHAD58C")||code.equals("CHAD58D")
+                            ||code.equals("CHAD59")||code.equals("CHAD60")) {
+                        try{
+                           def dictionaryInstance= Dictionary.findByCode(code)
+                            def surveyInstance= new Survey()
+                            surveyInstance.type=dictionaryInstance
+                            surveyInstance.chaid=chadInstance
+                            surveyInstance.survey_no=Integer.parseInt(answer_code)
+                            surveyInstance.save(failOnError: true, flush: true)
+                        }catch(Exception e){
+                            e.printStackTrace()
+                        }
 
                     }
 

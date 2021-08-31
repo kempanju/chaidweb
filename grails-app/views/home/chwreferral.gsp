@@ -28,7 +28,7 @@
 
    <form name="searchForm" ng-submit="chwReportByDate()">
 
-      <div class="col-md-3">
+      <div class="col-md-2">
 
                                     <div class="form-group">
 
@@ -54,9 +54,16 @@
                 </div>
 
 
+     <div class="col-md-2">
+                    <select class="form-control"  ng-model="insert.village" ng-options="item.id as item.name for item in villageList" ng-change="updateChwReport()">
+                          <option value="">-- Select Village --</option>
+
+                    </select>
+
+                    </div>
 
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
 
                             <div class="col-lg-12 ">
@@ -67,7 +74,7 @@
                     </div>
 
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
 
                             <div class="col-lg-12 ">

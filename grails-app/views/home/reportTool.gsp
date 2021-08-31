@@ -37,27 +37,55 @@ $( document ).ready(function() {
 });
 
 
+ function getVillagesByDistrict(ids){
+                 $.ajax({
+                     url: '${grailsApplication.config.systemLink.toString()}/home/search_village_list?src=1',
+                     data: {'id': ids}, // change this to send js object
+                     type: "post",
+                     success: function (data) {
+                    // alert("Done");
+                         //document.write(data); just do not use document.write
+                         $("#list-village").html(data);
+                          $("#list-village").show();
+
+                         //console.log(data);
+                     }
+                 });
+
+
+     }
+
+
 function getReports(){
 var district_id=$("#district_id").val();
 var region_id=$("#region_id").val();
+var village_id=$("#village_id").val();
+
 var end_date=$("#end_date").val();
 var from_date=$("#from_date").val();
 var selectedOption=$("#selectedOption").val();
-if((end_date&&from_date)||selectedOption=="country"||selectedOption=="region"){
+if((end_date&&from_date)||selectedOption=="country"||selectedOption=="region"||selectedOption=="district"){
+   $('.loader').show();
 
   $.ajax({
                         url: '${grailsApplication.config.systemLink.toString()}/home/reportByDateTool',
-                        data: {'district_id': district_id,'region_id':region_id,'end_date':end_date,'from_date':from_date,'selectedOption':selectedOption}, // change this to send js object
+                        data: {'district_id': district_id,'village_id':village_id,'region_id':region_id,'end_date':end_date,'from_date':from_date,'selectedOption':selectedOption}, // change this to send js object
                         type: "post",
                         success: function (data) {
                        // alert("Done");
                             //document.write(data); just do not use document.write
                             $("#village-report").html(data);
                             //console.log(data);
+                            $('.loader').hide();
                         }
                     });
 
                     }
+var lengthDistrict=document.getElementById("village_id");
+
+if(selectedOption=="district"&&!lengthDistrict){
+getVillagesByDistrict(district_id);
+}
 
 }
 </script>
@@ -100,7 +128,15 @@ if((end_date&&from_date)||selectedOption=="country"||selectedOption=="region"){
                                       class="form-control " noSelection="['': 'Region']"/>
 
                         </div>
+   <div class="col-lg-3" id="districtId" style="display:none">
+    <g:select name="district_id" id="district_id" value="" onchange="getReports(this)"
+              data-show-subtext="true" data-live-search="true"
+              from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
+              class="form-control " noSelection="['': 'District']"/>
 
+</div>
+     <div class="col-lg-3" id="list-village" style="display:none">
+          </div>
   <div class="col-lg-3">
                         <div class="form-group">
                             <div class="col-lg-10 input-append date form_datetime">
