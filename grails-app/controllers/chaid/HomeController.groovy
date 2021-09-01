@@ -996,7 +996,6 @@ ApplicationService applicationService
     }
 
     def referralsReportByDate(){
-        println(params)
         String start_date=params.start_date
         def end_date=params.end_date
         // def  startDate=Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",start_date,TimeZone.getTimeZone("UTC"))

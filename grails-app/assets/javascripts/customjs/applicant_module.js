@@ -26,7 +26,7 @@ app.controller("myCtrl",["$scope","$http", function($scope,$http) {
 
 
     linkName="http://chaid.mkapafoundation.or.tz"
-   // linkName="http://localhost:9090"
+    //linkName="http://localhost:9090"
    // linkName="http://www.habarisasa.com:8080/chaid"
 
    callRegisteredMethod("");
@@ -97,8 +97,8 @@ app.controller("reached",["$scope","$http", function($scope,$http) {
     var linkName=$scope.linkName;
     //$scope.linkName = "feli";
 
-   linkName="http://chaid.mkapafoundation.or.tz"
-   // linkName="http://localhost:9090"
+    linkName="http://chaid.mkapafoundation.or.tz"
+    //linkName="http://localhost:9090"
     //linkName="http://www.habarisasa.com:8080/chaid"
 
 callRegisteredMethod("");
@@ -235,7 +235,7 @@ $scope.referral.start_date="";
     //$scope.linkName = "feli";
 
     linkName="http://chaid.mkapafoundation.or.tz"
-   // linkName="http://localhost:9090"
+    //linkName="http://localhost:9090"
 callHttpMethod("");
 
 $scope.calculateTotal = function(filteredArray){
@@ -266,6 +266,7 @@ function getVillageByDistrict(district){
 
 
 $scope.chwReportByDate=function(){
+$scope.spinnerEnabled=true;
 
         $http({
             method: "POST",
@@ -275,7 +276,8 @@ $scope.chwReportByDate=function(){
         }).then(function mySuccess(response) {
                       var data=response.data;
                       $scope.report = data;
-                      console.log( $scope.report);
+                      //console.log( $scope.report);
+                  $scope.spinnerEnabled=false;
 
 
                   }, function myError(response) {
@@ -296,6 +298,7 @@ console.log($scope);
 
 
 function callHttpMethod(district,village){
+$scope.spinnerEnabled=true;
 
    // linkName="http://www.habarisasa.com:8080/chaid"
     $http({
@@ -306,7 +309,8 @@ function callHttpMethod(district,village){
     }).then(function mySuccess(response) {
         var data=response.data;
         $scope.report = data;
-        console.log($scope.report);
+      //  console.log($scope.report);
+      $scope.spinnerEnabled=false;
 
 
     }, function myError(response) {
@@ -327,6 +331,7 @@ $scope.referral = {};
 $scope.referral.end_date="";
 $scope.villageList = null;
 
+$scope.spinnerEnabled=false;
 $scope.referral.start_date="";
 
   var linkName=$scope.linkName;
@@ -338,7 +343,7 @@ callHttpMethod("");
 
 
 $scope.chwReportByDate=function(){
-
+$scope.spinnerEnabled=true;
         $http({
             method: "POST",
             url: linkName+"/home/reportByCwaReferralsJSON",
@@ -347,13 +352,11 @@ $scope.chwReportByDate=function(){
         }).then(function mySuccess(response) {
                       var data=response.data;
                       $scope.report = data;
-                      console.log( $scope.report);
-
+                    $scope.spinnerEnabled=false;
 
                   }, function myError(response) {
 
                   });
-        console.log($scope);
     };
 
 function getVillageByDistrict(district){
@@ -388,7 +391,7 @@ console.log($scope);
 function callHttpMethod(district,village){
 
    // linkName="http://www.habarisasa.com:8080/chaid"
-
+$scope.spinnerEnabled=true;
     $http({
         method: "POST",
         url:linkName+ "/home/reportByCwaReferralsJSON",
@@ -398,7 +401,7 @@ function callHttpMethod(district,village){
         var data=response.data;
         $scope.report = data;
         console.log($scope.report);
-
+      $scope.spinnerEnabled=false;
 
     }, function myError(response) {
         console.log("failed");

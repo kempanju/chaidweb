@@ -19,7 +19,14 @@
                 <div class="col-md-4">
                     <div class="card-counter success">
                         <i class="fa fa-database"></i>
-                        <span class="count-numbers">${chaid.Facility.executeQuery("from Facility where  deleted=false  and district_id.region_id=:regionInstance",[regionInstance:regionInstance]).size()}</span>
+                        <span class="count-numbers">
+
+                         <%
+                        def countFacility=chaid.MkChaid.executeQuery("select m.facility.id from MkChaid m where m.deleted=false  and distric.region_id=:regionInstance group by m.facility.id",[regionInstance:regionInstance]).size()
+                        %>
+                        ${formatAmountString(name: (int)countFacility)}
+
+                        </span>
                         <span class="count-name">Facilities reached</span>
                     </div>
                 </div>
@@ -57,7 +64,11 @@
                 </div>
             </div>
         </div>
+ <div class="  col-md-12" style="padding: 5px; margin-bottom:40px">
 
+                 <div id="columnchart_district" style="height: 300px;"></div>
+
+                 </div>
         <div class="col-lg-6 text-center" style="padding: 10px">
             <div id="piechart_3d_comp_gender" style="width: 100%;min-height: 300px;margin-top: 5px"></div>
 
@@ -85,6 +96,8 @@
          google.charts.setOnLoadCallback(drawChartCategory);
          google.charts.setOnLoadCallback(drawChartCrimeType);
          google.charts.setOnLoadCallback(drawChartPopulationType);
+         google.charts.setOnLoadCallback(drawChartDistrictReports);
+
 
 
 function drawChartGender() {
@@ -169,6 +182,37 @@ function drawChartGender() {
             var chart = new google.visualization.PieChart(document.getElementById('piechart_3d_comp_crime'));
             chart.draw(data, options);
         }
+
+
+          function drawChartDistrictReports() {
+                         var data = google.visualization.arrayToDataTable([
+                           ["Month", "Gathering", { role: "style" } ],
+                            <g:each  in="${materialize.view.DistrictReport.executeQuery("select population,district.name from DistrictReport where district.region_id=:regionInstance ",[regionInstance:regionInstance])}" var="reportDataInstance">
+
+                           ["${reportDataInstance[1]}", ${reportDataInstance[0]},"#66BB6A"],
+                           </g:each>
+
+                         ]);
+
+                         var view = new google.visualization.DataView(data);
+                         view.setColumns([0, 1,
+                                          { calc: "stringify",
+                                            sourceColumn: 1,
+                                            type: "string",
+                                            role: "annotation" },
+                                          2]);
+
+                         var options = {
+                           title: "${regionInstance.name} District Reports",
+                           width: 900,
+                           height: 300,
+                           bar: {groupWidth: "90%"},
+                           legend: { position: "none" },
+                         };
+                         var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_district"));
+                         chart.draw(view, options);
+                     }
+
 
 </script>
 

@@ -24,6 +24,7 @@
     <link rel = "stylesheet"
           type = "text/css" href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900"/>
     <asset:stylesheet src="icons/icomoon/styles.css"/>
+        <asset:stylesheet src="icons/fontawesome/styles.min.css"/>
     <asset:stylesheet src="application.css"/>
     <asset:stylesheet src="bootstrap.css"/>
     <asset:stylesheet src="darkbox.css"/>

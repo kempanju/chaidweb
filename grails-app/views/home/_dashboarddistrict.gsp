@@ -19,7 +19,13 @@
                 <div class="col-md-4">
                     <div class="card-counter success">
                         <i class="fa fa-database"></i>
-                        <span class="count-numbers">${chaid.Facility.countByDeletedAndDistrict_id(false,districtInstance)}</span>
+                        <span class="count-numbers">
+                         <%
+                            def countFacility=chaid.MkChaid.executeQuery("select m.facility.id from MkChaid m where m.deleted=false  and distric=:districtInstance group by m.facility.id",[districtInstance:districtInstance]).size()
+                            %>
+                            ${formatAmountString(name: (int)countFacility)}
+
+                        </span>
                         <span class="count-name">Facilities reached</span>
                     </div>
                 </div>

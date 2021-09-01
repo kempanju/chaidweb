@@ -131,6 +131,12 @@
 
   </div>
 
+<div class="loader" ng-show="spinnerEnabled">
+                                <img height="50px"
+                                                src="${createLinkTo(dir: 'images', file: 'ajaxloader.gif')}"/>
+                                </div>
+            </div>
+
    </div>
 
    <script type="text/javascript">
