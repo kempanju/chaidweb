@@ -83,6 +83,7 @@
                                                           <a href="#"><i class="icon-file-excel"></i> <span>Reports</span></a>
                                                           <ul>
                                                         <li><g:link controller='home' action="reportByVillage">General Reports</g:link></li>
+                                                            <li><g:link controller='home' action="reportTool">Education and Referrals Reached</g:link></li>
 
                                                      <li><g:link controller='home' action="reportByRegistered">Registered</g:link></li>
                                                         <li><g:link controller='home' action="reportByReached">Reached</g:link></li>
@@ -91,7 +92,6 @@
                                                      <li><g:link controller='home' action="reportByHealthEducation">Health Education</g:link></li>
                                                         <li><g:link controller='home' action="chwActivity">CHW Activity Report</g:link></li>
                                                         <li><g:link controller='home' action="chwReferral">CHW Referral Report</g:link></li>
-                                                            <li><g:link controller='home' action="reportTool">Report Tools</g:link></li>
 
                                                         <li><g:link controller='home' action="map">Map</g:link></li>
 

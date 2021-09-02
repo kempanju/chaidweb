@@ -6,9 +6,9 @@
 <th>Village Name </th>
 <th>Visits</th>
 <th>Households</th>
-<th>Population</th>
-<th>Available Women</th>
-<th>Available Men</th>
+<th>Population reached</th>
+<th>Women</th>
+<th>Men</th>
 <th>Adolescents Girls (10-19) </th>
 <th style="width25%; ">Adolescents Boys (10-19)</th>
 <th>Neonates</th>
