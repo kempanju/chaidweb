@@ -295,7 +295,7 @@ ${fieldValue(bean: mkChaid, field: "age_sick_person")}
    <tr>
    <td>${i+1}</td>
     <td>
-    ${fieldValue(bean: activityListInstance, field: "name")} , ${fieldValue(bean: activityListInstance, field: "phone_number")}
+    ${fieldValue(bean: activityListInstance, field: "name")} , ${fieldValue(bean: activityListInstance, field: "gender")}, ${fieldValue(bean: activityListInstance, field: "age")}
                                        </td>
 
    </tr>

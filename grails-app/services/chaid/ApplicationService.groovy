@@ -857,7 +857,7 @@ class ApplicationService {
                     }
 
                     if(code.equals("CHAD47")){
-                        saveAdolescent(chadInstance, houseHoldInstance, jsonData, userInstance,results)
+                        saveAdolescent(chadInstance, houseHoldInstance, answer_code, userInstance,results)
 
                     }
 
@@ -941,9 +941,37 @@ class ApplicationService {
 
     }
 
-    def saveAdolescent(MkChaid mkChaid,Household household,def jsonData,def userInstance,def results){
+    def saveAdolescent(MkChaid mkChaid,Household household,def answer_codedata,def userInstance,def results){
         def adolescentInstance=new  Adolescent()
         adolescentInstance.chaid=mkChaid
+
+       // println("code"+answer_codedata)
+
+            try {
+                JSONArray newArray=new JSONArray(answer_codedata)
+                newArray.each {
+
+                    def codeValue = it.code
+                    String member_no = it.member_no
+                    if (codeValue.equals("CHAD47A")) {
+
+                        adolescentInstance.name = member_no
+                    }
+                    if (codeValue.equals("CHAD47B") ) {
+                        adolescentInstance.age = Integer.parseInt(member_no)
+
+                    }
+
+                    if (codeValue.equals("CHAD47C") ) {
+                        adolescentInstance.gender = member_no
+
+                    }
+                }
+            } catch (Exception e) {
+             //   e.printStackTrace()
+            }
+
+
         results.each {
             def code = it.code
             def answer_code = it.answer_code
@@ -965,30 +993,11 @@ class ApplicationService {
 
             if (code.equals("CHAD55A")) {
                 adolescentInstance.referrals = DictionaryItem.findByCode(answer_code).name
+            }else{
+                adolescentInstance.referrals = "Hapana"
             }
 
-            if (code.equals("CHAD47") ) {
 
-                try {
-
-                    answer_code.each {
-
-                        def codeValue = it.code
-                        String member_no = it.member_no
-                        if (codeValue.equals("CHAD47A")) {
-
-                            adolescentInstance.name = member_no
-                        }
-                        if (codeValue.equals("CHAD47B") ) {
-                            adolescentInstance.age = Integer.parseInt(member_no)
-
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace()
-                }
-
-            }
 
             if (code.equals("CHAD50") ) {
 

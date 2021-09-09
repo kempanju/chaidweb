@@ -11,7 +11,7 @@ class MkChaid {
     DictionaryItem visit_type,meeting_type,objective_type,relationship_status,interview_status,living_with_household
     java.sql.Timestamp arrival_time
     String respondent_name,respondent_gender,uniquecode,reg_no,sick_person_name
-    Integer respondent_age,age_sick_person,emergence_status,members_male=0,members_female=0
+    Integer respondent_age,total_members,age_sick_person,emergence_status,members_male=0,members_female=0
     Boolean sick_person,care_giver,deleted
     District distric
     Street street
@@ -52,6 +52,8 @@ class MkChaid {
         living_with_household nullable:true
         members_male nullable:true
         members_female nullable:true
+        total_members formula:"(members_male+members_female)"
+
 
     }
     static mapping = {

@@ -164,7 +164,7 @@
 
                 </div>
  <div class="loader" style="display:none">
-                                <img height="50px"
+                                <img height="40px"
                                                 src="${createLinkTo(dir: 'images', file: 'ajaxloader.gif')}"/>
                                 </div>
             </div>

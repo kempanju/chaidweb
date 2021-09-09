@@ -110,12 +110,12 @@ def month = new Date().format("MMM")
         </div>
 
 
-    <div class="  col-md-6" style="padding: 5px; margin-bottom:40px">
+    <div class="  col-md-12" style="padding: 5px; margin-bottom:40px">
 
-             <div id="columnchart_year" style="width: 300px;height: 300px;"></div>
+             <div id="columnchart_year" style="width: 600px;height: 300px;"></div>
 
              </div>
-             <div class="  col-md-6" style="padding: 5px; margin-bottom:40px">
+             <div class="  col-md-12" style="padding: 5px; margin-bottom:40px">
 
                           <div id="columnchart_monthly" style="height: 300px;"></div>
 
@@ -293,7 +293,7 @@ function drawChartGender() {
 
               var options = {
                 title: "${year} ${month} Daily  Reports",
-                width: 500,
+                width: 900,
                 height: 300,
                 bar: {groupWidth: "90%"},
                 legend: { position: "none" },
@@ -322,7 +322,7 @@ function drawChartGender() {
 
               var options = {
                 title: "${year} Monthly Reports",
-                width: 500,
+                width: 900,
                 height: 300,
                 bar: {groupWidth: "90%"},
                 legend: { position: "none" },
