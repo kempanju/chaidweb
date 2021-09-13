@@ -5,7 +5,7 @@ import admin.DictionaryItem
 class PostDelivery {
     int version,id
     MkChaid chaid
-    Date delivery_date
+    Date delivery_date,release_date
     DictionaryItem outcome_type,baby_condition,delivery_type,delivery_place,family_planning
     String facility_card_name
     DictionaryItem danger_sign
@@ -30,6 +30,7 @@ class PostDelivery {
         child_age_days formula:"(current_date -delivery_date::date)"
         created_at nullable: true
         is_referrals nullable:true
+        release_date nullable:true
     }
     def beforeInsert(){
         def current_time = Calendar.instance

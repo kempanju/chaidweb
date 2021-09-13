@@ -9,7 +9,7 @@ class PreginantDetails {
     Household household
     MkChaid chaid
     Street village_id
-    Date last_menstual,date_of_birth
+    Date last_menstual,date_of_birth,clinic_first_date,clinic_second_date,clinic_third_date,clinic_fourth_date
     DictionaryItem danger_sign,visit_type,education_type,family_planning_type,child_group_no
     Integer child_no,age
     Boolean attended_clinic,prefer_family_planning,child_under_one,ever_used_any_family_planning,is_referrals
@@ -38,6 +38,10 @@ class PreginantDetails {
         created_at nullable:true
         pregnant_month formula:"(current_date -last_menstual::date)/30"
         is_referrals nullable:true
+        clinic_first_date nullable:true
+        clinic_second_date nullable:true
+        clinic_third_date nullable:true
+        clinic_fourth_date nullable:true
     }
 
     def beforeInsert(){

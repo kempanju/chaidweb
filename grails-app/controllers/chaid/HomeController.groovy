@@ -76,7 +76,13 @@ ApplicationService applicationService
     }
 
     def reportTool(){
+        session["activePage"] = "reports"
         render view: "reportTool"
+    }
+
+    def monthlyReport(){
+        session["activePage"] = "reports"
+        render view: "/report/monthlyreport"
     }
 
     def sendMessage(){
@@ -1313,7 +1319,7 @@ ApplicationService applicationService
 
          jsonDetails.put("pregnant_list","null")
 
-         def chaidDataList= Dictionary.findAllByActiveAndIs_questionnaireAndActive(true,true,true,[order:'asc',sort:'id'])
+         def chaidDataList= Dictionary.findAllByActiveAndIs_questionnaire(true,true,[order:'asc',sort:'id'])
          JSONArray jsonArrayDetails=new JSONArray()
          chaidDataList.each{
              JSONObject jsonObject=new JSONObject()
@@ -1326,7 +1332,7 @@ ApplicationService applicationService
                  jsonObject.put("name_sw"," ")
              }
 
-             def optionQuestionare= DictionaryItem.findAllByActiveAndDictionary_id(true,it,[order:'asc',sort:'code']) as JSON
+             def optionQuestionare= DictionaryItem.findAllByActiveAndDictionary_id(true,it,[sort: ['displayOrder': 'asc', 'code': 'asc'] ]) as JSON
              jsonObject.put("options",optionQuestionare.toString())
              jsonArrayDetails.put(jsonObject)
 

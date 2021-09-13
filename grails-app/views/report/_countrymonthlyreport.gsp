@@ -30,8 +30,13 @@
 <tr>
                       <td  class="info">Total number of Girls and Boys in the adoloscent group ages (10-24) reached  </td>
               <g:each in="${memberCategoryList}" var="categorysListInstance">
+              <g:if test="${categorysListInstance.code=="CHAD17F"||categorysListInstance.code=="CHAD17E"}">
+              <td style="background:black"></td>
+              </g:if>
+              <g:else>
               <%
                      def groupAgeBetweenNo=0;
+
                 if(end_date&&from_date){
                   groupAgeBetweenNo=chaid.AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and arrival_time between '"+from_date+"' and '"+end_date+"'",[categoryType:categorysListInstance])[0]
 
@@ -45,6 +50,7 @@
 
                %>
               <td>${formatAmountString(name: (int)groupAgeBetweenNo)}</td>
+              </g:else>
              </g:each>
 
     </tr>
@@ -59,6 +65,11 @@
                     <td  class="info" >${educationListInstance.name}</td>
 
                     <g:each in="${memberCategoryList}" var="categorysListInstance">
+                     <g:if test="${categorysListInstance.code=="CHAD17F"||categorysListInstance.code=="CHAD17E"}">
+                                  <td style="background:black"></td>
+                                  </g:if>
+                          <g:else>
+
                     <%
                     def visitTypeInstance=admin.DictionaryItem.findByCode("CHAD4A")
                 def noHoldMember=0
@@ -74,6 +85,7 @@
                                   }
                     %>
                     <td>${formatAmountString(name: (int)noHoldMember)}</td>
+                    </g:else>
                     </g:each>
 
                     <td></td>
@@ -189,13 +201,13 @@ def totalCount=chaid.MkChaid.executeQuery("select sum(total_members) from MkChai
 
     <tr>
             <%
-             def surveyInstance1=admin.Dictionary.findByCode("CHAD60")
+             def surveyInstance1=admin.Dictionary.findByCode("CHAD59")
               def survey1=0
               if(end_date&&from_date){
                survey1=chaid.Survey.executeQuery(" select sum(survey_no) from Survey h where  type=:surveyInstance1  and arrival_time between '"+from_date+"' and '"+end_date+"'",[surveyInstance1:surveyInstance1]).size()
 
               }else{
-             survey2=chaid.Survey.executeQuery("select sum(survey_no) from Survey where  type=:surveyInstance1",[surveyInstance1:surveyInstance1])[0]
+             survey1=chaid.Survey.executeQuery("select sum(survey_no) from Survey where  type=:surveyInstance1",[surveyInstance1:surveyInstance1])[0]
 
               }
 

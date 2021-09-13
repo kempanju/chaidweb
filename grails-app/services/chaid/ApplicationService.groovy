@@ -1225,20 +1225,27 @@ class ApplicationService {
                 def code = it.code
                 def answer_code = it.answer_code
 
-                if (code.equals("CHAD23A")) {
+                if (code.equals("CHAD23B")) {
                     postDeliveryInstance.outcome_type = DictionaryItem.findByCode(answer_code)
                 }
 
-                if (code.equals("CHAD23B")) {
+                if (code.equals("CHAD23C")) {
                     postDeliveryInstance.baby_condition = DictionaryItem.findByCode(answer_code)
                 }
 
-                if (code.equals("CHAD23C")) {
+                if (code.equals("CHAD23D")) {
                     postDeliveryInstance.delivery_type = DictionaryItem.findByCode(answer_code)
                 }
 
-                if (code.equals("CHAD23D")) {
+
+                if (code.equals("CHAD23E")) {
                     postDeliveryInstance.delivery_place = DictionaryItem.findByCode(answer_code)
+                }
+
+                if (code.equals("CHAD24")) {
+                    if(answer_code) {
+                        postDeliveryInstance.release_date = java.util.Date.parse("yyyy-MM-dd", answer_code)
+                    }
                 }
 
                 if (code.equals("CHAD29")) {
@@ -1275,7 +1282,6 @@ class ApplicationService {
 
                     }
                     if (code.equals("CHAD25")) {
-                        println("passe")
 
                         try {
                             def dangerSignExists = false
@@ -1473,6 +1479,31 @@ class ApplicationService {
 
                 if (code.equals("CHAD22B")) {
                     pregnantInstance.family_planning_type = DictionaryItem.findByCode(answer_code)
+                }
+
+                if(code.equals("CHAD18E")){
+                    try{
+                        String anserDate=answer_code
+                        def arrayDate=anserDate.split(",")
+                        def sizeD=arrayDate.size()
+                        if(sizeD>0){
+                            pregnantInstance.clinic_first_date=java.util.Date.parse("yyyy-MM-dd",arrayDate[0].trim())
+                        }
+                        if(sizeD>1){
+                            pregnantInstance.clinic_second_date=java.util.Date.parse("yyyy-MM-dd",arrayDate[1].trim())
+                        }
+
+                        if(sizeD>2){
+                            pregnantInstance.clinic_third_date=java.util.Date.parse("yyyy-MM-dd",arrayDate[2].trim())
+                        }
+                        if(sizeD>3){
+                            pregnantInstance.clinic_third_date=java.util.Date.parse("yyyy-MM-dd",arrayDate[3].trim())
+                        }
+
+                    }catch(Exception e){
+                        e.printStackTrace()
+                    }
+
                 }
 
             }

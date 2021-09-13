@@ -15,11 +15,22 @@
        </td>
        <td >
         <span class="text-muted"><g:formatDate format="dd MMM, yyyy HH:mm"
-                          date="${postDeliveryInstance?.delivery_date}"/> ${postDeliveryInstance?.child_age}</span>
+                          date="${postDeliveryInstance?.delivery_date}"/> </span>
 
 
        </td>
    </tr>
+    <tr>
+          <td>
+              <span class="text-semibold"><g:message code="description" default="Release Date"/></span>
+          </td>
+          <td >
+           <span class="text-muted"><g:formatDate format="dd MMM, yyyy HH:mm"
+                             date="${postDeliveryInstance?.release_date}"/> </span>
+
+
+          </td>
+      </tr>
 <tr>
 <td> <span class="text-semibold">Delivery Outcome of Baby</span></td>
  <td>

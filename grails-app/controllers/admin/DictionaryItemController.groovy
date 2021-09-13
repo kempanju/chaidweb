@@ -22,7 +22,7 @@ class DictionaryItemController {
         String searchstring="%"+searchText+"%"
        // searchstring=searchstring.toLowerCase()
         //println(searchstring)
-        def dictionaryInstanceList= DictionaryItem.executeQuery("from DictionaryItem where  name like :searchstring or name_en like :searchstring or code like :searchstring or dictionary_id.name like :searchstring ",[searchstring:searchstring],params)
+        def dictionaryInstanceList= DictionaryItem.executeQuery("from DictionaryItem where  lower(name) like lower(:searchstring) or lower(name_en) like lower(:searchstring) or code like :searchstring or dictionary_id.name like :searchstring ",[searchstring:searchstring],params)
 
         render(template: 'dictionaryItem',model: [dictionaryItemList:dictionaryInstanceList])
 

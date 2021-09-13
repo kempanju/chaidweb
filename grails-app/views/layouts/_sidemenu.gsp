@@ -83,7 +83,8 @@
                                                           <a href="#"><i class="icon-file-excel"></i> <span>Reports</span></a>
                                                           <ul>
                                                         <li><g:link controller='home' action="reportByVillage">General Reports</g:link></li>
-                                                            <li><g:link controller='home' action="reportTool">Education and Referrals Reached</g:link></li>
+                                                            <li><g:link controller='home' action="reportTool">Monthly Reporting</g:link></li>
+                                                            <li><g:link controller='home' action="monthlyReport">Monthly Reporting 2</g:link></li>
 
                                                      <li><g:link controller='home' action="reportByRegistered">Registered</g:link></li>
                                                         <li><g:link controller='home' action="reportByReached">Reached</g:link></li>

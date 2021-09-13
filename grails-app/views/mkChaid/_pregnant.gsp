@@ -74,12 +74,14 @@ ${ pregnantInstance.attended_clinic?"Yes": "No"}
        </td>
    </tr>
 <tr>
-<td> <span class="text-semibold">Visit Type</span></td>
+<td> <span class="text-semibold"><g:message code="description" default="Attended Any Clinic?"/></span></td>
  <td>
  ${fieldValue(bean: pregnantInstance, field: "visit_type.name")}
                                     </td>
 
 </tr>
+
+
 
 
 <tr>
