@@ -866,6 +866,23 @@ ApplicationService applicationService
 
         render view: 'chwreferral',model: [currentUser:currentUser]
     }
+    def chwReport(){
+        def username=params.username
+        def userInstance=MkpUser.findByUsername(username)
+        def totalChaid=MkChaid.countByCreated_by(userInstance)
+        def todayNumber=MkChaid.executeQuery("from MkChaid where created_by=:userInstance and DATE(arrival_time) = CURRENT_DATE ",[userInstance:userInstance]).size()
+        def monthNumber=MkChaid.executeQuery("from MkChaid where created_by=:userInstance and date_part('month', arrival_time) = date_part('month', CURRENT_DATE) ",[userInstance:userInstance]).size()
+        def monthNumberWeek=MkChaid.executeQuery("from MkChaid where created_by=:userInstance and  arrival_time >  CURRENT_DATE - 7 ",[userInstance:userInstance]).size()
+
+        JSONObject jsonObject=new JSONObject()
+        jsonObject.put("total",totalChaid)
+        jsonObject.put("total_month",monthNumber)
+        jsonObject.put("total_today",todayNumber)
+        jsonObject.put("total_week",monthNumberWeek)
+
+
+        render jsonObject as JSON
+    }
     def reportByCwaActivityJSON(){
         JSONArray jsonArray=new JSONArray()
         def roleInstance= MkpRole.findByAuthority("ROLE_CHW")
@@ -1164,7 +1181,7 @@ ApplicationService applicationService
             def response = request.JSON
             if (response) {
                 String data=response.toString()
-               // println(data)
+                //println(data)
                 try {
                     applicationService.saveChaid(data)
                 }catch(Exception e){
@@ -1332,7 +1349,7 @@ ApplicationService applicationService
                  jsonObject.put("name_sw"," ")
              }
 
-             def optionQuestionare= DictionaryItem.findAllByActiveAndDictionary_id(true,it,[sort: ['displayOrder': 'asc', 'code': 'asc'] ]) as JSON
+             def optionQuestionare= DictionaryItem.findAllByActiveAndDictionary_id(true,it,[sort:'code',order: 'asc']) as JSON
              jsonObject.put("options",optionQuestionare.toString())
              jsonArrayDetails.put(jsonObject)
 

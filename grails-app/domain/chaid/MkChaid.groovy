@@ -18,7 +18,9 @@ class MkChaid {
     Double centroid_x=0,centroid_y=0,accuracy=0
     MkpUser created_by
     Facility facility
-    String message,app_logs
+    String message,app_logs,pandemic_name
+    Integer pandemic_total_count,pandemic_referral_no,pandemic_closed_referral
+
     static belongsTo = [household: Household]
 
     static constraints = {
@@ -53,6 +55,11 @@ class MkChaid {
         members_male nullable:true
         members_female nullable:true
         total_members formula:"(members_male+members_female)"
+        pandemic_name nullable:true
+
+        pandemic_total_count nullable:true
+        pandemic_referral_no nullable:true
+        pandemic_closed_referral nullable:true
 
 
     }

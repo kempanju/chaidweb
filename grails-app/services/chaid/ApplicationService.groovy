@@ -484,12 +484,17 @@ class ApplicationService {
                         String reqCode = it
                         reqCode = reqCode.trim()
                        // println(reqCode)
-                        def immunizationAvailable = new ImmunizationAvailableChildren()
-                        immunizationAvailable.availableMemberHouse = availableMemberHouse
-                        immunizationAvailable.categoryAvailableChildren = categoryAvailableInstance
-                        def dictionaryItemList = DictionaryItem.findByCode(reqCode)
-                        immunizationAvailable.immunization_type = dictionaryItemList
-                        immunizationAvailable.save(failOnError: true)
+                        try {
+                            def immunizationAvailable = new ImmunizationAvailableChildren()
+                            immunizationAvailable.availableMemberHouse = availableMemberHouse
+                            immunizationAvailable.categoryAvailableChildren = categoryAvailableInstance
+                            def dictionaryItemList = DictionaryItem.findByCode(reqCode)
+                            immunizationAvailable.immunization_type = dictionaryItemList
+                            immunizationAvailable.save(failOnError: true)
+                        }catch(Exception e){
+                            println("Failed: "+reqCode)
+                         //   e.printStackTrace()
+                        }
                     }
                 }
                 if (danger_sign) {
@@ -646,6 +651,33 @@ class ApplicationService {
                 if (code.equals("CHAD33E")) {
                     chadInstance.living_with_household = DictionaryItem.findByCode(answer_code)
                 }
+                if (code.equals("CHAD58A")) {
+                    chadInstance.pandemic_name = answer_code
+                }
+
+                if (code.equals("CHAD58B")) {
+                    try {
+                        chadInstance.pandemic_total_count = Integer.parseInt(answer_code)
+                    }catch(Exception e){
+
+                    }
+                }
+                if (code.equals("CHAD58C")) {
+                    try {
+                        chadInstance.pandemic_referral_no = Integer.parseInt(answer_code)
+                    }catch(Exception e){
+
+                    }
+                }
+                if (code.equals("CHAD58D")) {
+                    try {
+                        chadInstance.pandemic_closed_referral = Integer.parseInt(answer_code)
+                    }catch(Exception e){
+
+                    }
+                }
+
+
                 if (code.equals("CHAD43")||code.equals("CHAD46")) {
                     try {
 
@@ -654,11 +686,22 @@ class ApplicationService {
                             def codeValue=it.code
                             String member_no=it.member_no
                             if(codeValue.equals("CHAD43A")||codeValue.equals("CHAD46A")){
+                                if(member_no.isEmpty()){
+                                    chadInstance.members_female=0
 
-                                chadInstance.members_female=Integer.parseInt(member_no)
+                                }else{
+                                    chadInstance.members_female=Integer.parseInt(member_no)
+
+                                }
                             }
                             if(codeValue.equals("CHAD43B")||codeValue.equals("CHAD46B")){
-                                chadInstance.members_male=Integer.parseInt(member_no)
+                                if(member_no.isEmpty()){
+                                    chadInstance.members_male=0
+
+                                }else{
+                                    chadInstance.members_male=Integer.parseInt(member_no)
+
+                                }
 
                             }
                         }
