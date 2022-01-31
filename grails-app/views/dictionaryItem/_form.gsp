@@ -48,6 +48,17 @@
         </div>
     </div>
 
+      <div class="form-group">
+            <label class="control-label col-lg-3"><g:message code="dictionary" default="Category"/> </label>
+
+            <div class="col-lg-7">
+                <g:select name="category" id="category" value="${dictionaryItem?.category?.id}"
+                          from="${admin.DictionaryItem.findAllByActive(true)}" optionKey="id" optionValue="full_name"
+                          class="form-control select-search " noSelection="['': message(code:'select.dictionary', default:'Select Category')]"/>
+
+            </div>
+        </div>
+
      <div class="form-group">
             <label class="control-label col-lg-3">Display in Report?</label>
 

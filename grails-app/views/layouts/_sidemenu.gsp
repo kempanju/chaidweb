@@ -82,9 +82,9 @@
             <li class="<g:if test="${activePage == 'reports'}">active</g:if>">
                                                           <a href="#"><i class="icon-file-excel"></i> <span>Reports</span></a>
                                                           <ul>
-                                                        <li><g:link controller='home' action="reportByVillage">General Reports</g:link></li>
-                                                            <li><g:link controller='home' action="reportTool">Monthly Reporting</g:link></li>
-                                                            <li><g:link controller='home' action="monthlyReport">Monthly Reporting 2</g:link></li>
+                                                        <li class="<g:if test="${activePage == 'generalReport'}">active</g:if>"><g:link controller='home' action="reportByVillage">General Reports</g:link></li>
+                                                            <li class="<g:if test="${activePage == 'reportTool'}">active</g:if>"><g:link controller='home' action="reportTool">Monthly Reporting</g:link></li>
+                                                            <li class="<g:if test="${activePage == 'monthlyReport'}">active</g:if>"><g:link controller='home' action="monthlyReport">Monthly Reporting 2</g:link></li>
 
                                                      <li><g:link controller='home' action="reportByRegistered">Registered</g:link></li>
                                                         <li><g:link controller='home' action="reportByReached">Reached</g:link></li>

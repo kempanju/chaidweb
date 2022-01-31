@@ -65,19 +65,25 @@ var end_date=$("#end_date").val();
 var from_date=$("#from_date").val();
 var selectedOption=$("#selectedOption").val();
 if((end_date&&from_date)||selectedOption=="country"||selectedOption=="region"||selectedOption=="district"){
-   $('.loader').show();
+
 
   $.ajax({
                         url: '${grailsApplication.config.systemLink.toString()}/home/reportByDateTool',
                         data: {'district_id': district_id,'village_id':village_id,'region_id':region_id,'end_date':end_date,'from_date':from_date,'selectedOption':selectedOption}, // change this to send js object
                         type: "post",
+                         beforeSend: function() {
+                                $('.loader').show();
+                            },
                         success: function (data) {
                        // alert("Done");
                             //document.write(data); just do not use document.write
                             $("#village-report").html(data);
                             //console.log(data);
-                            $('.loader').hide();
-                        }
+
+                        },
+                         complete: function() {
+                          $('.loader').hide();
+                         }
                     });
 
                     }
@@ -113,7 +119,7 @@ getVillagesByDistrict(district_id);
         <div class="form-group">
 
           <div class="col-lg-2">
-          <select id="selectedOption" name="selectedOption" onchange="callOption(this)">
+          <select id="selectedOption" name="selectedOption">
           <option value="country">Country</option>
           <option value="region">Region</option>
           <option value="district">District</option>
@@ -169,6 +175,8 @@ getVillagesByDistrict(district_id);
       </div>
   <script type="text/javascript">
       $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:mm'});
+
+
   </script>
 
       </body>

@@ -224,14 +224,14 @@ ${fieldValue(bean: mkChaid, field: "age_sick_person")}
              <div style="width: 50%;float: left">
 
                               <table class="table text-wrap customers" >
-        <g:if test="${chaid.EducationType.countByChaid(mkChaid)>0}">
+        <g:if test="${chaid.HealthEducation.countByChaid(mkChaid)>0}">
 
 
          <tr>
                                             <td colspan="2">
                                                <h5>Education Type</h5>
                                             </td>
-<g:each in="${chaid.EducationType.findAllByChaid(mkChaid)}" status="i" var="mkchaidListInstance">
+<g:each in="${chaid.HealthEducation.findAllByChaid(mkChaid)}" status="i" var="mkchaidListInstance">
 <tr>
 <td>${i+1}</td>
  <td>

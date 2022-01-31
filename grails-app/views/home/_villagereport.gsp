@@ -37,13 +37,22 @@ def totalVisit=0;
 
      def houseHoldNo=0;
         def chadNo=0;
+      def visitedNewHouseHold=0;
+        def repeatHouse = 0;
          if(end_date&&from_date){
-         houseHoldNo=chaid.Household.executeQuery("from Household where village_id=:village and deleted=false and created_at between '"+from_date+"' and '"+end_date+"'",[village:villageListInstance]).size()
          chadNo=chaid.MkChaid.executeQuery("from MkChaid where street=:village and deleted=false and arrival_time between '"+from_date+"' and '"+end_date+"'",[village:villageListInstance]).size()
 
+           visitedNewHouseHold =chaid.Household.executeQuery("select id from Household where village_id=:village and deleted=false and created_at between '"+from_date+"' and '"+end_date+"'",[village:villageListInstance]).size()
+          houseHoldNo=chaid.MkChaid.executeQuery("select household.id from MkChaid where street=:village and deleted=false and arrival_time between '"+from_date+"' and '"+end_date+"' group by household.id",[village:villageListInstance]).size()
+
+        repeatHouse = houseHoldNo-visitedNewHouseHold;
          }else{
-        houseHoldNo=chaid.Household.countByVillage_idAndDeleted(villageListInstance,false)
         chadNo=chaid.MkChaid.countByStreetAndDeleted(villageListInstance,false)
+
+      visitedNewHouseHold =chaid.Household.executeQuery("select id from Household where village_id=:village and deleted=false ",[village:villageListInstance]).size()
+      houseHoldNo=chaid.MkChaid.executeQuery("select household.id from MkChaid where street=:village and deleted=false  group by household.id",[village:villageListInstance]).size()
+
+         repeatHouse = houseHoldNo-visitedNewHouseHold;
         }
     %>
 
@@ -58,7 +67,19 @@ def totalVisit=0;
         totalHouseHold=totalHouseHold+houseHoldNo;
         totalVisit=totalVisit+chadNo;
         %>
-        <td>${houseHoldNo}</td>
+        <td>
+                   <table>
+                   <tr>
+                   <td>Total</td><td> ${houseHoldNo}</td>
+                   </tr>
+                    <tr>
+                       <td>New</td><td> ${visitedNewHouseHold}</td>
+                       </tr>
+                    <tr>
+                       <td>Repeat</td><td> ${repeatHouse}</td>
+                       </tr>
+                   </table>
+                 </td>
          <%
             def houseHoldMember=0
 

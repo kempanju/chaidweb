@@ -59,10 +59,23 @@
             <td colspan="16" class="text-bold text-left">  HEALTH EDUCATION:TYPE OF HEALTH EDUCATION PROVIDED FOR GIRLS AND BOYS IN THE ADOLESCENT GROUP AGES 10 -24 YEARS </td>
          </tr>
 
-     <g:each in="${admin.DictionaryItem.findAllByDictionary_idAndDisplayReport(admin.Dictionary.findByCode("CHAD33F"),true)}" status="i" var="educationListInstance">
+     <g:each in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("EDYTYVA123"))}" status="i" var="educationListInstance">
 
                     <tr>
-                    <td  class="info" >${educationListInstance.name}</td>
+                    <td  class="info" >
+<ul class="myUL">
+
+                   <li><span class="caret"> ${educationListInstance.name}
+                   <ul class="nested">
+         <g:each in="${admin.DictionaryItem.findAllByCategory(educationListInstance)}" status="ii" var="categoryListInstance">
+                   <li>${categoryListInstance.name}</li>
+        </g:each>
+
+                   </ul>
+                   </li>
+</ul>
+
+                    </td>
 
                     <g:each in="${memberCategoryList}" var="categorysListInstance">
                      <g:if test="${categorysListInstance.code=="CHAD17F"||categorysListInstance.code=="CHAD17E"}">
@@ -71,13 +84,13 @@
                           <g:else>
 
                     <%
-                    def visitTypeInstance=admin.DictionaryItem.findByCode("CHAD4A")
+                    //def visitTypeInstance=admin.DictionaryItem.findByCode("CHAD4A")
                 def noHoldMember=0
                   if(end_date&&from_date){
-                   noHoldMember=materialize.view.ViewHealthEducation.executeQuery("select sum(h.member_no) from ViewHealthEducation h where category=:category and education_type=:education_type and chaid.visit_type=:visitTypeInstance and arrival_time between '"+from_date+"' and '"+end_date+"'",[category:categorysListInstance,education_type:educationListInstance,visitTypeInstance:visitTypeInstance])[0]
+                   noHoldMember=materialize.view.ViewHealthEducation.executeQuery("select sum(h.member_no) from ViewHealthEducation h where category=:category and education_type.category=:education_type  and arrival_time between '"+from_date+"' and '"+end_date+"'",[category:categorysListInstance,education_type:educationListInstance])[0]
 
                   }else{
-                      noHoldMember=materialize.view.ViewHealthEducation.executeQuery("select sum(h.member_no) from ViewHealthEducation h where category=:category and education_type=:education_type and chaid.visit_type=:visitTypeInstance",[category:categorysListInstance,education_type:educationListInstance,visitTypeInstance:visitTypeInstance])[0]
+                      noHoldMember=materialize.view.ViewHealthEducation.executeQuery("select sum(h.member_no) from ViewHealthEducation h where category=:category and education_type.category=:education_type and chaid.visit_type=:visitTypeInstance",[category:categorysListInstance,education_type:educationListInstance,visitTypeInstance:visitTypeInstance])[0]
 
                   }
                    if(!noHoldMember){
@@ -96,11 +109,26 @@
 <tr>
             <td colspan="16" class="text-bold text-center">  REFERRALS CONDUCTED FROM THE COMMUNITY :-TOTAL NUMBER OF GIRLS AND BOYS IN THE ADOLLENCENT GROUP Who (10-24 YRS) WERE REFERRED DUE TO:-</td>
          </tr>
-        <g:each in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD54C"))}" status="i" var="referralsListInstance">
+        <g:each in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("RCFCC10"))}" status="i" var="referralsListInstance">
 <tr>
-        <td  class="info">${referralsListInstance.name}</td>
+        <td  class="info">
+
+
+        <ul class="myUL">
+
+                           <li><span class="caret"> ${referralsListInstance.name}
+                           <ul class="nested">
+                 <g:each in="${admin.DictionaryItem.findAllByCategory(referralsListInstance)}" status="iii" var="categoryEdListInstance">
+                           <li>${categoryEdListInstance.name}</li>
+                </g:each>
+
+                           </ul>
+                           </li>
+        </ul>
+        </td>
         <%
-        def countReferrals=materialize.view.DangerSign.countBySignType(referralsListInstance)
+        def countReferrals=materialize.view.DangerSign.executeQuery("select signType.id from DangerSign where signType.category=:referralsListInstance",[referralsListInstance:referralsListInstance]).size()
+
         if(!countReferrals){
         countReferrals=0
         }
@@ -108,29 +136,7 @@
         <td>${formatAmountString(name: (int)countReferrals)}</td>
 </tr>
 </g:each>
-<tr>
-            <td colspan="16" class="text-bold text-center">  REFERRAL:- HEALTH FACILITY ADVISED TO GO DURING THE REFERRAL-</td>
-         </tr>
 
-        <g:each in="${admin.DictionaryItem.findAllByDictionary_idAndDisplayReport(admin.Dictionary.findByCode("FAUCYTYPE"),true)}" status="i" var="facilityTypeListInstance">
-<tr>
-        <%
-                def countByFacilityType=0;
-                        if(end_date&&from_date){
-              countByFacilityType=chaid.MkChaid.executeQuery("from MkChaid where deleted=false and emergence_status<>0 and facility.type=:type and arrival_time between '"+from_date+"' and '"+end_date+"'",[type:facilityTypeListInstance]).size();
-            }else{
-             countByFacilityType=chaid.MkChaid.executeQuery("from MkChaid where deleted=false and emergence_status<>0 and facility.type=:type",[type:facilityTypeListInstance]).size();
-
-            }
-        %>
-        <g:if test="${countByFacilityType>0}">
-        <td  class="info" colspan="3">${facilityTypeListInstance.name}</td>
-        <td>
-            ${formatAmountString(name: (int)countByFacilityType)}
-        </td>
-        </g:if>
-  </tr>
-</g:each>
 <tr>
 <td colspan="3">1.Idadi ya wavulana na wasichana kundi balehe umri 10-24 waliotoa ripoti na kupata huduma katika vituodhidi ya unyanyasaji wa kingono (Ukatili wa kijinsia- GBV)</td>
 <td>${chaid.AdolescentAbuse.count()}</td>
@@ -155,10 +161,31 @@
 <tr>
 <td  colspan="2">${gatheringTypeListInstance.name}</td>
 <%
-def totalCount=chaid.MkChaid.executeQuery("select sum(total_members) from MkChaid where deleted=false and meeting_type=:meeting_type",[meeting_type:gatheringTypeListInstance])[0]
+def totalCountData=chaid.MkChaid.executeQuery("select sum(total_members),sum(members_male),sum(members_female)  from MkChaid where deleted=false and meeting_type=:meeting_type and arrival_time between '"+from_date+"' and '"+end_date+"'",[meeting_type:gatheringTypeListInstance])[0]
+
+def totalCount= totalCountData[0];
+def totalMaleN = totalCountData[1];
+def totalFemaleN = totalCountData[2];
+
+if(!totalCount){
+totalCount=0
+}
+
+if(!totalMaleN){
+totalMaleN = 0;
+}
+
+if(!totalFemaleN){
+totalFemaleN = 0;
+}
 %>
-<td colspan="3">${totalCount}</td>
-<td colspan="3"></td>
+<td colspan="3">${formatAmountString(name: (int)totalCount)},
+Male : ${formatAmountString(name: (int)totalMaleN)} ,
+Female : ${formatAmountString(name: (int)totalFemaleN)}
+</td>
+<td colspan="3">
+
+</td>
 </tr>
 </g:each>
 
@@ -167,28 +194,56 @@ def totalCount=chaid.MkChaid.executeQuery("select sum(total_members) from MkChai
     <td colspan="16" class="text-bold text-left">TYPE OF HEALTH EDUCATION PROVIDED TO GIRLS AND BOYS IN THE ADOLESCENT GROUP DURING GATHERINGS </td>
  </tr>
 
-<g:each in="${admin.DictionaryItem.findAllByDictionary_idAndDisplayReport(admin.Dictionary.findByCode("CHAD6"),true)}" status="i" var="educationListInstance">
+<g:each in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("EDUGATHER01"))}" status="i" var="educationListInstance">
 
                     <tr>
-                    <td  class="info" colspan="3">${educationListInstance.name}</td>
+                    <td  class="info" colspan="3">
+
+                       <ul class="myUL">
+
+                                   <li><span class="caret"> ${educationListInstance.name}
+                                   <ul class="nested">
+                         <g:each in="${admin.DictionaryItem.findAllByCategory(educationListInstance)}" status="iiiI" var="categoryEdUListInstance">
+                                   <li>${categoryEdUListInstance.name}</li>
+                        </g:each>
+
+                                   </ul>
+                                   </li>
+                </ul>
+                    </td>
 
                     <%
                 def noHoldMember=0
                 def visitTypeInstance=admin.DictionaryItem.findByCode("CHAD4B")
-
+                   def noHoldMemberData;
                   if(end_date&&from_date){
-                   noHoldMember=materialize.view.ViewHealthEducation.executeQuery("select sum(h.member_no) from ViewHealthEducation h where  education_type=:education_type and chaid.visit_type=:visitTypeInstance and arrival_time between '"+from_date+"' and '"+end_date+"'",[education_type:educationListInstance,visitTypeInstance:visitTypeInstance])[0]
+                   noHoldMemberData=chaid.HealthEducation.executeQuery("select sum(chaid.total_members),sum(chaid.members_male),sum(chaid.members_female) from HealthEducation where  type.category=:education_type and chaid.visit_type=:visitTypeInstance and created_at between '"+from_date+"' and '"+end_date+"'",[education_type:educationListInstance,visitTypeInstance:visitTypeInstance])[0]
 
                   }else{
-                      noHoldMember=materialize.view.ViewHealthEducation.executeQuery("select sum(h.member_no) from ViewHealthEducation h where  education_type=:education_type and chaid.visit_type=:visitTypeInstance",[education_type:educationListInstance,visitTypeInstance:visitTypeInstance])[0]
+                      noHoldMemberData=chaid.HealthEducation.executeQuery("select sum(chaid.total_members),sum(chaid.members_male),sum(chaid.members_female) from HealthEducation  where  type.category=:education_type and chaid.visit_type=:visitTypeInstance",[education_type:educationListInstance,visitTypeInstance:visitTypeInstance])[0]
 
                   }
+                   noHoldMember = noHoldMemberData[0];
+                   noHoldMemberMale = noHoldMemberData[1];
+                   noHoldMemberFemale = noHoldMemberData[2];
+
                    if(!noHoldMember){
-                                  noHoldMember=0
-                                  }
+                      noHoldMember=0
+                      }
+                    if(!noHoldMemberMale){
+                                        noHoldMemberMale=0
+                                        }
+                  if(!noHoldMemberFemale){
+                                      noHoldMemberFemale=0
+                                      }
                     %>
                     <td>${formatAmountString(name: (int)noHoldMember)}</td>
-
+                    <td>
+                        <table>
+                        <tr><td>Male</td><td>${formatAmountString(name: (int)noHoldMemberMale)}</td></tr>
+                         <tr><td>Female</td><td>${formatAmountString(name: (int)noHoldMemberFemale)}</td></tr>
+                        </table>
+                    </td>
 
                     </tr>
                     </g:each>
@@ -254,7 +309,7 @@ def totalCount=chaid.MkChaid.executeQuery("select sum(total_members) from MkChai
            }
          %>
          <td colspan="3">1. Idadi ya wanaume waliopatiwa elimu ya COVID 19</td>
-         <td>${noHoldMember[1]}</td>
+         <td>${noHoldMember[0]}</td>
          </tr>
          <tr>
          <td  colspan="3">2. Idadi ya wanawake waliopatiwa elimu ya COVID 19</td>
@@ -269,3 +324,15 @@ def totalCount=chaid.MkChaid.executeQuery("select sum(total_members) from MkChai
 
    </table>
 </div>
+
+<script type="text/javascript">
+
+      var toggler = document.getElementsByClassName("caret");
+      var i;
+      for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function() {
+          this.parentElement.querySelector(".nested").classList.toggle("activee");
+          this.classList.toggle("caret-down");
+        });
+      }
+  </script>

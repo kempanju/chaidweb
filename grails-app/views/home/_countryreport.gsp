@@ -2,8 +2,8 @@
 <table class="table">
 <thead>
 <tr class="active">
-<th>No</th>
-<th>Village Name </th>
+<th>11No</th>
+<th>Name </th>
 <th>Visits</th>
 <th>Households</th>
 <th>Population reached</th>
@@ -37,13 +37,16 @@ def totalVisit=0;
     <%
         def houseHoldNo=0;
         def chadNo=0;
+        def visitedNewHouseHold=0;
+        def repeatHouse = 0;
          if(end_date&&from_date){
-         houseHoldNo=chaid.Household.executeQuery("from Household where district_id.region_id=:region and deleted=false and created_at between '"+from_date+"' and '"+end_date+"'",[region:regionListInstance]).size()
+         visitedNewHouseHold =chaid.Household.executeQuery("select id from Household where district_id.region_id=:region and deleted=false and created_at between '"+from_date+"' and '"+end_date+"'",[region:regionListInstance]).size()
          chadNo=chaid.MkChaid.executeQuery("from MkChaid where distric.region_id=:region and deleted=false and arrival_time between '"+from_date+"' and '"+end_date+"'",[region:regionListInstance]).size()
-
+         houseHoldNo=chaid.MkChaid.executeQuery("select household.id from MkChaid where distric.region_id=:region and deleted=false and arrival_time between '"+from_date+"' and '"+end_date+"' group by household.id",[region:regionListInstance]).size()
+         repeatHouse = houseHoldNo-visitedNewHouseHold;
          }else{
-        houseHoldNo=chaid.Household.executeQuery("from Household where district_id.region_id=:region and deleted=false ",[region:regionListInstance]).size()
-        chadNo=chaid.MkChaid.executeQuery("from MkChaid where distric.region_id=:region and deleted=false ",[region:regionListInstance]).size()
+        houseHoldNo=chaid.Household.executeQuery("select id from Household where district_id.region_id=:region and deleted=false ",[region:regionListInstance]).size()
+        chadNo=chaid.MkChaid.executeQuery("select id from MkChaid where distric.region_id=:region and deleted=false ",[region:regionListInstance]).size()
 
         }
     %>
@@ -58,8 +61,22 @@ def totalVisit=0;
         <%
         totalHouseHold=totalHouseHold+houseHoldNo;
         totalVisit=totalVisit+chadNo;
+
+
         %>
-        <td>${houseHoldNo}</td>
+        <td>
+        <table>
+        <tr>
+        <td>Total</td><td> ${houseHoldNo}</td>
+        </tr>
+         <tr>
+            <td>New</td><td> ${visitedNewHouseHold}</td>
+            </tr>
+         <tr>
+            <td>Repeat</td><td> ${repeatHouse}</td>
+            </tr>
+        </table>
+      </td>
          <%
               def houseHoldMember=0
 
@@ -170,24 +187,25 @@ def totalVisit=0;
 
              <%
                     def chadNoH=0;
-                     if(end_date&&from_date){
-                     chadNoH=chaid.MkChaid.executeQuery("from MkChaid where  deleted=false and visit_type=:visit_type and arrival_time between '"+from_date+"' and '"+end_date+"'",[visit_type:visitDataInstance]).size()
+                        if(end_date&&from_date){
+                                        chadNoH=chaid.MkChaid.executeQuery("from MkChaid where  deleted=false and visit_type=:visit_type and distric.region_id=:region and arrival_time between '"+from_date+"' and '"+end_date+"'",[visit_type:visitDataInstance,region:regionListInstance]).size()
 
-                     }else{
-                    chadNoH=chaid.MkChaid.countByDeletedAndVisit_type(false,visitDataInstance)
-                    }
+                                        }else{
+                                            chadNoH=chaid.MkChaid.executeQuery("from MkChaid where  deleted=false and visit_type=:visit_type and distric.region_id=:region ",[visit_type:visitDataInstance,region:regionListInstance]).size()
+
+                           }
                 %>
             <td>${chadNoH}</td>
             <td></td>
 
              <%
                     def houseHoldMemberH=0;
-                        if(end_date&&from_date){
-                          houseHoldMemberH=chaid.MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where  visit_type=:visit_type and deleted=false and created_at between '"+from_date+"' and '"+end_date+"'",[visit_type:visitDataInstance] )
-                        }else{
-                        houseHoldMemberH=chaid.MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where  visit_type=:visit_type and deleted=false",[visit_type:visitDataInstance] )
+                          if(end_date&&from_date){
+                              houseHoldMemberH=chaid.MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where  visit_type=:visit_type and distric.region_id=:region and deleted=false  and created_at between '"+from_date+"' and '"+end_date+"'",[visit_type:visitDataInstance,region:regionListInstance] )
+                            }else{
+                            houseHoldMemberH=chaid.MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where  visit_type=:visit_type and distric.region_id=:region and deleted=false",[visit_type:visitDataInstance,region:regionListInstance] )
 
-                        }
+                            }
                     %>
                <td >${houseHoldMemberH[0][0]}</td>
             <td>${houseHoldMemberH[0][1]}</td>

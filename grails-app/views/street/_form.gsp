@@ -19,7 +19,13 @@
 
             </div>
         </div>
+<div class="form-group">
+    <label class="control-label col-lg-2">Removed  </label>
+    <div class="col-lg-8">
+        <g:checkBox name="deleted" value="${street.deleted}" />
 
+    </div>
+</div>
 
  <div class="form-group" id="list-ward">
 

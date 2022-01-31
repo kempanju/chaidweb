@@ -101,6 +101,16 @@
                                              </td>
                                          </tr>
 
+<tr>
+                     <td>
+                         <span class="text-semibold"><g:message code="name.en" default="Category"/></span>
+                     </td>
+                     <td><span
+                             class="text-bold">${fieldValue(bean: dictionaryItem, field: "category.name")}</span>
+
+                     </td>
+                 </tr>
+
 
 
     <tr>

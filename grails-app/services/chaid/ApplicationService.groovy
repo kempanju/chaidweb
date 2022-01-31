@@ -729,7 +729,7 @@ class ApplicationService {
                                 String codeselected=it
                                 codeselected=codeselected.trim()
                                 def dictionaryItemList = DictionaryItem.findByCode(codeselected)
-                                def educationInstance = new EducationType()
+                                def educationInstance = new HealthEducation()
                                 educationInstance.type = dictionaryItemList
                                 educationInstance.chaid = chadInstance
                                 educationInstance.save(flush: true)

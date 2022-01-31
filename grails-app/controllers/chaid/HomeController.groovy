@@ -76,12 +76,12 @@ ApplicationService applicationService
     }
 
     def reportTool(){
-        session["activePage"] = "reports"
+        session["activePage"] = "reportTool"
         render view: "reportTool"
     }
 
     def monthlyReport(){
-        session["activePage"] = "reports"
+        session["activePage"] = "monthlyReport"
         render view: "/report/monthlyreport"
     }
 
@@ -371,7 +371,7 @@ ApplicationService applicationService
 
     @Transactional
     def chadStatusApi(){
-        println(params)
+       // println(params)
         def userID=params.user_id
         def comment=params.comment
         def chaidCode=params.code
@@ -840,7 +840,7 @@ ApplicationService applicationService
     }
 
     def registeredReportByDate(){
-        println(params)
+        //println(params)
         String start_date=params.start_date
         def end_date=params.end_date
        // def  startDate=Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",start_date,TimeZone.getTimeZone("UTC"))
@@ -849,7 +849,7 @@ ApplicationService applicationService
         def formatedEndDate=applicationService.changeTimeZOne(end_date)
         def facility=params.facility
        def  outPutObject=applicationService.registeredReportByDate(facility,formatedStartDate,formatedEndDate)
-        println(outPutObject)
+       // println(outPutObject)
 
         render outPutObject as JSON
     }
@@ -1027,7 +1027,7 @@ ApplicationService applicationService
         def formatedEndDate=applicationService.changeTimeZOne(end_date)
         def facility=params.facility
         def  outPutObject=applicationService.referralsReportByDate(facility,formatedStartDate,formatedEndDate)
-        println(outPutObject)
+       // println(outPutObject)
 
         render outPutObject as JSON
     }
@@ -1097,7 +1097,7 @@ ApplicationService applicationService
     }
 
     def reportByVillage(){
-        session["activePage"] = "reports"
+        session["activePage"] = "generalReport"
         render view: 'reportbyvillage'
     }
 
@@ -1134,7 +1134,13 @@ ApplicationService applicationService
             def districtInstance=District.get(params.district_id)
             render template: 'villagereport',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
         }else {
-            render template: 'countryreport',model: [from_date:from_date,end_date:end_date]
+            if(from_date&&end_date){
+                render template: 'countryreport',model: [from_date:from_date,end_date:end_date]
+
+            } else {
+                render template: '/report/warning',model: [from_date:from_date,end_date:end_date]
+
+            }
         }
     }
 
@@ -1142,7 +1148,7 @@ ApplicationService applicationService
         def  selectedOption= params.selectedOption
         def from_date=params.from_date
         def end_date=params.end_date
-        println(params)
+       // println(params)
         if( selectedOption&& selectedOption.equals("region")){
             def regionInstance=Region.get(params.region_id)
             render template: '/report/regionreport',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
@@ -1172,7 +1178,13 @@ ApplicationService applicationService
                 render template: '/report/districtmonthlyreport', model: [districtInstance: districtInstance, from_date: from_date, end_date: end_date]
             }
         }else {
-            render template: '/report/countrymonthlyreport',model: [from_date:from_date,end_date:end_date]
+            if(from_date&&end_date){
+                render template: '/report/countrymonthlyreport',model: [from_date:from_date,end_date:end_date]
+
+            } else {
+                render template: '/report/warning',model: [from_date:from_date,end_date:end_date]
+
+            }
         }
     }
 
@@ -1181,7 +1193,7 @@ ApplicationService applicationService
             def response = request.JSON
             if (response) {
                 String data=response.toString()
-                //println(data)
+                println(data)
                 try {
                     applicationService.saveChaid(data)
                 }catch(Exception e){
@@ -1363,8 +1375,7 @@ ApplicationService applicationService
     def getVillageList(){
 
         def districtInstance= District.get(params.id)
-
-        def streetListInstance= Street.findAllByDistrict_id(districtInstance)
+        def streetListInstance= Street.findAllByDistrict_idAndDeleted(districtInstance,false)
         render streetListInstance as JSON
     }
 
@@ -1377,7 +1388,7 @@ ApplicationService applicationService
         }
         def districtInstance= District.get(params.id)
 
-        def streetListInstance= Street.findAllByDistrict_id(districtInstance)
+        def streetListInstance= Street.findAllByDistrict_idAndDeleted(districtInstance,false)
         //println(streetListInstance.toString())
         if(src=="1"){
             render(template: 'villagebydistrict', model: [streetListInstance: streetListInstance])
