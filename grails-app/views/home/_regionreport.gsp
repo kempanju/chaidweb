@@ -40,8 +40,8 @@ def totalVisit=0;
         def repeatHouse = 0;
          if(end_date&&from_date){
          chadNo=chaid.MkChaid.executeQuery("from MkChaid where distric=:district and deleted=false and arrival_time between '"+from_date+"' and '"+end_date+"'",[district:districtListInstance]).size()
-          visitedNewHouseHold =chaid.Household.executeQuery("select id from Household where district_id=:district and deleted=false and created_at between '"+from_date+"' and '"+end_date+"'",[district:districtListInstance]).size()
-          houseHoldNo=chaid.MkChaid.executeQuery("select household.id from MkChaid where distric=:district and deleted=false and arrival_time between '"+from_date+"' and '"+end_date+"' group by household.id",[district:districtListInstance]).size()
+          houseHoldNo=view.HouseHoldStat.executeQuery("select number_of_orders from HouseHoldStat where district_id=:district and chaid.arrival_time between '"+from_date+"' and '"+end_date+"' ",[district:districtListInstance]).size()
+         visitedNewHouseHold =view.HouseHoldStat.executeQuery("select number_of_orders from HouseHoldStat where  district_id=:district and  chaid.arrival_time between '"+from_date+"' and '"+end_date+"' and number_of_orders=1",[district:districtListInstance]).size()
 
          repeatHouse = houseHoldNo-visitedNewHouseHold;
          }else{

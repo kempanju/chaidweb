@@ -2,7 +2,7 @@
 <table class="table">
 <thead>
 <tr class="active">
-<th>11No</th>
+<th>No</th>
 <th>Name </th>
 <th>Visits</th>
 <th>Households</th>
@@ -40,9 +40,10 @@ def totalVisit=0;
         def visitedNewHouseHold=0;
         def repeatHouse = 0;
          if(end_date&&from_date){
-         visitedNewHouseHold =chaid.Household.executeQuery("select id from Household where district_id.region_id=:region and deleted=false and created_at between '"+from_date+"' and '"+end_date+"'",[region:regionListInstance]).size()
+         // repeatHouse =view.HouseHoldStat.executeQuery("select number_of_orders from HouseHoldStat where region_id=:region and  chaid.arrival_time between '"+from_date+"' and '"+end_date+"' and number_of_orders>1",[region:regionListInstance]).size()
          chadNo=chaid.MkChaid.executeQuery("from MkChaid where distric.region_id=:region and deleted=false and arrival_time between '"+from_date+"' and '"+end_date+"'",[region:regionListInstance]).size()
-         houseHoldNo=chaid.MkChaid.executeQuery("select household.id from MkChaid where distric.region_id=:region and deleted=false and arrival_time between '"+from_date+"' and '"+end_date+"' group by household.id",[region:regionListInstance]).size()
+         houseHoldNo=view.HouseHoldStat.executeQuery("select number_of_orders from HouseHoldStat where region_id=:region and chaid.arrival_time between '"+from_date+"' and '"+end_date+"' ",[region:regionListInstance]).size()
+         visitedNewHouseHold =view.HouseHoldStat.executeQuery("select number_of_orders from HouseHoldStat where region_id=:region and  chaid.arrival_time between '"+from_date+"' and '"+end_date+"' and number_of_orders=1",[region:regionListInstance]).size()
          repeatHouse = houseHoldNo-visitedNewHouseHold;
          }else{
         houseHoldNo=chaid.Household.executeQuery("select id from Household where district_id.region_id=:region and deleted=false ",[region:regionListInstance]).size()

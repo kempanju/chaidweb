@@ -4,7 +4,7 @@ import admin.District
 import admin.Street
 import admin.SubStreet
 
-class Household {
+class  Household {
     int version,id
     String name,number,full_name
     Boolean deleted
