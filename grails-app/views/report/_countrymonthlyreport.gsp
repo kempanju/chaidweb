@@ -58,7 +58,7 @@
     <tr>
             <td colspan="16" class="text-bold text-left">  HEALTH EDUCATION:TYPE OF HEALTH EDUCATION PROVIDED FOR GIRLS AND BOYS IN THE ADOLESCENT GROUP AGES 10 -24 YEARS </td>
          </tr>
-
+<tr><td></td><td>Male</td><td>Female</td><td>Total</td></tr>
      <g:each in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("EDYTYVA123"))}" status="i" var="educationListInstance">
 
                     <tr>
@@ -77,29 +77,40 @@
 
                     </td>
 
-                    <g:each in="${memberCategoryList}" var="categorysListInstance">
-                     <g:if test="${categorysListInstance.code=="CHAD17F"||categorysListInstance.code=="CHAD17E"}">
-                                  <td style="background:black"></td>
-                                  </g:if>
-                          <g:else>
-
                     <%
-                    //def visitTypeInstance=admin.DictionaryItem.findByCode("CHAD4A")
-                def noHoldMember=0
-                  if(end_date&&from_date){
-                   noHoldMember=materialize.view.ViewHealthEducation.executeQuery("select sum(h.member_no) from ViewHealthEducation h where category=:category and education_type.category=:education_type  and arrival_time between '"+from_date+"' and '"+end_date+"'",[category:categorysListInstance,education_type:educationListInstance])[0]
+                                        //def visitTypeInstance=admin.DictionaryItem.findByCode("CHAD4A")
+                                    def noHoldMember=0
+                                    def noHoldMemberMale=0
+                                    def noHoldMemberFemale=0
 
-                  }else{
-                      noHoldMember=materialize.view.ViewHealthEducation.executeQuery("select sum(h.member_no) from ViewHealthEducation h where category=:category and education_type.category=:education_type and chaid.visit_type=:visitTypeInstance",[category:categorysListInstance,education_type:educationListInstance,visitTypeInstance:visitTypeInstance])[0]
+                                    def noHoldMemberData
+                                      if(end_date&&from_date){
+                                       noHoldMemberData=chaid.HealthEducation.executeQuery("select sum(h.chaid.members_male),sum(h.chaid.members_female) from HealthEducation h where type.category=:education_type  and created_at between '"+from_date+"' and '"+end_date+"'",[education_type:educationListInstance])[0]
 
-                  }
-                   if(!noHoldMember){
-                                  noHoldMember=0
-                                  }
-                    %>
-                    <td>${formatAmountString(name: (int)noHoldMember)}</td>
-                    </g:else>
-                    </g:each>
+                                      }else{
+                                          noHoldMember=materialize.view.ViewHealthEducation.executeQuery("select sum(h.member_no) from ViewHealthEducation h where category=:category and education_type.category=:education_type and chaid.visit_type=:visitTypeInstance",[category:categorysListInstance,education_type:educationListInstance,visitTypeInstance:visitTypeInstance])[0]
+
+                                      }
+                                      noHoldMember=noHoldMemberData[0]
+                                      noHoldMemberMale = noHoldMemberData[0]
+                                        noHoldMemberFemale = noHoldMemberData[1]
+                                          if(!noHoldMemberMale){
+                                          noHoldMemberMale=0
+                                          }
+                                        if(!noHoldMemberFemale){
+                                        noHoldMemberFemale=0
+                                        }
+                                        noHoldMember = noHoldMemberMale + noHoldMemberFemale;
+                                       if(!noHoldMember){
+                                                      noHoldMember=0
+                                                      }
+                                        %>
+                                        <td>${formatAmountString(name: (int)noHoldMemberMale)}</td>
+
+                                        <td>${formatAmountString(name: (int)noHoldMemberFemale)}</td>
+
+                                        <td>${formatAmountString(name: (int)noHoldMember)}</td>
+
 
                     <td></td>
                     </tr>
