@@ -1,9 +1,10 @@
+<%@ page import="chaid.AvailableMemberHouse; admin.DictionaryItem; chaid.Household; chaid.MkChaid" %>
  <div class="container col-lg-12" style="margin-top: 10px">
             <div class="row ">
                 <div class="col-md-4">
                     <div class="card-counter primary">
                         <i class="fa fa-code-fork"></i>
-                        <span class="count-numbers">${chaid.MkChaid.countByDeletedAndStreet(false,streetInstance)}</span>
+                        <span class="count-numbers">${MkChaid.countByDeletedAndStreet(false,streetInstance)}</span>
                         <span class="count-name">Gathering</span>
                     </div>
                 </div>
@@ -11,7 +12,7 @@
                 <div class="col-md-4">
                     <div class="card-counter danger">
                         <i class="fa fa-legal"></i>
-                        <span class="count-numbers">${chaid.Household.countByDeletedAndVillage_id(false,streetInstance)}</span>
+                        <span class="count-numbers">${Household.countByDeletedAndVillage_id(false,streetInstance)}</span>
                         <span class="count-name">Households visits</span>
                     </div>
                 </div>
@@ -21,7 +22,7 @@
                         <i class="fa fa-database"></i>
                         <span class="count-numbers">
                          <%
-                        def countFacility=chaid.MkChaid.executeQuery("select m.facility.id from MkChaid m where m.deleted=false  and street=:streetInstance group by m.facility.id",[streetInstance:streetInstance]).size()
+                        def countFacility= MkChaid.executeQuery("select m.facility.id from MkChaid m where m.deleted=false  and street=:streetInstance group by m.facility.id",[streetInstance:streetInstance]).size()
                         %>
                         ${formatAmountString(name: (int)countFacility)}
                         </span>
@@ -47,14 +48,14 @@
                 <div class="col-md-4">
                     <div class="card-counter info">
                         <i class="fa fa-file"></i>
-                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where emergence_status<>0 and deleted=false and street=:streetInstance",[streetInstance:streetInstance]).size()}</span>
+                        <span class="count-numbers">${MkChaid.executeQuery("select id from MkChaid where emergence_status<>0 and deleted=false and street=:streetInstance",[streetInstance:streetInstance]).size()}</span>
                         <span class="count-name">Referrals</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card-counter info">
                         <i class="fa fa-users"></i>
-                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where emergence_status=2 and deleted=false  and street=:streetInstance",[streetInstance:streetInstance]).size()}</span>
+                        <span class="count-numbers">${MkChaid.executeQuery("select id from MkChaid where emergence_status=2 and deleted=false  and street=:streetInstance",[streetInstance:streetInstance]).size()}</span>
                         <span class="count-name">Responded Referrals</span>
                     </div>
                 </div>
@@ -111,9 +112,9 @@ function drawChartGender() {
         function drawChartCategory() {
             var data = google.visualization.arrayToDataTable([
                 ['Task', ' Visit Type'],
-                <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD4"))}" var="lawyerDataInstance">
+                <g:each  in="${DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD4"))}" var="lawyerDataInstance">
 
-                ["${lawyerDataInstance.name}", ${chaid.MkChaid.executeQuery(" from MkChaid where visit_type=:visit_type and street=:streetInstance",[visit_type:lawyerDataInstance,streetInstance:streetInstance]).size()}],
+                ["${lawyerDataInstance.name}", ${MkChaid.executeQuery("select id from MkChaid where visit_type=:visit_type and street=:streetInstance",[visit_type:lawyerDataInstance,streetInstance:streetInstance]).size()}],
                 </g:each>
 
             ]);
@@ -131,9 +132,9 @@ function drawChartGender() {
          function drawChartPopulationType() {
                     var data = google.visualization.arrayToDataTable([
                         ['Task', ' Available Members'],
-                        <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD17"))}" var="lawyerDataInstance">
+                        <g:each  in="${DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD17"))}" var="lawyerDataInstance">
 
-                        ["${lawyerDataInstance.name}", ${chaid.AvailableMemberHouse.executeQuery(" from AvailableMemberHouse where type_id=:visit_type  and chaid.street=:streetInstance",[visit_type:lawyerDataInstance,streetInstance:streetInstance]).size()}],
+                        ["${lawyerDataInstance.name}", ${AvailableMemberHouse.executeQuery("select id from AvailableMemberHouse where type_id=:visit_type  and chaid.street=:streetInstance",[visit_type:lawyerDataInstance,streetInstance:streetInstance]).size()}],
                         </g:each>
 
                     ]);
@@ -152,9 +153,9 @@ function drawChartGender() {
         function drawChartCrimeType() {
             var data = google.visualization.arrayToDataTable([
                 ['Task', 'Types of gathering reached'],
-                <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD5"))}" var="lawyerDataInstances">
+                <g:each  in="${DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD5"))}" var="lawyerDataInstances">
   <%
-                                def countTotal=chaid.MkChaid.executeQuery(" from MkChaid where meeting_type=:meeting_type and street=:streetInstance",[meeting_type:lawyerDataInstances,streetInstance:streetInstance]).size();
+                                def countTotal=MkChaid.executeQuery("select id from MkChaid where meeting_type=:meeting_type and street=:streetInstance",[meeting_type:lawyerDataInstances,streetInstance:streetInstance]).size();
                                 if(!countTotal){
                                 countTotal=0;
                                 }

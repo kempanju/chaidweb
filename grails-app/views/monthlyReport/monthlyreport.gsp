@@ -1,3 +1,4 @@
+<%@ page import="admin.District; admin.Region" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,6 +13,70 @@
         white-space: wrap;
     }
     </style>
+
+    <script>
+        function callOption(data) {
+            var selectedItem = data.value;
+            $("#village-report").empty();
+            if (selectedItem == "district") {
+                $("#districtId").show();
+                $("#regionId").hide();
+
+            } else if (selectedItem == "region") {
+                $("#districtId").hide();
+                $("#regionId").show();
+
+            } else {
+                $("#regionId").hide();
+                $("#districtId").hide();
+            }
+        }
+
+        $(document).ready(function () {
+            getReports();
+        });
+
+
+        function getReports() {
+            var district_id = $("#district_id").val();
+            var region_id = $("#region_id").val();
+            var end_date = $("#end_date").val();
+            var from_date = $("#from_date").val();
+            var selectedOption = $("#selectedOption").val();
+            if ((end_date && from_date) || selectedOption === "country"|| selectedOption === "region" || selectedOption === "district") {
+
+                $.ajax({
+                    url: '${grailsApplication.config.systemLink.toString()}/monthlyReport/reportByDate',
+                    data: {
+                        'district_id': district_id,
+                        'region_id': region_id,
+                        'end_date': end_date,
+                        'from_date': from_date,
+                        'selectedOption': selectedOption
+                    }, // change this to send js object
+                    type: "post",
+                    beforeSend: function () {
+                        $('.loader').show();
+                    },
+                    success: function (data) {
+                        // alert("Done");
+                        //document.write(data); just do not use document.write
+                        $("#village-report").html(data);
+                        //console.log(data);
+
+                    },
+                    complete: function () {
+                        $('.loader').hide();
+                    }
+                });
+
+            }
+
+        }
+
+
+    </script>
+
 </head>
 
 <body>
@@ -46,7 +111,7 @@
                     <div class="col-lg-3" id="regionId" style="display:none">
                         <g:select name="region_id" id="region_id" value="" onchange="getReports(this)"
                                   data-show-subtext="true" data-live-search="true"
-                                  from="${admin.Region.list()}" optionKey="id" optionValue="name"
+                                  from="${Region.list()}" optionKey="id" optionValue="name"
                                   class="form-control " noSelection="['': 'Region']"/>
 
                     </div>
@@ -54,7 +119,7 @@
                     <div class="col-lg-3" id="districtId" style="display:none">
                         <g:select name="district_id" id="district_id" value="" onchange="getReports(this)"
                                   data-show-subtext="true" data-live-search="true"
-                                  from="${admin.District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
+                                  from="${District.findAllByD_deleted(false)}" optionKey="id" optionValue="name"
                                   class="form-control " noSelection="['': 'District']"/>
 
                     </div>
@@ -93,13 +158,25 @@
         </div>
 
 
-        <g:render template="/report/monthlydata"/>
+%{--
+        <g:render template="/monthlyReport/monthlydata"/>
+--}%
+
+        <div class="col-lg-12" style="overflow:auto" id="village-report">
+
+        </div>
+
 
     </div>
 
 </div>
 <script type="text/javascript">
     $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:mm'});
+    $('.prev i').removeClass();
+    $('.prev i').addClass("fa fa-chevron-left");
+
+    $('.next i').removeClass();
+    $('.next i').addClass("fa fa-chevron-right");
 </script>
 
 </body>

@@ -45,7 +45,9 @@
                                            <span class="text-semibold"><g:message code="name.en" default="Dictionary"/></span>
                                        </td>
                                        <td><span
-                                               class="text-bold">${fieldValue(bean: dictionaryItem, field: "dictionary_id.name")}</span>
+                                               class="text-bold">${fieldValue(bean: dictionaryItem, field: "dictionary_id.name")}
+                                       - ${fieldValue(bean: dictionaryItem, field: "dictionary_id.code")}
+                                       </span>
 
                                        </td>
                                    </tr>

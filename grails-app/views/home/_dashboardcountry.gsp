@@ -1,3 +1,4 @@
+<%@ page import="materialize.view.RegionReport; materialize.view.YearReports; materialize.view.MonthlyReport; materialize.view.ChaidMeetingType; materialize.view.DangerSign; materialize.view.ViewHealthEducation; materialize.view.ChaidVisitType; admin.DictionaryItem; chaid.Household; chaid.MkChaid" %>
 <%
 def year = new Date().format("yyyy")
 def month = new Date().format("MMM")
@@ -13,7 +14,7 @@ def month = new Date().format("MMM")
 
 
                         <%
-                        def totalChaid=chaid.MkChaid.countByDeleted(false)
+                        def totalChaid= MkChaid.countByDeleted(false)
                         %>
                         ${formatAmountString(name: (int)totalChaid)}
                         </span>
@@ -26,7 +27,7 @@ def month = new Date().format("MMM")
                         <i class="fa  fa-bus"></i>
                         <span class="count-numbers">
                         <%
-                        def countHouse=chaid.Household.countByDeleted(false)
+                        def countHouse= Household.countByDeleted(false)
                         %>
                         ${formatAmountString(name: (int)countHouse)}
                         </span>
@@ -39,7 +40,7 @@ def month = new Date().format("MMM")
                         <i class="fa  fa-bank"></i>
                         <span class="count-numbers">
                         <%
-                        def countFacility=chaid.MkChaid.executeQuery("select m.facility.id from MkChaid m where m.deleted=false group by m.facility.id").size()
+                        def countFacility= MkChaid.executeQuery("select m.facility.id from MkChaid m where m.deleted=false group by m.facility.id").size()
                         %>
                         ${formatAmountString(name: (int)countFacility)}
                         </span>
@@ -60,14 +61,14 @@ def month = new Date().format("MMM")
                 <div class="col-md-3">
                     <div class="card-counter info">
                         <i class="fa fa-paper-plane-o"></i>
-                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where emergence_status<>0 and deleted=false").size()}</span>
+                        <span class="count-numbers">${MkChaid.executeQuery("select id from MkChaid where emergence_status<>0 and deleted=false").size()}</span>
                         <span class="count-name">Referrals</span>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="card-counter info">
                         <i class="fa fa-envelope-o"></i>
-                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where emergence_status=2 and deleted=false").size()}</span>
+                        <span class="count-numbers">${MkChaid.executeQuery("select id from MkChaid where emergence_status=2 and deleted=false").size()}</span>
                         <span class="count-name">Responded Referrals</span>
                     </div>
                 </div>
@@ -75,14 +76,14 @@ def month = new Date().format("MMM")
                  <div class="col-md-3">
                                     <div class="card-counter secondary ">
                                         <i class="fa fa-circle-o"></i>
-                                        <span class="count-numbers">${chaid.MkChaid.executeQuery("select distric.region_id.id from MkChaid where  deleted=false group by distric.region_id.id").size()}</span>
+                                        <span class="count-numbers">${MkChaid.executeQuery("select distric.region_id.id from MkChaid where  deleted=false group by distric.region_id.id").size()}</span>
                                         <span class="count-name">Region Covered</span>
                                     </div>
                                 </div>
              <div class="col-md-3">
                                                 <div class="card-counter secondary ">
                                                     <i class="fa  fa-clock-o"></i>
-                                                    <span class="count-numbers">${chaid.MkChaid.executeQuery("select distric.id from MkChaid where  deleted=false group by distric.id").size()}</span>
+                                                    <span class="count-numbers">${MkChaid.executeQuery("select distric.id from MkChaid where  deleted=false group by distric.id").size()}</span>
                                                     <span class="count-name">District Covered</span>
                                                 </div>
                                             </div>
@@ -90,7 +91,7 @@ def month = new Date().format("MMM")
             <div class="col-md-3">
                    <div class="card-counter secondary ">
                        <i class="fa fa-certificate"></i>
-                       <span class="count-numbers">${chaid.MkChaid.executeQuery("select street.ward_id.id from MkChaid where  deleted=false group by street.ward_id.id").size()}</span>
+                       <span class="count-numbers">${MkChaid.executeQuery("select street.ward_id.id from MkChaid where  deleted=false group by street.ward_id.id").size()}</span>
                        <span class="count-name">Wards Covered</span>
                    </div>
                </div>
@@ -98,7 +99,7 @@ def month = new Date().format("MMM")
                    <div class="card-counter secondary">
                        <i class="fa fa-circle-o-notch"></i>
                        <span class="count-numbers">
-                       <% def villagesNo=chaid.MkChaid.executeQuery("select street.id from MkChaid where  deleted=false group by street.id").size()
+                       <% def villagesNo= MkChaid.executeQuery("select street.id from MkChaid where  deleted=false group by street.id").size()
                        %>
                      ${formatAmountString(name: (int)villagesNo)}
 
@@ -185,9 +186,9 @@ function drawChartGender() {
         function drawChartCategory() {
             var data = google.visualization.arrayToDataTable([
                 ['Task', ' Visit Type'],
-                <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD4"))}" var="lawyerDataInstance">
+                <g:each  in="${DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD4"))}" var="lawyerDataInstance">
 
-                ["${lawyerDataInstance.name}", ${materialize.view.ChaidVisitType.executeQuery("select sum(visitcount) from ChaidVisitType where visit_type=:visit_type",[visit_type:lawyerDataInstance])[0]}],
+                ["${lawyerDataInstance.name}", ${ChaidVisitType.executeQuery("select sum(visitcount) from ChaidVisitType where visit_type=:visit_type",[visit_type:lawyerDataInstance])[0]}],
                 </g:each>
 
             ]);
@@ -205,9 +206,9 @@ function drawChartGender() {
         function drawChartEducationType() {
                             var data = google.visualization.arrayToDataTable([
                                 ['Task', ' Health Education Provided'],
-                                <g:each  in="${materialize.view.ViewHealthEducation.executeQuery("select education_type.id,education_type.name from ViewHealthEducation group by education_type.id,education_type.name")}" var="lawyerDataInstance">
+                                <g:each  in="${ViewHealthEducation.executeQuery("select education_type.id,education_type.name from ViewHealthEducation group by education_type.id,education_type.name")}" var="lawyerDataInstance">
                                 <%
-                                def dictionaryInstance=admin.DictionaryItem.read(lawyerDataInstance[0])
+                                def dictionaryInstance=DictionaryItem.read(lawyerDataInstance[0])
                                 %>
                                 ["${lawyerDataInstance[1]}", ${materialize.view.ViewHealthEducation.executeQuery(" select d.education_type from ViewHealthEducation d where d.education_type.id=:visit_type ",[visit_type:lawyerDataInstance[0]]).size()}],
                                 </g:each>
@@ -229,11 +230,11 @@ function drawChartGender() {
          function drawChartPopulationType() {
                     var data = google.visualization.arrayToDataTable([
                         ['Task', ' Population reached by Gender and Age'],
-                        <g:each  in="${materialize.view.DangerSign.executeQuery("select signType.id,signType.name from DangerSign group by signType.id,signType.name")}" var="lawyerDataInstance">
+                        <g:each  in="${DangerSign.executeQuery("select signType.id,signType.name from DangerSign group by signType.id,signType.name")}" var="lawyerDataInstance">
                         <%
-                        def dictionaryInstance=admin.DictionaryItem.read(lawyerDataInstance[0])
+                        def dictionaryInstance=DictionaryItem.read(lawyerDataInstance[0])
                         %>
-                        ["${lawyerDataInstance[1]} (${dictionaryInstance.dictionary_id.name})", ${materialize.view.DangerSign.executeQuery(" select d.signType from DangerSign d where d.signType.id=:visit_type ",[visit_type:lawyerDataInstance[0]]).size()}],
+                        ["${lawyerDataInstance[1]} (${dictionaryInstance.dictionary_id.name})", ${DangerSign.executeQuery(" select d.signType from DangerSign d where d.signType.id=:visit_type ",[visit_type:lawyerDataInstance[0]]).size()}],
                         </g:each>
 
                     ]);
@@ -252,9 +253,9 @@ function drawChartGender() {
         function drawChartCrimeType() {
             var data = google.visualization.arrayToDataTable([
                 ['Task', ' Types of gathering reached'],
-                <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD5"))}" var="lawyerDataInstances">
+                <g:each  in="${DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD5"))}" var="lawyerDataInstances">
                 <%
-                def countTotal=materialize.view.ChaidMeetingType.executeQuery("select meetingcount from ChaidMeetingType where meeting_type=:meeting_type",[meeting_type:lawyerDataInstances])[0];
+                def countTotal=ChaidMeetingType.executeQuery("select meetingcount from ChaidMeetingType where meeting_type=:meeting_type",[meeting_type:lawyerDataInstances])[0];
                 if(!countTotal){
                 countTotal=0;
                 }
@@ -276,7 +277,7 @@ function drawChartGender() {
  function drawChartMonthlyReports() {
               var data = google.visualization.arrayToDataTable([
                 ["Month", "Gathering", { role: "style" } ],
-                 <g:each  in="${materialize.view.MonthlyReport.executeQuery("select day_sum,txn_day from MonthlyReport ")}" var="reportDataInstance">
+                 <g:each  in="${MonthlyReport.executeQuery("select day_sum,txn_day from MonthlyReport ")}" var="reportDataInstance">
 
                 ["${formatDateCustomDayGroovy(name:reportDataInstance[1].toString())}", ${reportDataInstance[0]},"#EF5350"],
                 </g:each>
@@ -305,7 +306,7 @@ function drawChartGender() {
         function drawChartYearReports() {
               var data = google.visualization.arrayToDataTable([
                 ["Month", "Gathering", { role: "style" } ],
-                 <g:each  in="${materialize.view.YearReports.executeQuery("select monthly_sum,txn_month from YearReports ")}" var="reportDataInstance">
+                 <g:each  in="${YearReports.executeQuery("select monthly_sum,txn_month from YearReports ")}" var="reportDataInstance">
 
                 ["${formatDateCustomGroovy(name:reportDataInstance[1].toString())}", ${reportDataInstance[0]},"#007BFF"],
                 </g:each>
@@ -337,7 +338,7 @@ function drawChartGender() {
     function drawChartRegionReports() {
                  var data = google.visualization.arrayToDataTable([
                    ["Month", "Gathering", { role: "style" } ],
-                    <g:each  in="${materialize.view.RegionReport.executeQuery("select population,region.name from RegionReport ")}" var="reportDataInstance">
+                    <g:each  in="${RegionReport.executeQuery("select population,region.name from RegionReport ")}" var="reportDataInstance">
 
                    ["${reportDataInstance[1]}", ${reportDataInstance[0]},"#66BB6A"],
                    </g:each>

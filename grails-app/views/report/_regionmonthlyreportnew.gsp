@@ -1,6 +1,6 @@
-<%@ page import="chaid.Survey; chaid.MkChaid; materialize.view.DangerSign; chaid.AdolescentAbuse; materialize.view.ViewHealthEducation; chaid.HealthEducation; chaid.AvailableMemberHouse; chaid.Household; admin.DictionaryItem; admin.DictionaryItem;" %>
+<%@ page import="materialize.view.DangerSign; admin.DictionaryItem; chaid.HealthEducation; chaid.Survey; chaid.MkChaid; chaid.AdolescentAbuse; materialize.view.ViewHealthEducation; chaid.Household; chaid.AvailableMemberHouse" %>
 <%
-    def memberCategoryList = DictionaryItem.findAllByDictionary_idAndDisplayReport(admin.Dictionary.findByCode("CHAD17"), true, [sort: 'displayOrder', order: 'asc']);
+    def memberCategoryList = admin.DictionaryItem.findAllByDictionary_idAndDisplayReport(admin.Dictionary.findByCode("CHAD17"), true, [sort: 'displayOrder', order: 'asc']);
 %>
 
 <div style=" overflow-x: auto;">
@@ -20,10 +20,10 @@
             <%
                 def houseHoldNo = 0;
                 if (end_date && from_date) {
-                    houseHoldNo = Household.executeQuery("from Household where created_at between '" + from_date + "' and '" + end_date + "'").size()
+                    houseHoldNo = Household.executeQuery("from Household where created_at between '" + from_date + "' and '" + end_date + "' and district_id.region_id=:regionInstance", [regionInstance: regionInstance]).size()
 
                 } else {
-                    houseHoldNo = Household.executeQuery("from Household where deleted=false ").size()
+                    houseHoldNo = Household.executeQuery("from Household where deleted=false and district_id.region_id=:regionInstance", [regionInstance: regionInstance]).size()
 
                 }
             %>
@@ -40,10 +40,10 @@
                         def groupAgeBetweenNo = 0;
 
                         if (end_date && from_date) {
-                            groupAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and arrival_time between '" + from_date + "' and '" + end_date + "'", [categoryType: categorysListInstance])[0]
+                            groupAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.distric.region_id=:regionInstance", [categoryType: categorysListInstance, regionInstance: regionInstance])[0]
 
                         } else {
-                            groupAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false ", [categoryType: categorysListInstance])[0]
+                            groupAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.distric.region_id=:regionInstance", [categoryType: categorysListInstance, regionInstance: regionInstance])[0]
 
                         }
                         if (!groupAgeBetweenNo) {
@@ -90,13 +90,12 @@
 
                     def noHoldMemberData
                     if (end_date && from_date) {
-                        noHoldMemberData = HealthEducation.executeQuery("select sum(h.chaid.members_male),sum(h.chaid.members_female) from HealthEducation h where type.category=:education_type  and created_at between '" + from_date + "' and '" + end_date + "'", [education_type: educationListInstance])[0]
+                        noHoldMemberData = HealthEducation.executeQuery("select sum(h.chaid.members_male),sum(h.chaid.members_female) from HealthEducation h where type.category=:education_type  and created_at between '" + from_date + "' and '" + end_date + "' and h.chaid.distric.region_id=:regionInstance", [education_type: educationListInstance, regionInstance: regionInstance])[0]
 
                     } else {
-                        noHoldMember = ViewHealthEducation.executeQuery("select sum(h.member_no) from ViewHealthEducation h where category=:category and education_type.category=:education_type and chaid.visit_type=:visitTypeInstance", [category: categorysListInstance, education_type: educationListInstance, visitTypeInstance: visitTypeInstance])[0]
+                        noHoldMemberData = HealthEducation.executeQuery("select sum(h.chaid.members_male),sum(h.chaid.members_female) from HealthEducation h where type.category=:education_type  and  h.chaid.distric.region_id=:regionInstance", [education_type: educationListInstance, regionInstance: regionInstance])[0]
 
                     }
-                    noHoldMember = noHoldMemberData[0]
                     noHoldMemberMale = noHoldMemberData[0]
                     noHoldMemberFemale = noHoldMemberData[1]
                     if (!noHoldMemberMale) {
@@ -122,6 +121,7 @@
         </g:each>
 
 
+
         <tr>
             <td colspan="16"
                 class="text-bold text-center">REFERRALS CONDUCTED FROM THE COMMUNITY :-TOTAL NUMBER OF GIRLS AND BOYS IN THE ADOLLENCENT GROUP Who (10-24 YRS) WERE REFERRED DUE TO:-</td>
@@ -131,44 +131,44 @@
                 var="referralsListInstance">
             <tr>
                 <td class="info">
-                    <span >${referralsListInstance.name}
-                  %{--  <ul class="myUL">
+                    <span>${referralsListInstance.name}
+                    %{--  <ul class="myUL">
 
-                        <li><span class="caret">${referralsListInstance.name}
-                            <ul class="nested">
-                                <g:each in="${DictionaryItem.findAllByCategory(referralsListInstance)}"
-                                        status="iii" var="categoryEdListInstance">
-                                    <li>${categoryEdListInstance.name}</li>
-                                </g:each>
+                          <li><span class="caret">${referralsListInstance.name}
+                              <ul class="nested">
+                                  <g:each in="${DictionaryItem.findAllByCategory(referralsListInstance)}"
+                                          status="iii" var="categoryEdListInstance">
+                                      <li>${categoryEdListInstance.name}</li>
+                                  </g:each>
 
-                            </ul>
-                        </li>
-                    </ul>--}%
+                              </ul>
+                          </li>
+                      </ul>--}%
                 </td>
                 <%
 
-                    def countReferrals,countReferralsMale,countReferralsFemale
+                    def countReferrals, countReferralsMale, countReferralsFemale
                     if (end_date && from_date) {
-                        countReferrals = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: referralsListInstance]).size()
+                        countReferrals = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  and chaid.distric.region_id=:regionInstance", [referralsListInstance: referralsListInstance, regionInstance: regionInstance]).size()
 
                     } else {
-                        countReferrals = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where type=:referralsListInstance ", [referralsListInstance: referralsListInstance]).size()
+                        countReferrals = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where type=:referralsListInstance and chaid.distric.region_id=:regionInstance", [referralsListInstance: referralsListInstance, regionInstance: regionInstance]).size()
 
                     }
 
                     if (end_date && from_date) {
-                        countReferralsFemale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: referralsListInstance]).size()
+                        countReferralsFemale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  and chaid.distric.region_id=:regionInstance", [referralsListInstance: referralsListInstance, regionInstance: regionInstance]).size()
 
                     } else {
-                        countReferralsFemale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance ", [referralsListInstance: referralsListInstance]).size()
+                        countReferralsFemale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance and chaid.distric.region_id=:regionInstance", [referralsListInstance: referralsListInstance, regionInstance: regionInstance]).size()
 
                     }
 
                     if (end_date && from_date) {
-                        countReferralsMale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('me','Me')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: referralsListInstance]).size()
+                        countReferralsMale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('me','Me') and chaid.distric.region_id=:regionInstance and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: referralsListInstance, regionInstance: regionInstance]).size()
 
                     } else {
-                        countReferralsMale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('me','Me')  and type=:referralsListInstance ", [referralsListInstance: referralsListInstance]).size()
+                        countReferralsMale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('me','Me') and chaid.distric.region_id=:regionInstance and type=:referralsListInstance ", [referralsListInstance: referralsListInstance, regionInstance: regionInstance]).size()
 
                     }
 
@@ -183,7 +183,7 @@
                         countReferralsFemale = 0
                     }
 
-                    def unknownGender = countReferrals - (countReferralsFemale+countReferralsMale)
+                    def unknownGender = countReferrals - (countReferralsFemale + countReferralsMale)
                 %>
                 <td>${formatAmountString(name: (int) countReferralsMale)}</td>
                 <td>${formatAmountString(name: (int) countReferralsFemale)}</td>
@@ -195,18 +195,7 @@
 
         <tr>
             <td colspan="3">1.Idadi ya wavulana na wasichana kundi balehe umri 10-24 waliotoa ripoti na kupata huduma katika vituodhidi ya unyanyasaji wa kingono (Ukatili wa kijinsia- GBV)</td>
-            <td>
-                <%
-                    def adolescentNo
-                    if (end_date && from_date) {
-                        adolescentNo = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where arrival_time between '" + from_date + "' and '" + end_date + "' ").size()
-                    } else {
-                        adolescentNo = AdolescentAbuse.count()
-                    }
-                %>
-                ${formatAmountString(name: adolescentNo)}
-
-            </td>
+            <td>${AdolescentAbuse.count()}</td>
         </tr>
         <tr>
             <td colspan="3">2-Idadi ya wavulana na wasichana umri 10-24 waliopewa ushauri juu ya  Virusi vya Ukimwi</td>
@@ -215,33 +204,29 @@
                     def healthEducationMale
                     def eduInstance1 = DictionaryItem.findByCode('CHAD33F2')
                     if (end_date && from_date) {
-                        healthEducationMale = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where arrival_time between '" + from_date + "' and '" + end_date + "' and education_type =:educationType ", [educationType: eduInstance1]).size()
+                        healthEducationMale = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where arrival_time between '" + from_date + "' and '" + end_date + "' and education_type =:educationType and chaid.distric.region_id=:regionInstance ", [educationType: eduInstance1, regionInstance: regionInstance]).size()
                     } else {
-                        healthEducationMale = ViewHealthEducation.countByEducation_type(eduInstance1)
+                        healthEducationMale = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where  education_type =:educationType and chaid.distric.region_id=:regionInstance ", [educationType: eduInstance1, regionInstance: regionInstance]).size()
                     }
 
                 %>
                 ${formatAmountString(name: (int) healthEducationMale)}
-
             </td>
         </tr>
         <tr>
-
             <td colspan="3">3-Idadi ya wavulana na wasichana umri 10-24 waliopewa ushauri juu ya kufua kikuu</td>
             <td>
-
                 <%
                     def healthEducationFemale1
                     def eduInstance2 = DictionaryItem.findByCode('CHAD6H')
                     if (end_date && from_date) {
-                        healthEducationFemale1 = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where arrival_time between '" + from_date + "' and '" + end_date + "' and education_type =:educationType ", [educationType: eduInstance2]).size()
+                        healthEducationFemale1 = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where arrival_time between '" + from_date + "' and '" + end_date + "' and education_type =:educationType and chaid.distric.region_id=:regionInstance ", [educationType: eduInstance2, regionInstance: regionInstance]).size()
                     } else {
-                        healthEducationFemale1 = ViewHealthEducation.countByEducation_type(eduInstance2)
+                        healthEducationFemale1 = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where education_type =:educationType and chaid.distric.region_id=:regionInstance ", [educationType: eduInstance2, regionInstance: regionInstance]).size()
                     }
 
                 %>
                 ${formatAmountString(name: (int) healthEducationFemale1)}
-
             </td>
         </tr>
 
@@ -257,7 +242,17 @@
             <tr>
                 <td colspan="2">${gatheringTypeListInstance.name}</td>
                 <%
-                    def totalCountData = MkChaid.executeQuery("select sum(total_members),sum(members_male),sum(members_female)  from MkChaid where deleted=false and meeting_type=:meeting_type and arrival_time between '" + from_date + "' and '" + end_date + "'", [meeting_type: gatheringTypeListInstance])[0]
+                    def totalCountData = null
+                    if (end_date && from_date) {
+                        totalCountData = MkChaid.executeQuery("select sum(total_members),sum(members_male),sum(members_female)  from MkChaid where deleted=false and meeting_type=:meeting_type and arrival_time between '" + from_date + "' and '" + end_date + "' " +
+
+                                "and distric.region_id=:regionInstance", [meeting_type: gatheringTypeListInstance, regionInstance: regionInstance])[0]
+                    } else {
+
+                        totalCountData = MkChaid.executeQuery("select sum(total_members),sum(members_male),sum(members_female)  from MkChaid where deleted=false and meeting_type=:meeting_type " +
+
+                                "and distric.region_id=:regionInstance", [meeting_type: gatheringTypeListInstance, regionInstance: regionInstance])[0]
+                    }
 
                     def totalCount = totalCountData[0];
                     def totalMaleN = totalCountData[1];
@@ -316,10 +311,14 @@
                     def visitTypeInstance = DictionaryItem.findByCode("CHAD4B")
                     def noHoldMemberData1;
                     if (end_date && from_date) {
-                        noHoldMemberData1 = HealthEducation.executeQuery("select sum(chaid.total_members),sum(chaid.members_male),sum(chaid.members_female) from HealthEducation where  type.category=:education_type and chaid.visit_type=:visitTypeInstance and created_at between '" + from_date + "' and '" + end_date + "'", [education_type: educationListInstance, visitTypeInstance: visitTypeInstance])[0]
+                        noHoldMemberData1 = HealthEducation.executeQuery("select sum(chaid.total_members),sum(chaid.members_male),sum(chaid.members_female) from HealthEducation where  type.category=:education_type and chaid.visit_type=:visitTypeInstance " +
+
+                                "and created_at between '" + from_date + "' and '" + end_date + "' and chaid.distric.region_id=:regionInstance", [education_type: educationListInstance, visitTypeInstance: visitTypeInstance, regionInstance: regionInstance])[0]
 
                     } else {
-                        noHoldMemberData1 = HealthEducation.executeQuery("select sum(chaid.total_members),sum(chaid.members_male),sum(chaid.members_female) from HealthEducation  where  type.category=:education_type and chaid.visit_type=:visitTypeInstance", [education_type: educationListInstance, visitTypeInstance: visitTypeInstance])[0]
+                        noHoldMemberData1 = HealthEducation.executeQuery("select sum(chaid.total_members),sum(chaid.members_male),sum(chaid.members_female) from HealthEducation  " +
+
+                                "where  type.category=:education_type and chaid.visit_type=:visitTypeInstance and chaid.distric.region_id=:regionInstance", [education_type: educationListInstance, visitTypeInstance: visitTypeInstance, regionInstance: regionInstance])[0]
 
                     }
                     noHoldMember1 = noHoldMemberData1[0];
@@ -358,20 +357,20 @@
                 def surveyInstance1 = admin.Dictionary.findByCode("CHAD59")
                 def survey1 = 0
                 if (end_date && from_date) {
-                    survey1 = Survey.executeQuery(" select sum(survey_no) from Survey h where  type=:surveyInstance1  and arrival_time between '" + from_date + "' and '" + end_date + "'", [surveyInstance1: surveyInstance1]).size()
+                    survey1 = Survey.executeQuery(" select sum(survey_no) from Survey h where  type=:surveyInstance1  and arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.distric.region_id=:regionInstance", [surveyInstance1: surveyInstance1, regionInstance: regionInstance]).size()
 
                 } else {
-                    survey1 = Survey.executeQuery("select sum(survey_no) from Survey where  type=:surveyInstance1", [surveyInstance1: surveyInstance1])[0]
+                    survey1 = Survey.executeQuery("select sum(survey_no) from Survey where  type=:surveyInstance1 and chaid.distric.region_id=:regionInstance", [surveyInstance1: surveyInstance1, regionInstance: regionInstance])[0]
 
                 }
 
                 def surveyInstance2 = admin.Dictionary.findByCode("CHAD60")
                 def survey2 = 0
                 if (end_date && from_date) {
-                    survey2 = Survey.executeQuery(" select sum(survey_no)  from Survey h where  type=:surveyInstance1  and arrival_time between '" + from_date + "' and '" + end_date + "'", [surveyInstance1: surveyInstance2])[0]
+                    survey2 = Survey.executeQuery(" select sum(survey_no)  from Survey h where  type=:surveyInstance1  and arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.distric.region_id=:regionInstance", [surveyInstance1: surveyInstance2, regionInstance: regionInstance])[0]
 
                 } else {
-                    survey2 = Survey.executeQuery("select sum(survey_no) from Survey where  type=:surveyInstance1", [surveyInstance1: surveyInstance2])[0]
+                    survey2 = Survey.executeQuery("select sum(survey_no) from Survey where  type=:surveyInstance1 and chaid.distric.region_id=:regionInstance", [surveyInstance1: surveyInstance2, regionInstance: regionInstance])[0]
 
                 }
             %>
@@ -388,7 +387,18 @@
         </tr>
         <tr>
             <td colspan="3">1.Idadi ya watoto na watu wazima walio ripoti kupata huduma za  uchunguzi wa magonjwa ya ngono na unyanyasaji kijinsia</td>
-            <td>${AdolescentAbuse.count()}</td>
+            <td>
+                <%
+                    def adolescentNo
+                    if (end_date && from_date) {
+                        adolescentNo = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.distric.region_id=:regionInstance", [regionInstance: regionInstance]).size()
+                    } else {
+                        adolescentNo = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where  chaid.distric.region_id=:regionInstance", [regionInstance: regionInstance]).size()
+                    }
+                %>
+                ${formatAmountString(name: adolescentNo)}
+
+            </td>
         </tr>
 
         <tr>
@@ -399,13 +409,16 @@
             <%
                 def educationListInstance = DictionaryItem.findByCode("CHAD33F5")
 
+                def covidMale1
+                def covidFemale
                 if (end_date && from_date) {
-                    noHoldMember = ViewHealthEducation.executeQuery("select sum(h.chaid.members_male), sum(h.chaid.members_female)  from ViewHealthEducation h where  education_type=:education_type  and arrival_time between '" + from_date + "' and '" + end_date + "'", [education_type: educationListInstance])[0]
+                    noHoldMember = ViewHealthEducation.executeQuery("select sum(h.chaid.members_male), sum(h.chaid.members_female)  from ViewHealthEducation h where  education_type=:education_type  and arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.distric.region_id=:regionInstance", [education_type: educationListInstance, regionInstance: regionInstance])[0]
 
                 } else {
-                    noHoldMember = ViewHealthEducation.executeQuery("select sum(h.chaid.members_male), sum(h.chaid.members_female) from ViewHealthEducation h where  education_type=:education_type ", [education_type: educationListInstance])[0]
-
+                    noHoldMember = ViewHealthEducation.executeQuery("select sum(h.chaid.members_male), sum(h.chaid.members_female) from ViewHealthEducation h where  education_type=:education_type and chaid.distric.region_id=:regionInstance", [education_type: educationListInstance, regionInstance: regionInstance])[0]
                 }
+
+
             %>
             <td colspan="3">1. Idadi ya wanaume waliopatiwa elimu ya COVID 19</td>
             <td>${noHoldMember[0]}</td>

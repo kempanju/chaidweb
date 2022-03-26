@@ -1,8 +1,12 @@
 package materialize.view
 
+import admin.District
+import admin.Region
+import grails.plugin.springsecurity.annotation.Secured
 import grails.validation.ValidationException
 import static org.springframework.http.HttpStatus.*
 
+@Secured("isAuthenticated()")
 class MonthlyReportController {
 
     MonthlyReportService monthlyReportService
@@ -16,6 +20,28 @@ class MonthlyReportController {
 
     def show(Long id) {
         respond monthlyReportService.get(id)
+    }
+
+    def reportByDate(){
+        def  selectedOption= params.selectedOption
+        def from_date=params.from_date
+        def end_date=params.end_date
+       // println(params)
+        // println(params)
+       if( selectedOption&& selectedOption.equals("region")){
+            def regionInstance= Region.get(params.region_id)
+            render template: '/monthlyReport/regionmonthlydata',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
+        }else if(selectedOption&& selectedOption.equals("district")){
+            def districtInstance= District.get(params.district_id)
+            render template: '/monthlyReport/districtmonthlydata',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
+        }else {
+          // if(from_date && end_date){
+               render template: '/monthlyReport/statemonthlydata',model: [from_date:from_date,end_date:end_date]
+
+          /* } else {
+               render " Select date range"
+           }*/
+        }
     }
 
     def create() {

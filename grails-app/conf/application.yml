@@ -107,7 +107,7 @@ environments:
     development:
         dataSource:
             dbCreate: update
-            url: jdbc:postgresql://localhost:5433/db_chaid
+            url: jdbc:postgresql://localhost:5432/db_chaid
  #           logSql: true
         systemLink: http://localhost:9090
 

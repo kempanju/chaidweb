@@ -82,7 +82,7 @@ ApplicationService applicationService
 
     def monthlyReport(){
         session["activePage"] = "monthlyReport"
-        render view: "/report/monthlyreport"
+        render view: "/monthlyReport/monthlyreport"
     }
 
     def sendMessage(){
@@ -1166,7 +1166,7 @@ ApplicationService applicationService
         def end_date=params.end_date
         if( selectedOption&& selectedOption.equals("region")){
             def regionInstance=Region.read(params.region_id)
-            render template: '/report/regiontoolreport',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
+            render template: '/report/regionmonthlyreportnew',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
         }else if(selectedOption&& selectedOption.equals("district")){
             def village_id=params.village_id
             if(village_id){
@@ -1175,7 +1175,7 @@ ApplicationService applicationService
 
             }else {
                 def districtInstance = District.read(params.district_id)
-                render template: '/report/districtmonthlyreport', model: [districtInstance: districtInstance, from_date: from_date, end_date: end_date]
+                render template: '/report/districtmonthlyreportnew', model: [districtInstance: districtInstance, from_date: from_date, end_date: end_date]
             }
         }else {
             if(from_date&&end_date){
@@ -1193,7 +1193,7 @@ ApplicationService applicationService
             def response = request.JSON
             if (response) {
                 String data=response.toString()
-                println(data)
+               // println(data)
                 try {
                     applicationService.saveChaid(data)
                 }catch(Exception e){

@@ -1,9 +1,10 @@
+<%@ page import="materialize.view.DistrictReport; materialize.view.ChaidMeetingType; materialize.view.AvailableMember; admin.DictionaryItem; materialize.view.ChaidVisitType; chaid.Household; chaid.MkChaid" %>
  <div class="container col-lg-12" style="margin-top: 10px">
             <div class="row ">
                 <div class="col-md-4">
                     <div class="card-counter primary">
                         <i class="fa fa-code-fork"></i>
-                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where  deleted=false  and distric.region_id=:regionInstance",[regionInstance:regionInstance]).size()}</span>
+                        <span class="count-numbers">${MkChaid.executeQuery("select id from MkChaid where  deleted=false  and distric.region_id=:regionInstance",[regionInstance:regionInstance]).size()}</span>
                         <span class="count-name">Gathering</span>
                     </div>
                 </div>
@@ -11,7 +12,7 @@
                 <div class="col-md-4">
                     <div class="card-counter danger">
                         <i class="fa fa-legal"></i>
-                        <span class="count-numbers">${chaid.Household.executeQuery("from Household where  deleted=false  and district_id.region_id=:regionInstance",[regionInstance:regionInstance]).size() }</span>
+                        <span class="count-numbers">${Household.executeQuery("select id from Household where  deleted=false  and district_id.region_id=:regionInstance",[regionInstance:regionInstance]).size() }</span>
                         <span class="count-name">Household visits</span>
                     </div>
                 </div>
@@ -51,14 +52,14 @@
                 <div class="col-md-4">
                     <div class="card-counter info">
                         <i class="fa fa-file"></i>
-                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where emergence_status<>0 and deleted=false and distric.region_id=:regionInstance",[regionInstance:regionInstance]).size()}</span>
+                        <span class="count-numbers">${MkChaid.executeQuery("select id from MkChaid where emergence_status<>0 and deleted=false and distric.region_id=:regionInstance",[regionInstance:regionInstance]).size()}</span>
                         <span class="count-name">Referrals</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card-counter info">
                         <i class="fa fa-users"></i>
-                        <span class="count-numbers">${chaid.MkChaid.executeQuery("from MkChaid where emergence_status=2 and deleted=false  and distric.region_id=:regionInstance",[regionInstance:regionInstance]).size()}</span>
+                        <span class="count-numbers">${MkChaid.executeQuery("select id from MkChaid where emergence_status=2 and deleted=false  and distric.region_id=:regionInstance",[regionInstance:regionInstance]).size()}</span>
                         <span class="count-name">Responded Referrals</span>
                     </div>
                 </div>
@@ -123,7 +124,7 @@ function drawChartGender() {
                 ['Task', ' Visit Type'],
                 <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD4"))}" var="lawyerDataInstance">
 
-                ["${lawyerDataInstance.name}", ${materialize.view.ChaidVisitType.executeQuery("select sum(visitcount) from ChaidVisitType where visit_type=:visit_type and region=:regionInstance",[visit_type:lawyerDataInstance,regionInstance:regionInstance])[0]}],
+                ["${lawyerDataInstance.name}", ${ChaidVisitType.executeQuery("select sum(visitcount) from ChaidVisitType where visit_type=:visit_type and region=:regionInstance",[visit_type:lawyerDataInstance,regionInstance:regionInstance])[0]}],
                 </g:each>
 
             ]);
@@ -141,9 +142,9 @@ function drawChartGender() {
          function drawChartPopulationType() {
                     var data = google.visualization.arrayToDataTable([
                         ['Task', ' Available Members'],
-                        <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD17"))}" var="lawyerDataInstance">
+                        <g:each  in="${DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD17"))}" var="lawyerDataInstance">
 
-                        ["${lawyerDataInstance.name}", ${materialize.view.AvailableMember.executeQuery("select sum(meetingcount) from AvailableMember where type_id=:visit_type  and region=:regionInstance",[visit_type:lawyerDataInstance,regionInstance:regionInstance])[0]}],
+                        ["${lawyerDataInstance.name}", ${AvailableMember.executeQuery("select sum(meetingcount) from AvailableMember where type_id=:visit_type  and region=:regionInstance",[visit_type:lawyerDataInstance,regionInstance:regionInstance])[0]}],
                         </g:each>
 
                     ]);
@@ -162,9 +163,9 @@ function drawChartGender() {
         function drawChartCrimeType() {
             var data = google.visualization.arrayToDataTable([
                 ['Task', ' Types of gathering reached'],
-                <g:each  in="${admin.DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD5"))}" var="lawyerDataInstances">
+                <g:each  in="${DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD5"))}" var="lawyerDataInstances">
                 <%
-                                def countTotal=materialize.view.ChaidMeetingType.executeQuery("select meetingcount from ChaidMeetingType where meeting_type=:meeting_type and region=:regionInstance",[meeting_type:lawyerDataInstances,regionInstance:regionInstance])[0];
+                                def countTotal=ChaidMeetingType.executeQuery("select meetingcount from ChaidMeetingType where meeting_type=:meeting_type and region=:regionInstance",[meeting_type:lawyerDataInstances,regionInstance:regionInstance])[0];
                                 if(!countTotal){
                                 countTotal=0;
                                 }
@@ -187,7 +188,7 @@ function drawChartGender() {
           function drawChartDistrictReports() {
                          var data = google.visualization.arrayToDataTable([
                            ["Month", "Gathering", { role: "style" } ],
-                            <g:each  in="${materialize.view.DistrictReport.executeQuery("select population,district.name from DistrictReport where district.region_id=:regionInstance ",[regionInstance:regionInstance])}" var="reportDataInstance">
+                            <g:each  in="${DistrictReport.executeQuery("select population,district.name from DistrictReport where district.region_id=:regionInstance ",[regionInstance:regionInstance])}" var="reportDataInstance">
 
                            ["${reportDataInstance[1]}", ${reportDataInstance[0]},"#66BB6A"],
                            </g:each>
