@@ -4,7 +4,7 @@
 %>
 
 <div style=" overflow-x: auto;">
-    <table class="table  table-bordered nowrap">
+    <table class="table  table-bordered nowrap" border="1">
 
         <tr style="white-space:nowrap;"><th></th>
 
@@ -69,14 +69,17 @@
                 <td class="info">
                     <ul class="myUL">
 
-                        <li><span class="caret">${educationListInstance.name}
-                            <ul class="nested">
-                                <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
-                                        status="ii" var="categoryListInstance">
-                                    <li>${categoryListInstance.name}</li>
-                                </g:each>
+                        <li><span class="caret">${educationListInstance.name}</span>
+                            <g:if test="${type == 'file'}">
 
-                            </ul>
+                                <ul class="nested">
+                                    <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
+                                            status="ii" var="categoryListInstance">
+                                        <li>${categoryListInstance.name}</li>
+                                    </g:each>
+
+                                </ul>
+                            </g:if>
                         </li>
                     </ul>
 
@@ -131,7 +134,7 @@
                 var="referralsListInstance">
             <tr>
                 <td class="info">
-                    <span>${referralsListInstance.name}
+                    <span>${referralsListInstance.name}</span>
                     %{--  <ul class="myUL">
 
                           <li><span class="caret">${referralsListInstance.name}
@@ -294,14 +297,17 @@
 
                     <ul class="myUL">
 
-                        <li><span class="caret">${educationListInstance.name}
-                            <ul class="nested">
-                                <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
-                                        status="iiiI" var="categoryEdUListInstance">
-                                    <li>${categoryEdUListInstance.name}</li>
-                                </g:each>
+                        <li><span class="caret">${educationListInstance.name}</span>
+                            <g:if test="${type == 'file'}">
 
-                            </ul>
+                                <ul class="nested">
+                                    <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
+                                            status="iiiI" var="categoryEdUListInstance">
+                                        <li>${categoryEdUListInstance.name}</li>
+                                    </g:each>
+
+                                </ul>
+                            </g:if>
                         </li>
                     </ul>
                 </td>
@@ -432,19 +438,21 @@
             <td>${noHoldMember[0] + noHoldMember[1]}</td>
         </tr>
 
-    </tr>
 
     </table>
 </div>
 
-<script type="text/javascript">
+<g:if test="${type == 'file'}">
 
-    var toggler = document.getElementsByClassName("caret");
-    var i;
-    for (i = 0; i < toggler.length; i++) {
-        toggler[i].addEventListener("click", function () {
-            this.parentElement.querySelector(".nested").classList.toggle("activee");
-            this.classList.toggle("caret-down");
-        });
-    }
-</script>
+    <script type="text/javascript">
+
+        var toggler = document.getElementsByClassName("caret");
+        var i;
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function () {
+                this.parentElement.querySelector(".nested").classList.toggle("activee");
+                this.classList.toggle("caret-down");
+            });
+        }
+    </script>
+</g:if>

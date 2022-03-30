@@ -4,7 +4,7 @@
 %>
 
 <div class="col-lg-12" style=" overflow-x: auto">
-    <table class="table  table-bordered nowrap">
+    <table class="table  table-bordered nowrap" border="1">
 
         <tr style="white-space:nowrap;"><th></th><th></th>
 
@@ -22,7 +22,7 @@
 
                 def visitedHouseHold
                 if (end_date && from_date) {
-                    visitedHouseHold = MkChaid.executeQuery("select id from MkChaid where deleted=false and visit_type=:visitType and arrival_time between '" + from_date + "' and '" + end_date + "'",[visitType:visitType]).size()
+                    visitedHouseHold = MkChaid.executeQuery("select id from MkChaid where deleted=false and visit_type=:visitType and arrival_time between '" + from_date + "' and '" + end_date + "'", [visitType: visitType]).size()
                 } else {
                     visitedHouseHold = MkChaid.countByDeletedAndVisit_type(false, visitType)
                 }
@@ -30,20 +30,20 @@
             %>
             <td>${formatAmountString(name: (int) visitedHouseHold)}</td>
         </tr>
+        <tr>
+            <td colspan="3">2. Idadi ya kaya zilizotembelewa ndani ya muda huu</td>
+            <%
+                def visitedNewHouseHold = 0
+                if (end_date && from_date) {
+                    visitedNewHouseHold = MkChaid.executeQuery("select id from MkChaid where deleted=false and visit_type=:visitType and  household.created_at between '" + from_date + "' and '" + end_date + "' ", [visitType: visitType]).size()
 
-        <td colspan="3">2. Idadi ya kaya zilizotembelewa ndani ya muda huu</td>
-        <%
-            def visitedNewHouseHold = 0
-            if(end_date && from_date){
-                 visitedNewHouseHold = MkChaid.executeQuery("select id from MkChaid where deleted=false and visit_type=:visitType and  household.created_at between '" + from_date + "' and '" + end_date + "' ", [visitType: visitType]).size()
+                } else {
+                    visitedNewHouseHold = MkChaid.executeQuery("select id from MkChaid where deleted=false and visit_type=:visitType and  household.created_at >= date_trunc('month', CURRENT_DATE) ", [visitType: visitType]).size()
 
-            } else {
-                 visitedNewHouseHold = MkChaid.executeQuery("select id from MkChaid where deleted=false and visit_type=:visitType and  household.created_at >= date_trunc('month', CURRENT_DATE) ", [visitType: visitType]).size()
-
-            }
-        %>
-        <td>${formatAmountString(name: (int) visitedNewHouseHold)}</td>
-    </tr>
+                }
+            %>
+            <td>${formatAmountString(name: (int) visitedNewHouseHold)}</td>
+        </tr>
         <tr>
             <td colspan="16" class="text-bold text-center">TAARIFA ZA RUFAA ZILIZOTOLEWA</td>
         </tr>
@@ -51,7 +51,7 @@
             <td>3. Idadi ya wajawazito waliopewa rufaa kwenda kuanza huduma za kliniki</td>
             <%
                 def dangerSignNo = 0
-                if(end_date && from_date){
+                if (end_date && from_date) {
                     dangerSignNo = DangerSignPregnant.executeQuery("select id from DangerSignPregnant where created_at between '" + from_date + "' and '" + end_date + "'").size()
                 } else {
                     dangerSignNo = DangerSignPregnant.count();
@@ -65,17 +65,17 @@
             <td style="background:black"></td>
             <%
                 def dangerSignNo1 = 0
-                if(end_date && from_date) {
-                     dangerSignNo1 = DangerSignPregnant.executeQuery("select id from  DangerSignPregnant where (preginantDetails.age between 10 and 19) and created_at between '" + from_date + "' and '" + end_date + "'").size();
+                if (end_date && from_date) {
+                    dangerSignNo1 = DangerSignPregnant.executeQuery("select id from  DangerSignPregnant where (preginantDetails.age between 10 and 19) and created_at between '" + from_date + "' and '" + end_date + "'").size();
                 } else {
-                     dangerSignNo1 = DangerSignPregnant.executeQuery("select id from  DangerSignPregnant where preginantDetails.age between 10 and 19").size();
+                    dangerSignNo1 = DangerSignPregnant.executeQuery("select id from  DangerSignPregnant where preginantDetails.age between 10 and 19").size();
                 }
             %>
             <td>${formatAmountString(name: (int) dangerSignNo1)}</td>
             <td style="background:black"></td>
             <%
                 def dangerSignNo2 = 0
-                if(end_date && from_date) {
+                if (end_date && from_date) {
                     dangerSignNo2 = DangerSignPregnant.executeQuery("select id from  DangerSignPregnant where (preginantDetails.age between 19 and 24) and created_at between '" + from_date + "' and '" + end_date + "'").size();
                 } else {
                     dangerSignNo2 = DangerSignPregnant.executeQuery("select id from  DangerSignPregnant where preginantDetails.age between 19 and 24").size();
@@ -90,10 +90,10 @@
             <td>4. Idadi ya Watoto chini ya miaka 5 wenye utapiamlo waliopewa rufaa kwa matibabu zaidi</td>
             <%
                 def dangerSignChildNo = 0
-                if(end_date && from_date) {
-                     dangerSignChildNo = DangerSignChildDelivery.executeQuery("select id from DangerSignChildDelivery where  created_at between '" + from_date + "' and '" + end_date + "'").size();
+                if (end_date && from_date) {
+                    dangerSignChildNo = DangerSignChildDelivery.executeQuery("select id from DangerSignChildDelivery where  created_at between '" + from_date + "' and '" + end_date + "'").size();
                 } else {
-                     dangerSignChildNo = DangerSignChildDelivery.count();
+                    dangerSignChildNo = DangerSignChildDelivery.count();
                 }
                 totalNumber = totalNumber + dangerSignChildNo
             %>
@@ -104,10 +104,10 @@
             <td>5. Idadi ya wateja waliopewa rufaa kwa sababu zingine za kiafya mbali na ujauzito na utapiamlo</td>
             <%
                 def dangerSignDeliveryNo = 0
-                if(end_date && from_date) {
-                     dangerSignDeliveryNo = DangerSignMotherDelivery.executeQuery("select id from DangerSignMotherDelivery where  created_at between '" + from_date + "' and '" + end_date + "'").size();
+                if (end_date && from_date) {
+                    dangerSignDeliveryNo = DangerSignMotherDelivery.executeQuery("select id from DangerSignMotherDelivery where  created_at between '" + from_date + "' and '" + end_date + "'").size();
                 } else {
-                     dangerSignDeliveryNo = DangerSignMotherDelivery.count();
+                    dangerSignDeliveryNo = DangerSignMotherDelivery.count();
 
                 }
                 totalNumber = totalNumber + dangerSignDeliveryNo
@@ -121,12 +121,12 @@
         <tr>
             <td>7. Jumla ya rufaa zilizofanikiwa</td>
             <%
-                def referrals =0
-                if(end_date && from_date) {
+                def referrals = 0
+                if (end_date && from_date) {
                     referrals = MkChaid.executeQuery("select id from MkChaid where emergence_status=2 and deleted=false and  arrival_time between '" + from_date + "' and '" + end_date + "'").size()
 
                 } else {
-                     referrals = MkChaid.executeQuery("select id from MkChaid where emergence_status=2 and deleted=false").size()
+                    referrals = MkChaid.executeQuery("select id from MkChaid where emergence_status=2 and deleted=false").size()
                 }
             %>
             <td>${formatAmountString(name: (int) referrals)}</td>
@@ -140,21 +140,21 @@
             <td>8. Idadi ya wajawazito walioanza kliniki ndani ya mwezi huu</td>
             <%
                 def clinicNo = 0
-                if(end_date && from_date) {
-                     clinicNo = PreginantDetails.executeQuery("select id from  PreginantDetails where clinic_first_date between '" + from_date + "' and '" + end_date + "'").size();
+                if (end_date && from_date) {
+                    clinicNo = PreginantDetails.executeQuery("select id from  PreginantDetails where clinic_first_date between '" + from_date + "' and '" + end_date + "'").size();
                 } else {
-                     clinicNo = PreginantDetails.executeQuery("select id from  PreginantDetails where date_part('month', clinic_first_date) = date_part('month', CURRENT_DATE)").size();
+                    clinicNo = PreginantDetails.executeQuery("select id from  PreginantDetails where date_part('month', clinic_first_date) = date_part('month', CURRENT_DATE)").size();
                 }
             %>
             <td>${formatAmountString(name: (int) clinicNo)}</td>
             <td style="background:black"></td>
             <td style="background:black"></td>
             <%
-                def clinicNoAge=0
-                if(end_date && from_date) {
-                     clinicNoAge = PreginantDetails.executeQuery("select id from  PreginantDetails where (age between 10 and 19) and clinic_first_date between '" + from_date + "' and '" + end_date + "'").size();
+                def clinicNoAge = 0
+                if (end_date && from_date) {
+                    clinicNoAge = PreginantDetails.executeQuery("select id from  PreginantDetails where (age between 10 and 19) and clinic_first_date between '" + from_date + "' and '" + end_date + "'").size();
                 } else {
-                     clinicNoAge = PreginantDetails.executeQuery("select id from  PreginantDetails where (age between 10 and 19) and date_part('month', clinic_first_date) = date_part('month', CURRENT_DATE)").size();
+                    clinicNoAge = PreginantDetails.executeQuery("select id from  PreginantDetails where (age between 10 and 19) and date_part('month', clinic_first_date) = date_part('month', CURRENT_DATE)").size();
 
                 }
 
@@ -162,10 +162,10 @@
             <td>${formatAmountString(name: (int) clinicNoAge)}</td>
             <%
                 def clinicNoAge24 = 0
-                if(end_date && from_date) {
-                     clinicNoAge24 = PreginantDetails.executeQuery("select id from  PreginantDetails where (age between 19 and 24) and clinic_first_date between '" + from_date + "' and '" + end_date + "'").size();
+                if (end_date && from_date) {
+                    clinicNoAge24 = PreginantDetails.executeQuery("select id from  PreginantDetails where (age between 19 and 24) and clinic_first_date between '" + from_date + "' and '" + end_date + "'").size();
                 } else {
-                     clinicNoAge24 = PreginantDetails.executeQuery("select id from  PreginantDetails where (age between 19 and 24) and date_part('month', clinic_first_date) = date_part('month', CURRENT_DATE)").size();
+                    clinicNoAge24 = PreginantDetails.executeQuery("select id from  PreginantDetails where (age between 19 and 24) and date_part('month', clinic_first_date) = date_part('month', CURRENT_DATE)").size();
 
                 }
 
@@ -180,10 +180,10 @@
             <td>9. Idadi ya wajawazito waliokamilisha walau mahudhurio 4 au Zaidi ya kliniki</td>
             <%
                 def clinicMoreNo = 0
-                if(end_date && from_date) {
-                     clinicMoreNo = PreginantDetails.executeQuery("select id from PreginantDetails where  (clinic_first_date is not null and clinic_second_date is not null and clinic_third_date is not null and clinic_fourth_date is not null) and created_at between '" + from_date + "' and '" + end_date + "' ").size();
+                if (end_date && from_date) {
+                    clinicMoreNo = PreginantDetails.executeQuery("select id from PreginantDetails where  (clinic_first_date is not null and clinic_second_date is not null and clinic_third_date is not null and clinic_fourth_date is not null) and created_at between '" + from_date + "' and '" + end_date + "' ").size();
                 } else {
-                     clinicMoreNo = PreginantDetails.executeQuery("select id from PreginantDetails where  clinic_first_date is not null and clinic_second_date is not null and clinic_third_date is not null and clinic_fourth_date is not null ").size();
+                    clinicMoreNo = PreginantDetails.executeQuery("select id from PreginantDetails where  clinic_first_date is not null and clinic_second_date is not null and clinic_third_date is not null and clinic_fourth_date is not null ").size();
 
                 }
             %>
@@ -219,10 +219,10 @@
             <%
                 def dictionaryInstance5 = DictionaryItem.findByCode("CHAD23E1");
                 def delivery5 = 0
-                if(end_date && from_date) {
-                     delivery5 = PostDelivery.executeQuery("select id from PostDelivery where delivery_place=:delivery_place and created_at between '" + from_date + "' and '" + end_date + "'",[delivery_place:dictionaryInstance5]).size()
+                if (end_date && from_date) {
+                    delivery5 = PostDelivery.executeQuery("select id from PostDelivery where delivery_place=:delivery_place and created_at between '" + from_date + "' and '" + end_date + "'", [delivery_place: dictionaryInstance5]).size()
                 } else {
-                     delivery5 = PostDelivery.countByDelivery_place(dictionaryInstance5)
+                    delivery5 = PostDelivery.countByDelivery_place(dictionaryInstance5)
 
                 }
             %>
@@ -234,8 +234,8 @@
             <%
                 def dictionaryInstance4 = DictionaryItem.findByCode("CHAD23E4");
                 def delivery4 = 0
-                if(end_date && from_date) {
-                    delivery4 = PostDelivery.executeQuery("select id from PostDelivery where delivery_place=:delivery_place and created_at between '" + from_date + "' and '" + end_date + "'",[delivery_place:dictionaryInstance4]).size()
+                if (end_date && from_date) {
+                    delivery4 = PostDelivery.executeQuery("select id from PostDelivery where delivery_place=:delivery_place and created_at between '" + from_date + "' and '" + end_date + "'", [delivery_place: dictionaryInstance4]).size()
                 } else {
                     delivery4 = PostDelivery.countByDelivery_place(dictionaryInstance4)
 
@@ -249,8 +249,8 @@
             <%
                 def dictionaryInstance3 = DictionaryItem.findByCode("CHAD23E3");
                 def delivery3 = 0
-                if(end_date && from_date) {
-                    delivery3 = PostDelivery.executeQuery("select id from PostDelivery where delivery_place=:delivery_place and created_at between '" + from_date + "' and '" + end_date + "'",[delivery_place:dictionaryInstance3]).size()
+                if (end_date && from_date) {
+                    delivery3 = PostDelivery.executeQuery("select id from PostDelivery where delivery_place=:delivery_place and created_at between '" + from_date + "' and '" + end_date + "'", [delivery_place: dictionaryInstance3]).size()
                 } else {
                     delivery3 = PostDelivery.countByDelivery_place(dictionaryInstance3)
 
@@ -265,8 +265,8 @@
                 def dictionaryInstance2 = DictionaryItem.findByCode("CHAD23E5");
                 def delivery2 = 0
 
-                if(end_date && from_date) {
-                    delivery2 = PostDelivery.executeQuery("select id from PostDelivery where delivery_place=:delivery_place and created_at between '" + from_date + "' and '" + end_date + "'",[delivery_place:dictionaryInstance2]).size()
+                if (end_date && from_date) {
+                    delivery2 = PostDelivery.executeQuery("select id from PostDelivery where delivery_place=:delivery_place and created_at between '" + from_date + "' and '" + end_date + "'", [delivery_place: dictionaryInstance2]).size()
                 } else {
                     delivery2 = PostDelivery.countByDelivery_place(dictionaryInstance2)
 
@@ -281,8 +281,8 @@
                 def dictionaryInstance1 = DictionaryItem.findByCode("CHAD23E2");
                 def delivery1 = 0
 
-                if(end_date && from_date) {
-                    delivery1 = PostDelivery.executeQuery("select id from PostDelivery where delivery_place=:delivery_place and created_at between '" + from_date + "' and '" + end_date + "'",[delivery_place:dictionaryInstance1]).size()
+                if (end_date && from_date) {
+                    delivery1 = PostDelivery.executeQuery("select id from PostDelivery where delivery_place=:delivery_place and created_at between '" + from_date + "' and '" + end_date + "'", [delivery_place: dictionaryInstance1]).size()
                 } else {
                     delivery1 = PostDelivery.countByDelivery_place(dictionaryInstance1)
 
@@ -294,11 +294,11 @@
         <tr>
             <td>16. Idadi ya wajawazito waliojifungua ndani ya mwezi huu</td>
             <%
-                def deliveryNo =0
-                if(end_date && from_date) {
-                     deliveryNo = PostDelivery.executeQuery("select id from PostDelivery where delivery_date  between '" + from_date + "' and '" + end_date + "' ").size();
+                def deliveryNo = 0
+                if (end_date && from_date) {
+                    deliveryNo = PostDelivery.executeQuery("select id from PostDelivery where delivery_date  between '" + from_date + "' and '" + end_date + "' ").size();
                 } else {
-                     deliveryNo = PostDelivery.executeQuery("select id from PostDelivery where  date_part('month', delivery_date) = date_part('month', CURRENT_DATE)").size();
+                    deliveryNo = PostDelivery.executeQuery("select id from PostDelivery where  date_part('month', delivery_date) = date_part('month', CURRENT_DATE)").size();
 
                 }
             %>
@@ -324,11 +324,11 @@
             <td>19. Idadi ya vifo vilivyotakana na uzazi</td>
             <%
                 def deliveryOutCome = 0
-                if(end_date && from_date) {
+                if (end_date && from_date) {
                     deliveryOutCome = PostDelivery.executeQuery("select id from PostDelivery where  outcome_type.code='CHAD23B2' and delivery_date  between '" + from_date + "' and '" + end_date + "'").size();
 
                 } else {
-                     deliveryOutCome = PostDelivery.executeQuery("select id from PostDelivery where  outcome_type.code='CHAD23B2'").size();
+                    deliveryOutCome = PostDelivery.executeQuery("select id from PostDelivery where  outcome_type.code='CHAD23B2'").size();
 
                 }
             %>
@@ -339,17 +339,16 @@
             <td>20. Idadi ya vifo vya watoto chini ya siku 28</td>
             <%
                 def deliveryCondition = 0
-                if(end_date && from_date) {
-                     deliveryCondition = PostDelivery.executeQuery("select id from PostDelivery where  outcome_type.code='CHAD23B1' and  baby_condition.code='CHAD23C2' and delivery_date  between '" + from_date + "' and '" + end_date + "'").size();
+                if (end_date && from_date) {
+                    deliveryCondition = PostDelivery.executeQuery("select id from PostDelivery where  outcome_type.code='CHAD23B1' and  baby_condition.code='CHAD23C2' and delivery_date  between '" + from_date + "' and '" + end_date + "'").size();
 
                 } else {
-                     deliveryCondition = PostDelivery.executeQuery("select id from PostDelivery where  outcome_type.code='CHAD23B1' and  baby_condition.code='CHAD23C2'").size();
+                    deliveryCondition = PostDelivery.executeQuery("select id from PostDelivery where  outcome_type.code='CHAD23B1' and  baby_condition.code='CHAD23C2'").size();
 
                 }
             %>
             <td>${formatAmountString(name: (int) deliveryCondition)}</td>
         </tr>
-    </tr>
 
 
         <tr>

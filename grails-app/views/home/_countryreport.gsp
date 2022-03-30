@@ -1,6 +1,6 @@
 <%@ page import="admin.Region; admin.DictionaryItem; chaid.CategoryAvailableChildren; chaid.AvailableMemberHouse; chaid.Household; view.HouseHoldStat; chaid.MkChaid" %>
 
-<table class="table">
+<table class="table" border="1">
     <thead>
     <tr class="active">
         <th>No</th>

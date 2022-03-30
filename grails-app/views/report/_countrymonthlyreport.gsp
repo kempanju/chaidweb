@@ -4,7 +4,7 @@
 %>
 
 <div style=" overflow-x: auto;">
-    <table class="table  table-bordered nowrap">
+    <table class="table  table-bordered nowrap" border="1">
 
         <tr style="white-space:nowrap;"><th></th>
 
@@ -67,16 +67,20 @@
 
             <tr>
                 <td class="info">
-                    <ul class="myUL">
 
-                        <li><span class="caret">${educationListInstance.name}
-                            <ul class="nested">
+                <ul class="myUL">
+
+                        <li><span class="caret">${educationListInstance.name}</span>
+                    <g:if  test="${type=='file'}">
+
+                        <ul class="nested">
                                 <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
                                         status="ii" var="categoryListInstance">
                                     <li>${categoryListInstance.name}</li>
                                 </g:each>
 
                             </ul>
+                    </g:if>
                         </li>
                     </ul>
 
@@ -131,23 +135,23 @@
                 var="referralsListInstance">
             <tr>
                 <td class="info">
-                    <span >${referralsListInstance.name}
-                  %{--  <ul class="myUL">
+                    <span>${referralsListInstance.name}</span>
+                    %{--  <ul class="myUL">
 
-                        <li><span class="caret">${referralsListInstance.name}
-                            <ul class="nested">
-                                <g:each in="${DictionaryItem.findAllByCategory(referralsListInstance)}"
-                                        status="iii" var="categoryEdListInstance">
-                                    <li>${categoryEdListInstance.name}</li>
-                                </g:each>
+                          <li><span class="caret">${referralsListInstance.name}
+                              <ul class="nested">
+                                  <g:each in="${DictionaryItem.findAllByCategory(referralsListInstance)}"
+                                          status="iii" var="categoryEdListInstance">
+                                      <li>${categoryEdListInstance.name}</li>
+                                  </g:each>
 
-                            </ul>
-                        </li>
-                    </ul>--}%
+                              </ul>
+                          </li>
+                      </ul>--}%
                 </td>
                 <%
 
-                    def countReferrals,countReferralsMale,countReferralsFemale
+                    def countReferrals, countReferralsMale, countReferralsFemale
                     if (end_date && from_date) {
                         countReferrals = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: referralsListInstance]).size()
 
@@ -183,7 +187,7 @@
                         countReferralsFemale = 0
                     }
 
-                    def unknownGender = countReferrals - (countReferralsFemale+countReferralsMale)
+                    def unknownGender = countReferrals - (countReferralsFemale + countReferralsMale)
                 %>
                 <td>${formatAmountString(name: (int) countReferralsMale)}</td>
                 <td>${formatAmountString(name: (int) countReferralsFemale)}</td>
@@ -299,16 +303,20 @@
 
                     <ul class="myUL">
 
-                        <li><span class="caret">${educationListInstance.name}
-                            <ul class="nested">
+                        <li><span class="caret">${educationListInstance.name}</span>
+                    <g:if  test="${type=='file'}">
+
+                        <ul class="nested">
                                 <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
                                         status="iiiI" var="categoryEdUListInstance">
                                     <li>${categoryEdUListInstance.name}</li>
                                 </g:each>
 
                             </ul>
+                    </g:if>
                         </li>
                     </ul>
+
                 </td>
 
                 <%
@@ -419,11 +427,10 @@
             <td>${noHoldMember[0] + noHoldMember[1]}</td>
         </tr>
 
-    </tr>
-
     </table>
 </div>
 
+<g:if  test="${type=='file'}">
 <script type="text/javascript">
 
     var toggler = document.getElementsByClassName("caret");
@@ -435,3 +442,4 @@
         });
     }
 </script>
+</g:if>

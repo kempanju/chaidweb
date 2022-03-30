@@ -176,6 +176,12 @@
                     </div>
                 </div>
 
+                <div>
+                    <g:link controller="home"   action="pdfRendering"><button class="btn" type="button">Print Pdf</button></g:link>
+                </div>
+
+
+
             </div>
 
         </form>

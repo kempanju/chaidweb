@@ -1,10 +1,10 @@
 <%@ page import="materialize.view.DangerSign; admin.DictionaryItem; chaid.HealthEducation; chaid.Survey; chaid.MkChaid; chaid.AdolescentAbuse; materialize.view.ViewHealthEducation; chaid.Household; chaid.AvailableMemberHouse" %>
 <%
-    def memberCategoryList = admin.DictionaryItem.findAllByDictionary_idAndDisplayReport(admin.Dictionary.findByCode("CHAD17"), true, [sort: 'displayOrder', order: 'asc']);
+    def memberCategoryList = DictionaryItem.findAllByDictionary_idAndDisplayReport(admin.Dictionary.findByCode("CHAD17"), true, [sort: 'displayOrder', order: 'asc']);
 %>
 
 <div style=" overflow-x: auto;">
-    <table class="table  table-bordered nowrap">
+    <table class="table  table-bordered nowrap" border="1">
 
         <tr style="white-space:nowrap;"><th></th>
 
@@ -69,14 +69,17 @@
                 <td class="info">
                     <ul class="myUL">
 
-                        <li><span class="caret">${educationListInstance.name}
-                            <ul class="nested">
+                        <li><span class="caret">${educationListInstance.name}</span>
+            <g:if test="${type == 'file'}">
+
+                <ul class="nested">
                                 <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
                                         status="ii" var="categoryListInstance">
                                     <li>${categoryListInstance.name}</li>
                                 </g:each>
 
                             </ul>
+            </g:if>
                         </li>
                     </ul>
 
@@ -130,7 +133,7 @@
                 var="referralsListInstance">
             <tr>
                 <td class="info">
-                    <span>${referralsListInstance.name}
+                    <span>${referralsListInstance.name}</span>
                     %{--  <ul class="myUL">
 
                           <li><span class="caret">${referralsListInstance.name}
@@ -156,7 +159,7 @@
                     }
 
                     if (end_date && from_date) {
-                        countReferralsFemale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  and chaid.distric=:districtInstance", [referralsListInstance: referralsListInstance,districtInstance: districtInstance]).size()
+                        countReferralsFemale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  and chaid.distric=:districtInstance", [referralsListInstance: referralsListInstance, districtInstance: districtInstance]).size()
 
                     } else {
                         countReferralsFemale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance and chaid.distric=:districtInstance", [referralsListInstance: referralsListInstance, districtInstance: districtInstance]).size()
@@ -195,38 +198,38 @@
             <td colspan="3">1.Idadi ya wavulana na wasichana kundi balehe umri 10-24 waliotoa ripoti na kupata huduma katika vituodhidi ya unyanyasaji wa kingono (Ukatili wa kijinsia- GBV)</td>
             <td>${AdolescentAbuse.count()}</td>
         </tr>
-<tr>
-        <td colspan="3">2-Idadi ya wavulana na wasichana umri 10-24 waliopewa ushauri juu ya  Virusi vya Ukimwi</td>
-        <td>
-            <%
-                def healthEducationMale
-                def eduInstance1 = DictionaryItem.findByCode('CHAD33F2')
-                if (end_date && from_date) {
-                    healthEducationMale = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where arrival_time between '" + from_date + "' and '" + end_date + "' and education_type =:educationType and chaid.distric=:districtInstance ", [educationType: eduInstance1,districtInstance: districtInstance]).size()
-                } else {
-                    healthEducationMale = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where  education_type =:educationType and chaid.distric=:districtInstance ", [educationType: eduInstance1,districtInstance: districtInstance]).size()
-                }
+        <tr>
+            <td colspan="3">2-Idadi ya wavulana na wasichana umri 10-24 waliopewa ushauri juu ya  Virusi vya Ukimwi</td>
+            <td>
+                <%
+                    def healthEducationMale
+                    def eduInstance1 = DictionaryItem.findByCode('CHAD33F2')
+                    if (end_date && from_date) {
+                        healthEducationMale = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where arrival_time between '" + from_date + "' and '" + end_date + "' and education_type =:educationType and chaid.distric=:districtInstance ", [educationType: eduInstance1, districtInstance: districtInstance]).size()
+                    } else {
+                        healthEducationMale = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where  education_type =:educationType and chaid.distric=:districtInstance ", [educationType: eduInstance1, districtInstance: districtInstance]).size()
+                    }
 
-            %>
-            ${formatAmountString(name: (int) healthEducationMale)}
-        </td>
-    </tr>
-    <tr>
-        <td colspan="3">3-Idadi ya wavulana na wasichana umri 10-24 waliopewa ushauri juu ya kufua kikuu</td>
-        <td>
-            <%
-                def healthEducationFemale1
-                def eduInstance2 = DictionaryItem.findByCode('CHAD6H')
-                if (end_date && from_date) {
-                    healthEducationFemale1 = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where arrival_time between '" + from_date + "' and '" + end_date + "' and education_type =:educationType and chaid.distric=:districtInstance ", [educationType: eduInstance2,districtInstance: districtInstance]).size()
-                } else {
-                    healthEducationFemale1 = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where education_type =:educationType and chaid.distric=:districtInstance ", [educationType: eduInstance2,districtInstance: districtInstance]).size()
-                }
+                %>
+                ${formatAmountString(name: (int) healthEducationMale)}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">3-Idadi ya wavulana na wasichana umri 10-24 waliopewa ushauri juu ya kufua kikuu</td>
+            <td>
+                <%
+                    def healthEducationFemale1
+                    def eduInstance2 = DictionaryItem.findByCode('CHAD6H')
+                    if (end_date && from_date) {
+                        healthEducationFemale1 = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where arrival_time between '" + from_date + "' and '" + end_date + "' and education_type =:educationType and chaid.distric=:districtInstance ", [educationType: eduInstance2, districtInstance: districtInstance]).size()
+                    } else {
+                        healthEducationFemale1 = ViewHealthEducation.executeQuery("select member_no from ViewHealthEducation where education_type =:educationType and chaid.distric=:districtInstance ", [educationType: eduInstance2, districtInstance: districtInstance]).size()
+                    }
 
-            %>
-            ${formatAmountString(name: (int) healthEducationFemale1)}
-        </td>
-    </tr>
+                %>
+                ${formatAmountString(name: (int) healthEducationFemale1)}
+            </td>
+        </tr>
 
 
         <tr>
@@ -292,14 +295,17 @@
 
                     <ul class="myUL">
 
-                        <li><span class="caret">${educationListInstance.name}
-                            <ul class="nested">
+                        <li><span class="caret">${educationListInstance.name}</span>
+            <g:if test="${type == 'file'}">
+
+                <ul class="nested">
                                 <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
                                         status="iiiI" var="categoryEdUListInstance">
                                     <li>${categoryEdUListInstance.name}</li>
                                 </g:each>
 
                             </ul>
+            </g:if>
                         </li>
                     </ul>
                 </td>
@@ -390,12 +396,12 @@
                 <%
                     def adolescentNo
                     if (end_date && from_date) {
-                        adolescentNo = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.distric=:districtInstance",[districtInstance:districtInstance]).size()
+                        adolescentNo = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.distric=:districtInstance", [districtInstance: districtInstance]).size()
                     } else {
-                        adolescentNo = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where  chaid.distric=:districtInstance",[districtInstance:districtInstance]).size()
+                        adolescentNo = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where  chaid.distric=:districtInstance", [districtInstance: districtInstance]).size()
                     }
                 %>
-                ${formatAmountString(name: adolescentNo) }
+                ${formatAmountString(name: adolescentNo)}
 
             </td>
         </tr>
@@ -421,16 +427,16 @@
 
                 }
 
-                if(!noHoldMember[0]){
-                    covidNoMale =0
+                if (!noHoldMember[0]) {
+                    covidNoMale = 0
                 } else {
-                    covidNoMale  = noHoldMember[0]
+                    covidNoMale = noHoldMember[0]
                 }
 
-                if(!noHoldMember[1]){
-                    covidNoFemale =0
+                if (!noHoldMember[1]) {
+                    covidNoFemale = 0
                 } else {
-                    covidNoFemale  = noHoldMember[1]
+                    covidNoFemale = noHoldMember[1]
                 }
 
             %>
@@ -443,13 +449,13 @@
         </tr>
         <tr>
             <td colspan="3">3. Jumla ya watu waliopatiwa elimu ya COVID 19</td>
-            <td>${covidNoMale +covidNoFemale}</td>
+            <td>${covidNoMale + covidNoFemale}</td>
         </tr>
 
-    </tr>
 
     </table>
 </div>
+<g:if test="${type == 'file'}">
 
 <script type="text/javascript">
 
@@ -462,3 +468,4 @@
         });
     }
 </script>
+    </g:if>

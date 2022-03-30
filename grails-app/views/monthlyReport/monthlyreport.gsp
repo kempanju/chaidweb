@@ -5,6 +5,7 @@
     <meta name="layout" content="main"/>
     <g:set var="entityName" value="${message(code: 'subStreet.label', default: 'SubStreet')}"/>
     <title>Reports</title>
+
     <style>
     th {
         position: sticky;
@@ -149,6 +150,9 @@
 
                             </div>
                         </div>
+                    </div>
+                    <div>
+                        <g:link controller="monthlyReport"   action="pdfRenderingSample"><button class="btn" type="button">Print Pdf</button></g:link>
                     </div>
 
                 </div>

@@ -1,5 +1,5 @@
 <%@ page import="chaid.CategoryAvailableChildren;view.HouseHoldStat; chaid.AvailableMemberHouse; chaid.Household; chaid.MkChaid; admin.Street" %>
-<table class="table">
+<table class="table" border="1">
     <thead>
     <tr class="active">
         <th>No</th>
@@ -103,6 +103,12 @@
                         visitedNewHouseHoldMember = HouseHoldStat.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from HouseHoldStat where street=:street and  number_of_orders=1 and   village_id=:street", [street: villageListInstance])
 
                     }
+                    def itemNo3 =0
+                    try{
+                        itemNo3 = houseHoldMember[0][0]-visitedNewHouseHoldMember[0][0]
+                    }catch (Exception e){
+
+                    }
 
                 %>
                 <td>
@@ -114,7 +120,7 @@
                             <td>New</td><td>${visitedNewHouseHoldMember[0][0]}</td>
                         </tr>
                         <tr>
-                            <td>Repeat</td><td>${houseHoldMember[0][0]-visitedNewHouseHoldMember[0][0]}</td>
+                            <td>Repeat</td><td>${}</td>
                         </tr>
                     </table>
                 </td>
@@ -126,8 +132,17 @@
                         <tr>
                             <td>New</td><td>${visitedNewHouseHoldMember[0][1]}</td>
                         </tr>
+                        <%
+                        def itemNo =0
+                            try{
+                                itemNo = houseHoldMember[0][1] - visitedNewHouseHoldMember[0][1]
+
+                            }catch(Exception e){
+
+                            }
+                        %>
                         <tr>
-                            <td>Repeat</td><td>${houseHoldMember[0][1]-visitedNewHouseHoldMember[0][1]}</td>
+                            <td>Repeat</td><td>${itemNo}</td>
                         </tr>
                     </table>
                 </td>
@@ -140,7 +155,16 @@
                             <td>New</td><td>${visitedNewHouseHoldMember[0][2]}</td>
                         </tr>
                         <tr>
-                            <td>Repeat</td><td>${houseHoldMember[0][2]-visitedNewHouseHoldMember[0][2]}</td>
+                            <%
+                                def itemNo1 =0
+                                try{
+                                    itemNo1 = houseHoldMember[0][2]-visitedNewHouseHoldMember[0][2]
+
+                                }catch(Exception e){
+
+                                }
+                            %>
+                            <td>Repeat</td><td>${itemNo1}</td>
                         </tr>
                     </table>
                 </td>

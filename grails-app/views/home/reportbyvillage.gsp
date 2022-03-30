@@ -144,6 +144,9 @@
                         </div>
                     </div>
                 </div>
+                <div>
+                    <g:link controller="home"   action="pdfGeneral"><button class="btn" type="button">Print Pdf</button></g:link>
+                </div>
 
             </div>
 

@@ -1115,23 +1115,99 @@ ApplicationService applicationService
         render view: 'reportbydistrict',model: [currentUser:currentUser]
     }
     def searchVillageReport(){
-        def districtInstance=District.get(params.id)
+        def  districtId =  params.id
+        session.districtId = districtId
+        session.selectedOption = "district"
+
+        def districtInstance=District.get(districtId)
         render template: 'villagereport',model: [districtInstance:districtInstance]
     }
     def searchDistrictReport(){
-        def regionInstance=Region.get(params.id)
+        def region = params.id
+        session.region = region
+        session.selectedOption = "region"
+
+        def regionInstance=Region.get(region)
         render template: 'regionreport',model: [regionInstance:regionInstance]
     }
+
+
+    def pdfRendering(){
+        //def bytes = pdfRenderingService.render(template:'/pdf/countrymonthlyreporttwo')
+        // render bytes.toString()
+        String selectedOption = session.selectedOption1
+        def from_date = session.from_date1
+        def end_date = session.end_date1
+        def regionId = session.region1
+        def districtId = session.districtId1
+
+        if(selectedOption == "region"){
+            def regionInstance= Region.get(regionId)
+
+            renderPdf(template: "/pdf/regionmonthlyreportone", filename: regionInstance.name+".pdf", model: [regionInstance:regionInstance,from_date: from_date, end_date: end_date,type:'pdf'])
+
+        } else if(selectedOption.equals("district")){
+            def districtInstance= District.get(districtId)
+            renderPdf(template: "/pdf/districtmonthlyreportone", filename: districtInstance.name+".pdf", model: [districtInstance:districtInstance,from_date: from_date, end_date: end_date,type:'pdf'])
+
+        } else {
+            if(from_date&&end_date) {
+                renderPdf(template: "/pdf/countrymonthlyreportone", filename: System.currentTimeMillis() + ".pdf", model: [from_date: from_date, end_date: end_date,type:'pdf'])
+            } else {
+                redirect action:'reportTool'
+            }
+        }
+    }
+
+    def pdfGeneral(){
+        //def bytes = pdfRenderingService.render(template:'/pdf/countrymonthlyreporttwo')
+        // render bytes.toString()
+        String selectedOption = session.selectedOption
+        def from_date = session.from_date
+        def end_date = session.end_date
+        def regionId = session.region
+        def districtId = session.districtId
+
+        println("region:"+regionId)
+
+        if(selectedOption == "region"){
+            def regionInstance= Region.get(regionId)
+
+            renderPdf(template: "/pdf/regionmonthlyreportone", filename: regionInstance.name+".pdf", model: [regionInstance:regionInstance,from_date: from_date, end_date: end_date,type:'pdf'])
+
+        } else if(selectedOption.equals("district")){
+            def districtInstance= District.get(districtId)
+            renderPdf(template: "/pdf/districtreport", filename: districtInstance.name+".pdf", model: [districtInstance:districtInstance,from_date: from_date, end_date: end_date,type:'pdf'])
+
+        } else {
+            if(from_date&&end_date) {
+                renderPdf(template: "/pdf/countryreport", filename: System.currentTimeMillis() + ".pdf", model: [from_date: from_date, end_date: end_date,type:'pdf'])
+            } else {
+                redirect action:'reportByVillage'
+            }
+        }
+    }
+
+
     def searchReportByDate(){
         def  selectedOption= params.selectedOption
         def from_date=params.from_date
         def end_date=params.end_date
 
+        session.selectedOption = selectedOption
+        session.from_date = from_date
+        session.end_date = end_date
+
         if( selectedOption&& selectedOption.equals("region")){
+            def regionId = params.region_id
+            session.region= regionId
             def regionInstance=Region.get(params.region_id)
             render template: 'regionreport',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
         }else if(selectedOption&& selectedOption.equals("district")){
-            def districtInstance=District.get(params.district_id)
+            def districtId = params.district_id
+            def districtInstance= District.get(districtId)
+            session.districtId = districtId
+
             render template: 'villagereport',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
         }else {
             if(from_date&&end_date){
@@ -1164,25 +1240,35 @@ ApplicationService applicationService
         def  selectedOption= params.selectedOption
         def from_date=params.from_date
         def end_date=params.end_date
+        session.selectedOption1 = selectedOption
+        session.from_date1 = from_date
+        session.end_date1 = end_date
+
         if( selectedOption&& selectedOption.equals("region")){
-            def regionInstance=Region.read(params.region_id)
-            render template: '/report/regionmonthlyreportnew',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
+            def regionId = params.region_id
+            session.region1 = regionId
+            def regionInstance=Region.get(params.region_id)
+            render template: '/report/regionmonthlyreportnew',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date,type:'file']
         }else if(selectedOption&& selectedOption.equals("district")){
             def village_id=params.village_id
+
             if(village_id){
                 def villageInstance=Street.read(village_id)
-                render template: '/report/villagemonthlyreport', model: [villageInstance: villageInstance, from_date: from_date, end_date: end_date]
+                render template: '/report/villagemonthlyreport', model: [villageInstance: villageInstance, from_date: from_date, end_date: end_date,type:'file']
 
             }else {
-                def districtInstance = District.read(params.district_id)
-                render template: '/report/districtmonthlyreportnew', model: [districtInstance: districtInstance, from_date: from_date, end_date: end_date]
+                def districtId = params.district_id
+                def districtInstance= District.get(districtId)
+                session.districtId1 = districtId
+
+                render template: '/report/districtmonthlyreportnew', model: [districtInstance: districtInstance, from_date: from_date, end_date: end_date,type:'file']
             }
         }else {
             if(from_date&&end_date){
-                render template: '/report/countrymonthlyreport',model: [from_date:from_date,end_date:end_date]
+                render template: '/report/countrymonthlyreport',model: [from_date:from_date,end_date:end_date,type:'file']
 
             } else {
-                render template: '/report/warning',model: [from_date:from_date,end_date:end_date]
+                render template: '/report/warning',model: [from_date:from_date,end_date:end_date,type:'file']
 
             }
         }

@@ -4,7 +4,7 @@
 %>
 
 <div class="col-lg-12" style=" overflow-x: auto">
-    <table class="table  table-bordered nowrap">
+    <table class="table  table-bordered nowrap" border="1">
 
         <tr style="white-space:nowrap;"><th></th><th></th>
 
@@ -30,7 +30,7 @@
             %>
             <td>${formatAmountString(name: (int) visitedHouseHold)}</td>
         </tr>
-
+<tr>
         <td colspan="3">2. Idadi ya kaya zilizotembelewa ndani ya muda huu</td>
         <%
             def visitedNewHouseHold = 0
@@ -365,7 +365,6 @@
             %>
             <td>${formatAmountString(name: (int) deliveryCondition)}</td>
         </tr>
-    </tr>
 
 
         <tr>

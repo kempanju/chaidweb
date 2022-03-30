@@ -22,18 +22,52 @@ class MonthlyReportController {
         respond monthlyReportService.get(id)
     }
 
+    def pdfRenderingSample(){
+        //def bytes = pdfRenderingService.render(template:'/pdf/countrymonthlyreporttwo')
+       // render bytes.toString()
+        String selectedOption = session.selectedOption2
+        def from_date = session.from_date2
+        def end_date = session.end_date2
+        def regionId = session.region2
+        def districtId = session.districtId2
+
+        if(selectedOption.equals("region")){
+            def regionInstance= Region.get(regionId)
+
+            renderPdf(template: "/pdf/regionmonthlyreporttwo", filename: regionInstance.name+".pdf", model: [regionInstance:regionInstance,from_date: from_date, end_date: end_date])
+
+        } else if(selectedOption.equals("district")){
+            def districtInstance= District.get(districtId)
+            renderPdf(template: "/pdf/districtmonthlyreporttwo", filename: districtInstance.name+".pdf", model: [districtInstance:districtInstance,from_date: from_date, end_date: end_date])
+
+        } else {
+            renderPdf(template: "/pdf/countrymonthlyreporttwo", filename: System.currentTimeMillis()+".pdf", model: [from_date: from_date, end_date: end_date])
+        }
+    }
+
     def reportByDate(){
         def  selectedOption= params.selectedOption
         def from_date=params.from_date
         def end_date=params.end_date
-       // println(params)
+
+        session.selectedOption2 = selectedOption
+        session.from_date2 = from_date
+        session.end_date2 = end_date
+
+        // println(params)
         // println(params)
        if( selectedOption&& selectedOption.equals("region")){
-            def regionInstance= Region.get(params.region_id)
+           def regionId = params.region_id
+           session.region2 = regionId
+
+           def regionInstance= Region.get(regionId)
             render template: '/monthlyReport/regionmonthlydata',model: [regionInstance:regionInstance,from_date:from_date,end_date:end_date]
         }else if(selectedOption&& selectedOption.equals("district")){
-            def districtInstance= District.get(params.district_id)
-            render template: '/monthlyReport/districtmonthlydata',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
+            def districtId = params.district_id
+            def districtInstance= District.get(districtId)
+           session.districtId2 = districtId
+
+           render template: '/monthlyReport/districtmonthlydata',model: [districtInstance:districtInstance,from_date:from_date,end_date:end_date]
         }else {
           // if(from_date && end_date){
                render template: '/monthlyReport/statemonthlydata',model: [from_date:from_date,end_date:end_date]
