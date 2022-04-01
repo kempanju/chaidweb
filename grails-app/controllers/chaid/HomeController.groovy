@@ -1173,7 +1173,7 @@ ApplicationService applicationService
         if(selectedOption == "region"){
             def regionInstance= Region.get(regionId)
 
-            renderPdf(template: "/pdf/regionmonthlyreportone", filename: regionInstance.name+".pdf", model: [regionInstance:regionInstance,from_date: from_date, end_date: end_date,type:'pdf'])
+            renderPdf(template: "/pdf/regionreport", filename: regionInstance.name+".pdf", model: [regionInstance:regionInstance,from_date: from_date, end_date: end_date,type:'pdf'])
 
         } else if(selectedOption.equals("district")){
             def districtInstance= District.get(districtId)

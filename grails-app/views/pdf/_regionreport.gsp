@@ -13,6 +13,10 @@
         margin: 5px auto;
 
     }
+    @page
+    {
+        size: A3 landscape;
+    }
 
     hr {
         display: block;
@@ -21,6 +25,9 @@
         border-top: 1px solid #000000;
         margin: 1em 0;
         padding: 0;
+    }
+    table tr td{
+        padding: 2px !important;
     }
 
     @media print {
@@ -31,7 +38,7 @@
 
         }
         @page {
-            size: A4 portrait;
+            size: A3 landscape;
             padding: 0;
             margin: 0;
         }

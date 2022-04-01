@@ -1,12 +1,17 @@
-<%@ page import="chaid.CategoryAvailableChildren;view.HouseHoldStat; chaid.AvailableMemberHouse; chaid.Household; chaid.MkChaid; admin.Street" %>
+<%@ page import="admin.Dictionary; admin.Street; admin.DictionaryItem; chaid.CategoryAvailableChildren; chaid.AvailableMemberHouse; chaid.Household; view.HouseHoldStat; chaid.MkChaid" %>
+
+<%
+    def objectiveTypeList = DictionaryItem.findAllByDictionary_id(Dictionary.findByCode("CHAD11"))
+%>
 <table class="table" border="1">
     <thead>
     <tr class="active">
         <th>No</th>
-        <th>Village Name</th>
+        <th>Name</th>
+        <td></td>
         <th>Visits</th>
         <th>Households</th>
-        <th>Population reached</th>
+        <th>Reached</th>
         <th>Women</th>
         <th>Men</th>
         <th>Adolescents Girls (10-19)</th>
@@ -33,289 +38,343 @@
         def totalVisit = 0;
 
     %>
-    <g:each in="${Street.findAllByDistrict_id(districtInstance, [order: 'asc', sort: 'name'])}" status="i"
-            var="villageListInstance">
+    <g:each  in="${Street.findAllByDistrict_id(districtInstance, [order: 'asc', sort: 'name'])}" status="i"
+             var="villageListInstance" >
         <%
-
             def houseHoldNo = 0;
             def chadNo = 0;
             def visitedNewHouseHold = 0;
             def repeatHouse = 0;
             if (end_date && from_date) {
+                // repeatHouse =view.HouseHoldStat.executeQuery("select number_of_orders from HouseHoldStat where region_id=:region and  chaid.arrival_time between '"+from_date+"' and '"+end_date+"' and number_of_orders>1",[region:regionListInstance]).size()
                 chadNo = MkChaid.executeQuery("select id from MkChaid where street=:village and deleted=false and arrival_time between '" + from_date + "' and '" + end_date + "'", [village: villageListInstance]).size()
 
-                visitedNewHouseHold = Household.executeQuery("select id from Household where village_id=:village and deleted=false and created_at between '" + from_date + "' and '" + end_date + "'", [village: villageListInstance]).size()
-                houseHoldNo = MkChaid.executeQuery("select household.id from MkChaid where street=:village and deleted=false and arrival_time between '" + from_date + "' and '" + end_date + "' group by household.id", [village: villageListInstance]).size()
 
-                repeatHouse = houseHoldNo - visitedNewHouseHold;
             } else {
-                chadNo = MkChaid.countByStreetAndDeleted(villageListInstance, false)
+                chadNo = MkChaid.executeQuery("select id from MkChaid where street=:village and deleted=false ", [village: villageListInstance]).size()
 
-                visitedNewHouseHold = Household.executeQuery("select id from Household where village_id=:village and deleted=false ", [village: villageListInstance]).size()
-                houseHoldNo = MkChaid.executeQuery("select household.id from MkChaid where street=:village and deleted=false  group by household.id", [village: villageListInstance]).size()
-
-                repeatHouse = houseHoldNo - visitedNewHouseHold;
             }
         %>
 
-        <g:if test="${houseHoldNo > 0 || chadNo > 0}">
+        <g:if test="${chadNo > 0}">
 
             <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
                 <td>${countNo}</td>
-                <td><span class="text-bold">${villageListInstance.name}</span></td>
-                <td class="info"><span>${chadNo}</span></td>
-
-                <%
-                    totalHouseHold = totalHouseHold + houseHoldNo;
-                    totalVisit = totalVisit + chadNo;
-                %>
+                <td><span class="text-bold">${districtListInstance?.name}</span></td>
                 <td>
-                    <table>
-                        <tr>
-                            <td>Total</td><td>${houseHoldNo}</td>
-                        </tr>
-                        <tr>
-                            <td>New</td><td>${visitedNewHouseHold}</td>
-                        </tr>
-                        <tr>
-                            <td>Repeat</td><td>${repeatHouse}</td>
-                        </tr>
+                    <table class="table" border="1">
+                        <g:each in="${objectiveTypeList}" var="objectiveType1">
+                            <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
+                                <td>${objectiveType1.name}</td>
+                            </tr>
+                        </g:each>
+                    </table>
+                </td>
+                <td class="info">
+                    <table class="table" border="1">
+                        <g:each in="${objectiveTypeList}" var="objectiveType9">
+                            <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
+                                <%
+                                    def chadNo1 = 0;
+                                    if (end_date && from_date) {
+                                        chadNo1 = MkChaid.executeQuery("select id from MkChaid where street=:village and deleted=false and arrival_time between '" + from_date + "' and '" + end_date + "' and objective_type=:objectiveType", [village: villageListInstance, objectiveType: objectiveType9]).size()
+
+                                    } else {
+                                        chadNo1 = MkChaid.executeQuery("select id from MkChaid where street=:village and deleted=false and objective_type=:objectiveType", [village: villageListInstance, objectiveType: objectiveType9]).size()
+
+                                    }
+
+                                %>
+                                <td class="info"> <span>${formatAmountString(name: (int) chadNo1)}</span></td>
+                            </tr>
+                        </g:each>
+                    </table>
+
+
+
+                </td>
+
+
+                <td>
+                    <table class="table" border="1">
+                        <g:each in="${objectiveTypeList}" var="objectiveType9">
+                            <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
+                                <%
+                                    def houseHoldNo1 = 0;
+                                    if (end_date && from_date) {
+                                        houseHoldNo1 = MkChaid.executeQuery("select household.id from MkChaid where street=:village and deleted=false and arrival_time between '" + from_date + "' and '" + end_date + "' and objective_type=:objectiveType group by household.id", [village: villageListInstance, objectiveType: objectiveType9]).size()
+
+                                    } else {
+                                        houseHoldNo1 = MkChaid.executeQuery("select household.id from MkChaid where street=:village and deleted=false and objective_type=:objectiveType group by household.id", [village: villageListInstance, objectiveType: objectiveType9]).size()
+
+                                    }
+
+                                %>
+                                <td>${formatAmountString(name: (int) houseHoldNo1)}</td></tr>
+                        </g:each>
                     </table>
                 </td>
 
 
-                <%
-                    def houseHoldMember = 0
-                    def houseHoldNoMember = 0
-                    def visitedNewHouseHoldMember = 0
-                    def repeatHouseMember = 0
-
-                    if (end_date && from_date) {
-                        houseHoldMember = MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where   deleted=false and created_at between '" + from_date + "' and '" + end_date + "' and  village_id=:street",[street: villageListInstance])
-
-                        visitedNewHouseHoldMember = HouseHoldStat.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from HouseHoldStat where village_id=:street and  household.created_at between '" + from_date + "' and '" + end_date + "' and number_of_orders=1 and  village_id=:street", [street: villageListInstance])
-                        // repeatHouseMember = houseHoldNoMember - visitedNewHouseHoldMember;
-
-
-                    } else {
-                        houseHoldMember = MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where   deleted=false  and  village_id=:street",[street: villageListInstance])
-
-                        visitedNewHouseHoldMember = HouseHoldStat.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from HouseHoldStat where street=:street and  number_of_orders=1 and   village_id=:street", [street: villageListInstance])
-
-                    }
-                    def itemNo3 =0
-                    try{
-                        itemNo3 = houseHoldMember[0][0]-visitedNewHouseHoldMember[0][0]
-                    }catch (Exception e){
-
-                    }
-
-                %>
-                <td>
-                    <table>
-                        <tr>
-                            <td>Total</td><td>${houseHoldMember[0][0]}</td>
-                        </tr>
-                        <tr>
-                            <td>New</td><td>${visitedNewHouseHoldMember[0][0]}</td>
-                        </tr>
-                        <tr>
-                            <td>Repeat</td><td>${}</td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <td>Total</td><td>${houseHoldMember[0][1]}</td>
-                        </tr>
-                        <tr>
-                            <td>New</td><td>${visitedNewHouseHoldMember[0][1]}</td>
-                        </tr>
-                        <%
-                        def itemNo =0
-                            try{
-                                itemNo = houseHoldMember[0][1] - visitedNewHouseHoldMember[0][1]
-
-                            }catch(Exception e){
-
-                            }
-                        %>
-                        <tr>
-                            <td>Repeat</td><td>${itemNo}</td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <td>Total</td><td>${houseHoldMember[0][2]}</td>
-                        </tr>
-                        <tr>
-                            <td>New</td><td>${visitedNewHouseHoldMember[0][2]}</td>
-                        </tr>
-                        <tr>
+                <td colspan="3">
+                    <table class="table" border="1">
+                        <g:each in="${objectiveTypeList}" var="objectiveType">
                             <%
-                                def itemNo1 =0
-                                try{
-                                    itemNo1 = houseHoldMember[0][2]-visitedNewHouseHoldMember[0][2]
+                                def houseHoldMember = 0
+                                def houseHoldMemberTotal = 0
 
-                                }catch(Exception e){
+                                def houseHoldMale = 0
+                                def houseHoldMaleFemale = 0
+
+                                if (end_date && from_date) {
+                                    houseHoldMember = MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where   deleted=false and created_at between '" + from_date + "' and '" + end_date + "' and street=:village and objective_type=:objectiveType", [village: villageListInstance, objectiveType: objectiveType])
+
+                                    // repeatHouseMember = houseHoldNoMember - visitedNewHouseHoldMember;
+
+
+                                } else {
+                                    houseHoldMember = MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where  deleted=false and objective_type=:objectiveType  and street=:village", [objectiveType: objectiveType,village: villageListInstance])
 
                                 }
+
+                                if(houseHoldMember[0][0]){
+                                    houseHoldMemberTotal = houseHoldMember[0][0]
+                                }
+
+                                if(houseHoldMember[0][1]){
+                                    houseHoldMale = houseHoldMember[0][1]
+                                }
+                                if(houseHoldMember[0][2]){
+                                    houseHoldMaleFemale = houseHoldMember[0][2]
+                                }
+
                             %>
-                            <td>Repeat</td><td>${itemNo1}</td>
-                        </tr>
+                            <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} "><td>${formatAmountString(name: (int) houseHoldMemberTotal)}</td>
+                                <td>${formatAmountString(name: (int) houseHoldMale)}</td>
+                                <td>${formatAmountString(name: (int) houseHoldMaleFemale)}</td></tr>
+
+                        </g:each>
+                    </table>
+                </td>
+
+                <td>
+                    <table class="table" border="1">
+                        <g:each in="${objectiveTypeList}" var="objectiveType2">
+                            <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
+                                <%
+                                    def womenAgeBetweenNo = 0;
+                                    def womenAgeBetweenNo1 = 0;
+
+                                    if (end_date && from_date) {
+                                        womenAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17G"), village: villageListInstance, objectiveType: objectiveType2])
+
+                                    } else {
+                                        womenAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17G"),village: villageListInstance, objectiveType: objectiveType2])
+
+                                    }
+                                    if(womenAgeBetweenNo[0]){
+                                        womenAgeBetweenNo1 = womenAgeBetweenNo[0]
+                                    }
+
+                                %>
+                                <td>${formatAmountString(name: (int) womenAgeBetweenNo1)}</td></tr>
+                        </g:each>
                     </table>
                 </td>
 
 
-
-
                 <td>
-                    <%
-                        def womenAgeBetweenNo = 0;
-                        if (end_date && from_date) {
-                            womenAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and arrival_time between '" + from_date + "' and '" + end_date + "'", [categoryType: admin.DictionaryItem.findByCode("CHAD17G"), village: villageListInstance])
-
-                        } else {
-                            womenAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village ", [categoryType: admin.DictionaryItem.findByCode("CHAD17G"), village: villageListInstance])
-
-                        }
-                    %>
-                    ${womenAgeBetweenNo[0]}
-                </td>
 
 
-                <td>
-                    <%
+                    <table class="table" border="1">
+                        <g:each in="${objectiveTypeList}" var="objectiveType3">
+                            <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
+                                <%
+                                    def maleAgeBetweenNo = 0;
+                                    def maleAgeBetweenNo1 = 0;
 
-                        def maleAgeBetweenNo = 0;
-                        if (end_date && from_date) {
-                            maleAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and arrival_time between '" + from_date + "' and '" + end_date + "' ", [categoryType: admin.DictionaryItem.findByCode("CHAD17H"), village: villageListInstance])
-                        } else {
-                            maleAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village ", [categoryType: admin.DictionaryItem.findByCode("CHAD17H"), village: villageListInstance])
+                                    if (end_date && from_date) {
+                                        maleAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17H"), village: villageListInstance,objectiveType: objectiveType3])
+                                    } else {
+                                        maleAgeBetweenNo = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17H"), village: villageListInstance,objectiveType: objectiveType3])
+                                    }
 
-                        }
-                    %>
-                    ${maleAgeBetweenNo[0]}
+                                    if(maleAgeBetweenNo[0]){
+                                        maleAgeBetweenNo1 = maleAgeBetweenNo[0]
+                                    }
+                                %>
+                                <td>${formatAmountString(name: (int) maleAgeBetweenNo1)}</td></tr>
+                        </g:each>
+                    </table>
                 </td>
 
                 <td>
-                    <%
-                        def neonates = 0;
-                        if (end_date && from_date) {
-                            neonates = CategoryAvailableChildren.executeQuery("select sum(member_no) from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.street=:village and created_at between '" + from_date + "' and '" + end_date + "' ", [categoryType: admin.DictionaryItem.findByCode("CHAD17D"), village: villageListInstance])
 
-                        } else {
-                            neonates = CategoryAvailableChildren.executeQuery("select sum(member_no) from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.street=:village ", [categoryType: admin.DictionaryItem.findByCode("CHAD17D"), village: villageListInstance])
 
-                        }
+                    <table class="table" border="1">
+                        <g:each in="${objectiveTypeList}" var="objectiveType4">
+                            <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
+                                <%
+                                    def neonates = 0;
+                                    def neonates1 = 0;
 
-                    %>
+                                    if (end_date && from_date) {
+                                        neonates = CategoryAvailableChildren.executeQuery("select sum(member_no) from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.street=:village and created_at between '" + from_date + "' and '" + end_date + "'  and availableMemberHouse.chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17D"), village: villageListInstance,objectiveType: objectiveType4])
 
-                    ${neonates[0]}
+                                    } else {
+                                        neonates = CategoryAvailableChildren.executeQuery("select sum(member_no) from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.street=:village  and availableMemberHouse.chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17D"), village: villageListInstance,objectiveType: objectiveType4])
+
+                                    }
+
+                                    if(neonates[0]){
+                                        neonates1 = neonates[0]
+                                    }
+                                %>
+                                <td>${formatAmountString(name: (int) neonates1)}</td></tr>
+                        </g:each>
+                    </table>
+
                 </td>
 
                 <td>
-                    <%
-                        def infants = 0
-                        if (end_date && from_date) {
-                            infants = CategoryAvailableChildren.executeQuery("select sum(member_no)  from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.street=:village and created_at between '" + from_date + "' and '" + end_date + "'", [categoryType: admin.DictionaryItem.findByCode("CHAD17E"), village: villageListInstance])
-                        } else {
-                            infants = CategoryAvailableChildren.executeQuery("select sum(member_no)  from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.street=:village ", [categoryType: admin.DictionaryItem.findByCode("CHAD17E"), village: villageListInstance])
 
-                        }
+                    <table class="table" border="1">
+                        <g:each in="${objectiveTypeList}" var="objectiveType5">
+                            <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
+                                <%
+                                    def infants = 0
+                                    def infants1 = 0
 
-                    %>
+                                    if (end_date && from_date) {
+                                        infants = CategoryAvailableChildren.executeQuery("select sum(member_no)  from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.street=:village and created_at between '" + from_date + "' and '" + end_date + "'  and availableMemberHouse.chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17E"),village: villageListInstance,objectiveType: objectiveType5])
+                                    } else {
+                                        infants = CategoryAvailableChildren.executeQuery("select sum(member_no)  from CategoryAvailableChildren where categoryType=:categoryType  and availableMemberHouse.chaid.deleted=false and availableMemberHouse.chaid.street=:village  and availableMemberHouse.chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17E"), village: villageListInstance,objectiveType: objectiveType5])
 
-                    ${infants[0]}
-                </td>
-                <td>
+                                    }
 
-                    <%
+                                    if(infants[0]){
+                                        infants1 = infants[0]
+                                    }
 
-                        def pregnantWomen = 0
-                        if (end_date && from_date) {
-                            pregnantWomen = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and arrival_time between '" + from_date + "' and '" + end_date + "'", [categoryType: admin.DictionaryItem.findByCode("CHAD17A"), village: villageListInstance])
-
-                        } else {
-                            pregnantWomen = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village ", [categoryType: admin.DictionaryItem.findByCode("CHAD17A"), village: villageListInstance])
-
-                        }
-
-
-
-                    %>
-                    ${pregnantWomen[0]}
+                                %>
+                                <td>${formatAmountString(name: (int) infants1)}</td></tr>
+                        </g:each>
+                    </table>
 
                 </td>
                 <td>
-                    <%
-                        def breastFeedingWomen = 0;
-                        if (end_date && from_date) {
-                            breastFeedingWomen = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and arrival_time between '" + from_date + "' and '" + end_date + "'", [categoryType: admin.DictionaryItem.findByCode("CHAD17B"), village: villageListInstance])
 
-                        } else {
-                            breastFeedingWomen = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village ", [categoryType: admin.DictionaryItem.findByCode("CHAD17B"), village: villageListInstance])
 
-                        }
-                    %>
-                    ${breastFeedingWomen[0]}
+                    <table class="table" border="1">
+                        <g:each in="${objectiveTypeList}" var="objectiveType6">
+                            <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
+                                <%
+                                    def pregnantWomen = 0
+                                    def pregnantWomen1 = 0
+
+                                    if (end_date && from_date) {
+                                        pregnantWomen = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17A"), village: villageListInstance,objectiveType: objectiveType6])
+
+                                    } else {
+                                        pregnantWomen = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17A"), village: villageListInstance,objectiveType: objectiveType6])
+
+                                    }
+                                    if(pregnantWomen[0]){
+                                        pregnantWomen1 = pregnantWomen[0]
+                                    }
+                                %>
+                                <td>${formatAmountString(name: (int) pregnantWomen1) }</td></tr>
+                        </g:each>
+                    </table>
+
+                </td>
+                <td>
+
+                    <table class="table" border="1">
+                        <g:each in="${objectiveTypeList}" var="objectiveType7">
+                            <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
+                                <%
+                                    def breastFeedingWomen = 0;
+                                    def breastFeedingWomen1 = 0;
+
+                                    if (end_date && from_date) {
+                                        breastFeedingWomen = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and arrival_time between '" + from_date + "' and '" + end_date + "' and chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17B"), village: villageListInstance,objectiveType: objectiveType7])
+
+                                    } else {
+                                        breastFeedingWomen = AvailableMemberHouse.executeQuery("select sum(member_no)  from AvailableMemberHouse where type_id=:categoryType  and chaid.deleted=false and chaid.street=:village and chaid.objective_type=:objectiveType", [categoryType: DictionaryItem.findByCode("CHAD17B"), village: villageListInstance,objectiveType: objectiveType7])
+                                    }
+
+                                    if(breastFeedingWomen[0]){
+                                        breastFeedingWomen1 = breastFeedingWomen[0]
+                                    }
+                                %>
+                                <td>${formatAmountString(name: (int) breastFeedingWomen1)}</td></tr>
+                        </g:each>
+                    </table>
+
 
                 </td>
 
             </tr>
+
+            <g:each in="${DictionaryItem.findAllByDictionary_id(Dictionary.findByCode("CHAD4"))}"
+                    var="visitDataInstance">
+
+                <tr>
+                    <td></td>
+
+                    <td>${visitDataInstance.name}</td>
+                    <td></td>
+                    <%
+                        def chadNoH = 0;
+                        if (end_date && from_date) {
+                            chadNoH = MkChaid.executeQuery("select id from MkChaid where  deleted=false and visit_type=:visit_type and street=:village and arrival_time between '" + from_date + "' and '" + end_date + "'", [visit_type: visitDataInstance, village: villageListInstance]).size()
+
+                        } else {
+                            chadNoH = MkChaid.executeQuery("select id from MkChaid where  deleted=false and visit_type=:visit_type and street=:village ", [visit_type: visitDataInstance, village: villageListInstance]).size()
+
+                        }
+                    %>
+                    <td>${formatAmountString(name: (int) chadNoH)}</td>
+                    <td></td>
+
+                    <%
+                        def houseHoldMemberH = 0;
+                        def totalPopulation = 0
+                        def maleTotal = 0
+                        def femaleTotal = 0
+
+                        if (end_date && from_date) {
+                            houseHoldMemberH = MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where  visit_type=:visit_type and street=:village and deleted=false  and created_at between '" + from_date + "' and '" + end_date + "'", [visit_type: visitDataInstance, village: villageListInstance])
+                        } else {
+                            houseHoldMemberH = MkChaid.executeQuery("select sum(household.total_members),sum(household.male_no),sum(household.female_no) from MkChaid  where  visit_type=:visit_type and street=:village and deleted=false", [visit_type: visitDataInstance, village: villageListInstance])
+
+                        }
+                        if(houseHoldMemberH[0][0]){
+                            totalPopulation  = houseHoldMemberH[0][0]
+                        }
+
+                        if(houseHoldMemberH[0][1]){
+                            maleTotal  = houseHoldMemberH[0][1]
+                        }
+
+                        if(houseHoldMemberH[0][2]){
+                            femaleTotal  = houseHoldMemberH[0][2]
+                        }
+
+                    %>
+                    <td>${formatAmountString(name: (int) totalPopulation)}</td>
+                    <td>${formatAmountString(name: (int) maleTotal)}</td>
+                    <td>${formatAmountString(name: (int) femaleTotal)}</td>
+
+                </tr>
+            </g:each>
             <%
-                if (houseHoldMember[0][0]) {
-                    totalMember = totalMember + houseHoldMember[0][0];
-                }
 
-                if (houseHoldMember[0][2]) {
-                    totalMemberMale = totalMemberMale + houseHoldMember[0][2];
-                }
-
-                if (houseHoldMember[0][1]) {
-                    totalMemberWomen = totalMemberMale + houseHoldMember[0][1];
-                }
-                if (womenAgeBetweenNo[0]) {
-                    totalWomenAgeBetweenNo = totalWomenAgeBetweenNo + womenAgeBetweenNo[0];
-                }
-                if (maleAgeBetweenNo[0]) {
-                    totalMaleAgeBetweenNo = totalMaleAgeBetweenNo + maleAgeBetweenNo[0];
-                }
-                if (neonates[0]) {
-                    totalNeonates = totalNeonates + neonates[0];
-                }
-                if (infants[0]) {
-                    totalInfants = totalInfants + infants[0]
-                }
-                if (pregnantWomen[0]) {
-                    totalPregnantWomen = totalPregnantWomen + pregnantWomen[0];
-                }
-                if (breastFeedingWomen[0]) {
-                    totalBreastFeedingWomen = totalBreastFeedingWomen + breastFeedingWomen[0];
-                }
                 countNo++;
             %>
         </g:if>
     </g:each>
     </tbody>
-    <tfoot>
-    <tr class="success">
-        <td></td>
-        <td class="semi-bold">Total</td>
-        <td>${formatAmountString(name: (int) totalVisit)}</td>
-        <td>${formatAmountString(name: (int) totalHouseHold)}</td>
-        <td>${formatAmountString(name: (int) totalMember)}</td>
-        <td>${formatAmountString(name: (int) totalMemberWomen)}</td>
-        <td>${formatAmountString(name: (int) totalMemberMale)}</td>
-        <td>${formatAmountString(name: (int) totalWomenAgeBetweenNo)}</td>
-        <td>${formatAmountString(name: (int) totalMaleAgeBetweenNo)}</td>
-        <td>${formatAmountString(name: (int) totalNeonates)}</td>
-        <td>${formatAmountString(name: (int) totalInfants)}</td>
-        <td>${formatAmountString(name: (int) totalPregnantWomen)}</td>
-        <td>${formatAmountString(name: (int) totalBreastFeedingWomen)}</td>
-    </tr>
-    </tfoot>
+
 </table>

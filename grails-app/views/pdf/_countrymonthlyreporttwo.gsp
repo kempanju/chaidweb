@@ -9,56 +9,61 @@
     <asset:stylesheet src="application.css"/>
     <asset:stylesheet src="bootstrap.css"/>
     <style type="text/css">
-    p {
-        margin: 5px auto;
+p {
+    margin: 5px auto;
+
+}
+@page
+{
+    size: A3 landscape;
+}
+
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #000000;
+    margin: 1em 0;
+    padding: 0;
+}
+table tr td{
+    padding: 2px !important;
+}
+
+@media print {
+
+    /* ... the rest of the rules ... */
+    .table-bordered {
+        border: 1px solid red;
 
     }
-
-    hr {
-        display: block;
-        height: 1px;
-        border: 0;
-        border-top: 1px solid #000000;
-        margin: 1em 0;
+    @page {
+        size: A3 landscape;
         padding: 0;
+        margin: 0;
+    }
+    table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+        padding: 2px;
+    }
+    table tr td{
+        padding: 3px;
+    }
+    table tr th{
+        padding: 3px;
+    }
+    @page :left {
+        margin-left: 1mm;
     }
 
-    @media print {
-
-        /* ... the rest of the rules ... */
-        .table-bordered {
-            border: 1px solid red;
-
-        }
-        @page {
-            size: A4 portrait;
-            padding: 0;
-            margin: 0;
-        }
-        table {
-            width: 100%;
-            margin: 0;
-            border-collapse: collapse;
-            padding: 2px;
-        }
-        table tr td{
-            padding: 3px;
-        }
-        table tr th{
-            padding: 3px;
-        }
-        @page :left {
-            margin-left: 1mm;
-        }
-
-        @page :right {
-            margin-left: 1mm;
-        }
+    @page :right {
+        margin-left: 1mm;
     }
+}
 
-
-
-    </style>
+</style>
 
 
 </head>
