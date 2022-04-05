@@ -580,8 +580,11 @@ class ApplicationService {
                     def name = house_hold_id.name
                     def subStreetInstance = SubStreet.get(street_id)
                     houseHoldInstance = Household.findOrSaveWhere(village_id: subStreetInstance.village_id, district_id: subStreetInstance.district_id, number: number, name: name, street: subStreetInstance)
+                    chadInstance.repeated = false
                 }else{
                     houseHoldInstance = Household.get(id)
+                    chadInstance.repeated = true
+
                 }
             }
             chadInstance.respondent_name = respondent

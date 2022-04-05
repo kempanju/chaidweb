@@ -12,7 +12,7 @@ class MkChaid {
     java.sql.Timestamp arrival_time
     String respondent_name,respondent_gender,uniquecode,reg_no,sick_person_name
     Integer respondent_age,total_members,age_sick_person,emergence_status,members_male=0,members_female=0
-    Boolean sick_person,care_giver,deleted
+    Boolean sick_person,care_giver,deleted,repeated
     District distric
     Street street
     Double centroid_x=0,centroid_y=0,accuracy=0
@@ -29,6 +29,7 @@ class MkChaid {
         objective_type nullable:true
         objective_type nullable:true
         household nullable:true
+        repeated nullable: true
         relationship_status nullable:true
         interview_status nullable:true
         arrival_time nullable:true
