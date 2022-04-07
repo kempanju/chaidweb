@@ -98,10 +98,10 @@
                             <%
                                 def chadNo1 = 0;
                                 if (end_date && from_date) {
-                                    chadNo1 = MkChaid.executeQuery("select id from MkChaid where street=:village  and deleted=false and arrival_time between '" + from_date + "' and '" + end_date + "' and visit_type=:visitTypeInstance", [village: villageListInstance, visitTypeInstance: visitTypeInstance]).size()
+                                    chadNo1 = MkChaid.executeQuery("select id from MkChaid where street=:village  and deleted=false and arrival_time between '" + from_date + "' and '" + end_date + "' ", [village: villageListInstance]).size()
 
                                 } else {
-                                    chadNo1 = MkChaid.executeQuery("select id from MkChaid where street=:village  and deleted=false and visit_type=:visitTypeInstance", [village: villageListInstance, visitTypeInstance: visitTypeInstance]).size()
+                                    chadNo1 = MkChaid.executeQuery("select id from MkChaid where street=:village  and deleted=false ", [village: villageListInstance]).size()
 
                                 }
                                 totalVisit = totalVisit+chadNo1
