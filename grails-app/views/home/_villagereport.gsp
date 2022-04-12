@@ -83,7 +83,7 @@
 
             <tr class="${(countNo % 2) == 0 ? 'even' : 'odd'} ">
                 <td>${countNo}</td>
-                <td><span class="text-bold">${regionListInstance?.name}</span></td>
+                <td><span class="text-bold">${villageListInstance?.name}</span></td>
                 <td>
                     <table class="table" border="1">
                         <tr><td>New</td></tr>

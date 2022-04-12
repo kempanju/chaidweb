@@ -1,4 +1,4 @@
-<%@ page import="chaid.Survey; chaid.MkChaid; materialize.view.DangerSign; chaid.AdolescentAbuse; materialize.view.ViewHealthEducation; chaid.HealthEducation; chaid.AvailableMemberHouse; chaid.Household; admin.DictionaryItem; admin.DictionaryItem;" %>
+<%@ page import="chaid.DangerSignPregnant; chaid.ReferalAdolescent; chaid.Survey; chaid.MkChaid; materialize.view.DangerSign; chaid.AdolescentAbuse; materialize.view.ViewHealthEducation; chaid.HealthEducation; chaid.AvailableMemberHouse; chaid.Household; admin.DictionaryItem; admin.DictionaryItem;" %>
 <%
     def memberCategoryList = DictionaryItem.findAllByDictionary_idAndDisplayReport(admin.Dictionary.findByCode("CHAD17"), true, [sort: 'displayOrder', order: 'asc']);
 %>
@@ -68,19 +68,19 @@
             <tr>
                 <td class="info">
 
-                <ul class="myUL">
+                    <ul class="myUL">
 
                         <li><span class="caret">${educationListInstance.name}</span>
-                    <g:if  test="${type=='file'}">
+                            <g:if test="${type == 'file'}">
 
-                        <ul class="nested">
-                                <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
-                                        status="ii" var="categoryListInstance">
-                                    <li>${categoryListInstance.name}</li>
-                                </g:each>
+                                <ul class="nested">
+                                    <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
+                                            status="ii" var="categoryListInstance">
+                                        <li>${categoryListInstance.name}</li>
+                                    </g:each>
 
-                            </ul>
-                    </g:if>
+                                </ul>
+                            </g:if>
                         </li>
                     </ul>
 
@@ -128,75 +128,192 @@
 
         <tr>
             <td colspan="16"
-                class="text-bold text-center">REFERRALS CONDUCTED FROM THE COMMUNITY :-TOTAL NUMBER OF GIRLS AND BOYS IN THE ADOLLENCENT GROUP Who (10-24 YRS) WERE REFERRED DUE TO:-</td>
+                class="text-bold text-center">REFERRALS CONDUCTED FROM THE COMMUNITY :-TOTAL NUMBER OF GIRLS AND BOYS IN THE ADOLLENCENT GROUP Who (10-19 YRS) WERE REFERRED DUE TO:-</td>
         </tr>
         <tr><td></td><td>Male</td><td>Female</td><td>Unknown</td><td>Total</td></tr>
-        <g:each in="${DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD54C"))}" status="i"
-                var="referralsListInstance">
-            <tr>
-                <td class="info">
-                    <span>${referralsListInstance.name}</span>
-                    %{--  <ul class="myUL">
 
-                          <li><span class="caret">${referralsListInstance.name}
-                              <ul class="nested">
-                                  <g:each in="${DictionaryItem.findAllByCategory(referralsListInstance)}"
-                                          status="iii" var="categoryEdListInstance">
-                                      <li>${categoryEdListInstance.name}</li>
-                                  </g:each>
+        <tr><td>Vijana waliopewa rufaa ya afya ya uzazi</td>
+            <%
+                def ukatiliWaJinsioa = DictionaryItem.findByCode("CHAD55B3")
+                def countReferrals, countReferralsMale, countReferralsFemale
+                if (end_date && from_date) {
+                    countReferrals = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: ukatiliWaJinsioa]).size()
 
-                              </ul>
-                          </li>
-                      </ul>--}%
-                </td>
-                <%
+                } else {
+                    countReferrals = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where type=:referralsListInstance ", [referralsListInstance: ukatiliWaJinsioa]).size()
 
-                    def countReferrals, countReferralsMale, countReferralsFemale
-                    if (end_date && from_date) {
-                        countReferrals = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: referralsListInstance]).size()
+                }
 
-                    } else {
-                        countReferrals = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where type=:referralsListInstance ", [referralsListInstance: referralsListInstance]).size()
+                if (end_date && from_date) {
+                    countReferralsFemale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: ukatiliWaJinsioa]).size()
 
-                    }
+                } else {
+                    countReferralsFemale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance ", [referralsListInstance: ukatiliWaJinsioa]).size()
 
-                    if (end_date && from_date) {
-                        countReferralsFemale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: referralsListInstance]).size()
+                }
 
-                    } else {
-                        countReferralsFemale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance ", [referralsListInstance: referralsListInstance]).size()
+                if (end_date && from_date) {
+                    countReferralsMale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('me','Me')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: ukatiliWaJinsioa]).size()
 
-                    }
+                } else {
+                    countReferralsMale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('me','Me')  and type=:referralsListInstance ", [referralsListInstance: ukatiliWaJinsioa]).size()
 
-                    if (end_date && from_date) {
-                        countReferralsMale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('me','Me')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: referralsListInstance]).size()
+                }
+                def countReferalsFemale = 0;
+                if (end_date && from_date) {
+                     countReferalsFemale = DangerSignPregnant.executeQuery("select id from DangerSignPregnant where preginantDetails.age between 10 and 19 and chaid.deleted=false and arrival_time between '" + from_date + "' and '" + end_date + "'").size()
 
-                    } else {
-                        countReferralsMale = AdolescentAbuse.executeQuery("select id from AdolescentAbuse where adolescent.gender in ('me','Me')  and type=:referralsListInstance ", [referralsListInstance: referralsListInstance]).size()
+                } else {
+                    countReferalsFemale = DangerSignPregnant.executeQuery("select id from DangerSignPregnant where preginantDetails.age between 10 and 19 and chaid.deleted=false").size()
 
-                    }
+                }
+
+                if (!countReferrals) {
+                    countReferrals = 0
+                }
+                if (!countReferralsMale) {
+                    countReferralsMale = 0
+                }
+                if (!countReferralsFemale) {
+                    countReferralsFemale = 0
+                }
+
+                countReferralsFemale = countReferalsFemale + countReferralsFemale
+
+                def unknownGender = countReferrals - (countReferralsFemale + countReferralsMale) + countReferalsFemale
+            %>
+            <td>${formatAmountString(name: (int) countReferralsMale)}</td>
+            <td>${formatAmountString(name: (int) countReferralsFemale)}</td>
+            <td>${formatAmountString(name: (int) unknownGender)}</td>
+
+            <td>${formatAmountString(name: (int) countReferrals)}</td>
+        </tr>
+        <tr><td>Vijana waliopewa rufaa ya lishe</td>
+            <%
+                ukatiliWaJinsioa = DictionaryItem.findByCode("CHAD55B3")
+                countReferrals = 0;
+                countReferralsMale = 0;
+                countReferralsFemale = 0
+                if (end_date && from_date) {
+                    countReferrals = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+                } else {
+                    countReferrals = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where type=:referralsListInstance ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+                }
+
+                if (end_date && from_date) {
+                    countReferralsFemale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+                } else {
+                    countReferralsFemale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+                }
+
+                if (end_date && from_date) {
+                    countReferralsMale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('me','Me')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+                } else {
+                    countReferralsMale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('me','Me')  and type=:referralsListInstance ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+                }
 
 
-                    if (!countReferrals) {
-                        countReferrals = 0
-                    }
-                    if (!countReferralsMale) {
-                        countReferralsMale = 0
-                    }
-                    if (!countReferralsFemale) {
-                        countReferralsFemale = 0
-                    }
+                if (!countReferrals) {
+                    countReferrals = 0
+                }
+                if (!countReferralsMale) {
+                    countReferralsMale = 0
+                }
+                if (!countReferralsFemale) {
+                    countReferralsFemale = 0
+                }
 
-                    def unknownGender = countReferrals - (countReferralsFemale + countReferralsMale)
-                %>
-                <td>${formatAmountString(name: (int) countReferralsMale)}</td>
-                <td>${formatAmountString(name: (int) countReferralsFemale)}</td>
-                <td>${formatAmountString(name: (int) unknownGender)}</td>
+                unknownGender = countReferrals - (countReferralsFemale + countReferralsMale)
+            %>
+            <td>${formatAmountString(name: (int) countReferralsMale)}</td>
+            <td>${formatAmountString(name: (int) countReferralsFemale)}</td>
+            <td>${formatAmountString(name: (int) unknownGender)}</td>
 
-                <td>${formatAmountString(name: (int) countReferrals)}</td>
-            </tr>
-        </g:each>
+            <td>${formatAmountString(name: (int) countReferrals)}</td>
 
+        </tr>
+
+
+        <%
+            ukatiliWaJinsioa = DictionaryItem.findByCode("CHAD55B2")
+            countReferrals = 0;
+            countReferralsMale = 0;
+            countReferralsFemale = 0;
+            if (end_date && from_date) {
+                countReferrals = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+            } else {
+                countReferrals = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where type=:referralsListInstance ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+            }
+
+            if (end_date && from_date) {
+                countReferralsFemale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+            } else {
+                countReferralsFemale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('ke','Ke')  and type=:referralsListInstance ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+            }
+
+            if (end_date && from_date) {
+                countReferralsMale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('me','Me')  and type=:referralsListInstance and arrival_time between '" + from_date + "' and '" + end_date + "'  ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+            } else {
+                countReferralsMale = ReferalAdolescent.executeQuery("select id from ReferalAdolescent where adolescent.gender in ('me','Me')  and type=:referralsListInstance ", [referralsListInstance: ukatiliWaJinsioa]).size()
+
+            }
+
+
+            if (!countReferrals) {
+                countReferrals = 0
+            }
+            if (!countReferralsMale) {
+                countReferralsMale = 0
+            }
+            if (!countReferralsFemale) {
+                countReferralsFemale = 0
+            }
+
+            unknownGender = countReferrals - (countReferralsFemale + countReferralsMale)
+        %>
+
+        <tr><td>Vijana waliopewa rufaa ya ukatili wa kijinsia</td>
+            <td>${formatAmountString(name: (int) countReferralsMale)}</td>
+            <td>${formatAmountString(name: (int) countReferralsFemale)}</td>
+            <td>${formatAmountString(name: (int) unknownGender)}</td>
+
+            <td>${formatAmountString(name: (int) countReferrals)}</td>
+        </tr>
+
+        %{-- <g:each in="${DictionaryItem.findAllByDictionary_id(admin.Dictionary.findByCode("CHAD55B"))}" status="i"
+                 var="referralsListInstance">
+             <tr>
+                 <td class="info">
+                     <span>${referralsListInstance.name}</span>
+                     --}%%{--  <ul class="myUL">
+
+                           <li><span class="caret">${referralsListInstance.name}
+                               <ul class="nested">
+                                   <g:each in="${DictionaryItem.findAllByCategory(referralsListInstance)}"
+                                           status="iii" var="categoryEdListInstance">
+                                       <li>${categoryEdListInstance.name}</li>
+                                   </g:each>
+
+                               </ul>
+                           </li>
+                       </ul>--}%%{--
+                 </td>
+
+
+             </tr>
+         </g:each>
+ --}%
         <tr>
             <td colspan="3">1.Idadi ya wavulana na wasichana kundi balehe umri 10-24 waliotoa ripoti na kupata huduma katika vituodhidi ya unyanyasaji wa kingono (Ukatili wa kijinsia- GBV)</td>
             <td>
@@ -304,16 +421,16 @@
                     <ul class="myUL">
 
                         <li><span class="caret">${educationListInstance.name}</span>
-                    <g:if  test="${type=='file'}">
+                            <g:if test="${type == 'file'}">
 
-                        <ul class="nested">
-                                <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
-                                        status="iiiI" var="categoryEdUListInstance">
-                                    <li>${categoryEdUListInstance.name}</li>
-                                </g:each>
+                                <ul class="nested">
+                                    <g:each in="${DictionaryItem.findAllByCategory(educationListInstance)}"
+                                            status="iiiI" var="categoryEdUListInstance">
+                                        <li>${categoryEdUListInstance.name}</li>
+                                    </g:each>
 
-                            </ul>
-                    </g:if>
+                                </ul>
+                            </g:if>
                         </li>
                     </ul>
 
@@ -414,6 +531,14 @@
                     noHoldMember = ViewHealthEducation.executeQuery("select sum(h.chaid.members_male), sum(h.chaid.members_female) from ViewHealthEducation h where  education_type=:education_type ", [education_type: educationListInstance])[0]
 
                 }
+
+                def covidMale = 0
+                def covidFemale = 0
+
+                if (noHoldMember[0]) {
+                    covidMale = noHoldMember[0]
+                    covidFemale = noHoldMember[1]
+                }
             %>
             <td colspan="3">1. Idadi ya wanaume waliopatiwa elimu ya COVID 19</td>
             <td>${noHoldMember[0]}</td>
@@ -424,22 +549,22 @@
         </tr>
         <tr>
             <td colspan="3">3. Jumla ya watu waliopatiwa elimu ya COVID 19</td>
-            <td>${noHoldMember[0] + noHoldMember[1]}</td>
+            <td>${covidMale + covidFemale}</td>
         </tr>
 
     </table>
 </div>
 
-<g:if  test="${type=='file'}">
-<script type="text/javascript">
+<g:if test="${type == 'file'}">
+    <script type="text/javascript">
 
-    var toggler = document.getElementsByClassName("caret");
-    var i;
-    for (i = 0; i < toggler.length; i++) {
-        toggler[i].addEventListener("click", function () {
-            this.parentElement.querySelector(".nested").classList.toggle("activee");
-            this.classList.toggle("caret-down");
-        });
-    }
-</script>
+        var toggler = document.getElementsByClassName("caret");
+        var i;
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function () {
+                this.parentElement.querySelector(".nested").classList.toggle("activee");
+                this.classList.toggle("caret-down");
+            });
+        }
+    </script>
 </g:if>

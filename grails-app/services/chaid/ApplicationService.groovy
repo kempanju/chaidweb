@@ -1112,7 +1112,7 @@ class ApplicationService {
                 }
 
 
-                if (code.equals("CHAD54C")) {
+                if (code.equals("CHAD54C")||code.equals("CHAD55B")) {
                     try {
                         def breakArray = answer_code.split(",")
                         breakArray.each {
